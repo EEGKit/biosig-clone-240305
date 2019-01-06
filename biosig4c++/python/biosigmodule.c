@@ -117,8 +117,6 @@ static PyObject *biosig_data(PyObject *self, PyObject *args) {
 	return Data;
 }
 
-
-
 static PyMethodDef BiosigMethods[] = {
     {"header",  biosig_json_header, METH_VARARGS, "load biosig header and export as JSON ."},
     {"data",    biosig_data,        METH_VARARGS, "load biosig data."},
@@ -130,7 +128,14 @@ static PyMethodDef BiosigMethods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
-const char module___doc__[] = "biosig tools for loading signal data";
+const char module___doc__[] = "Biosig - a tool for loading biomedical signal data.\n"
+                              "  Biosig can read about 50 different fileformats of EEG, ECG, etc.\n"
+			      "  The data samples can be read into a single matrix\n"
+			      "  using the function\n"
+			      "         data = biosig.data(filename)\n"
+			      "  The header- and meta information including events can be\n"
+			      "  read into a JSON structure with the function\n"
+			      "         header = biosig.header(filename)\n";
 
 #if PY_MAJOR_VERSION >= 3
     static struct PyModuleDef moduledef = {

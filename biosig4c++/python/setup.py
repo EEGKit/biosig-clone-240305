@@ -18,7 +18,7 @@ except ValueError:
     LIBS='-lbiosig'
     LIBDIR='/usr/local/lib'
 
-module1 = Extension('biosig',
+module_biosig = Extension('biosig',
         define_macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '9')],
         include_dirs = [CPATH, mu.get_numpy_include_dirs()[0]],
         libraries    = LIBS,
@@ -31,8 +31,9 @@ setup (name = 'Biosig',
        author = 'Alois Schloegl',
        author_email = 'alois.schloegl@ist.ac.at',
        license = 'GPL',
-       url = 'http://biosig.sf.net',
+       url = 'https://biosig.sourceforge.io',
        long_description = '''This is the biosig demo package.''',
        keywords = 'EEG ECG EKG EMG EOG Polysomnography ECoG biomedical signals SCP EDF GDF HEKA CFS ABF',
-       ext_modules = [module1])
+       install_requires=['numpy','pkgconfig','setuptools'],
+       ext_modules = [module_biosig])
 
