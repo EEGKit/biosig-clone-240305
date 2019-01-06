@@ -63,9 +63,6 @@
 /* Define to 1 if you have the `asound' library (-lasound). */
 #undef HAVE_LIBASOUND
 
-/* Define to 1 if you have the `iberty' library (-liberty). */
-#undef HAVE_LIBIBERTY
-
 /* Define to 1 if you have the `iconv' library (-liconv). */
 #undef HAVE_LIBICONV
 
@@ -74,12 +71,6 @@
 
 /* Define to 1 if you have the `libmx' library (-llibmx). */
 #undef HAVE_LIBLIBMX
-
-/* Define to 1 if you have the `mathlink' library (-lmathlink). */
-#undef HAVE_LIBMATHLINK
-
-/* Define to 1 if you have the `uuid' library (-luuid). */
-#undef HAVE_LIBUUID
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H

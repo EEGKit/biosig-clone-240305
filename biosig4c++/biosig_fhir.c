@@ -26,6 +26,7 @@ extern "C" {
 
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <b64/cencode.h>
 #include "biosig-dev.h"
 #include "biosig.h"

@@ -62,7 +62,6 @@
 
 int VERBOSE_LEVEL = 0;		// this variable is always available, but only used without NDEBUG 
 
-#include "config.h"
 #include "biosig.h"
 #include "biosig-network.h"
 

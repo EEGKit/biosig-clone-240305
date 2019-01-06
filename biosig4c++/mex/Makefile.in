@@ -90,7 +90,7 @@ else
 		IO_H_FILE2 = io.h
 		CFLAGS  += -I$(prefix)/include
 		LIBS    += -lssp
-		LDLIBS  += -liconv -liberty -lws2_32
+		LDLIBS  += -liconv -lws2_32
 	endif
 endif
 

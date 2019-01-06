@@ -137,7 +137,7 @@ else
 		SOURCES += win32/getlogin.c win32/getline.c win32/getdelim.c
 		OBJECTS += getlogin.o getline.o getdelim.o
 		LDLIBS  += -lssp
-		LDLIBS  += -liconv -liberty -lstdc++ -lws2_32
+		LDLIBS  += -liconv -lstdc++ -lws2_32
 		BINEXT   = .exe
 	endif
 endif

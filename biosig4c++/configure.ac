@@ -39,8 +39,6 @@ AC_CHECK_LIB([z],       [gzopen],              AC_SUBST(HAVE_LIBZ,       "1") )
 # FIXME: Replace `main' with a function in `-lgdcmMSFF':
 #AC_CHECK_LIB([gdcmMSFF], [main])
 
-AC_CHECK_LIB([iberty], [getlogin])
-
 AC_CHECK_LIB([iconv], [iconv_open])
 AC_CHECK_HEADER([iconv.h], ,[AC_MSG_ERROR([can not find iconv.h])])
 #AC_CHECK_LIB([tinyxml] , [main],        AC_SUBST(HAVE_LIBTINYXML, "1")  [TEST_LIBS="$TEST_LIBS -ltinyxml"],   AC_MSG_WARN([libtinyxml is not installed.]))
