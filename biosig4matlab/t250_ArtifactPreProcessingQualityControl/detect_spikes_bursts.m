@@ -72,7 +72,7 @@ function [HDR, s] = detect_spikes_bursts(fn, chan, varargin)
 % References:
 %
 
-%    Copyright (C) 2011,2014,2016,2018 by Alois Schloegl <alois.schloegl@ist.ac.at>
+%    Copyright (C) 2011,2014,2016,2018,2019 by Alois Schloegl <alois.schloegl@ist.ac.at>
 %    This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 %    BioSig is free software: you can redistribute it and/or modify
@@ -166,13 +166,8 @@ Fs = 20000; 	% assumed samplerate
 %	load data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	if ischar(fn) && exist(fn,'file') && any(size(chan)==1)
-		winlen = ceil(Fs*.1);
-		[s, HDR] = sload(fn, 0, 'NUMBER_OF_NAN_IN_BREAK', winlen);
-		if Fs < HDR.SampleRate,
-			warning('Not-a-numbers are inserted between breaks, time structure w.r.t. to event table might be corrupted')
-			winlen   = ceil(HDR.SampleRate * .1);
-			[s, HDR] = sload(fn, 0, 'NUMBER_OF_NAN_IN_BREAK', winlen);
-		end;
+		warning('In the past Not-a-numbers are inserted between breaks, this is not done anymore - it might break backwards compatibility.')
+		[s, HDR] = sload(fn);
 		if chan==0, chan = 1:HDR.NS; end;
 	elseif isstruct(fn) && (fn.NS==size(chan,2))
 		HDR = fn;
@@ -204,7 +199,8 @@ Fs = 20000; 	% assumed samplerate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	Set Parameters for Spike Detection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	B  = [1; zeros(round(HDR.SampleRate*dT)-1, 1); -1];
+	B   = [1; zeros(round(HDR.SampleRate*dT)-1, 1); -1];
+	six = HDR.EVENT.POS(HDR.EVENT.TYP==hex2dec('7ffe')); % sweep index
 
 	HDR.BurstTable = [];
 
@@ -213,7 +209,9 @@ Fs = 20000; 	% assumed samplerate
 	if (bitand(HDR.PhysDimCode(ch), hex2dec('ffe0')) == 4256), %% physicalunits('V'),
 		%%%%%%%	Spike Detection %%%%%%%%%%%%%%%%%%%
 		[unit, scale] = physicalunits(HDR.PhysDimCode(ch));
-		tmp = scale * filter(B, round(HDR.SampleRate*dT)/HDR.SampleRate, s(:,ch));
+		stmp = s(:,ch);
+		stmp(six) = NaN;
+		tmp = scale * filter(B, round(HDR.SampleRate*dT)/HDR.SampleRate, stmp);
 		OnsetSpike = find( diff (tmp > slopeThreshold) > 0);	%% spike onset time [samples]
 		% --- remove double detections < 1 ms
 		if ~isempty(dT_Exclude) && ~isempty(OnsetSpike),
@@ -264,11 +262,9 @@ Fs = 20000; 	% assumed samplerate
 				%%% TODO: these should be properly computed %%%
 				EVENT.TimeStamp = [EVENT.TimeStamp; repmat(NaN, size(POS)) ];
 			end;
-
 		end
 	end;
 	end;
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
