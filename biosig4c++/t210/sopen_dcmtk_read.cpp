@@ -4,9 +4,9 @@
     The functions will be either fixed, then they are moved to another place;
     or the functions are discarded. Do not rely on the interface in this function
 
-    Copyright (C) 2018 Alois Schloegl <alois.schloegl@gmail.com>
+    Copyright (C) 2018-2019 Alois Schloegl <alois.schloegl@gmail.com>
     This file is part of the "BioSig for C/C++" repository
-    (biosig4c++) at http://biosig.sf.net/
+    (biosig4c++) at https://biosig.sourceforge.io
 
     BioSig is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -253,8 +253,8 @@ extern "C" int sopen_dcmtk_read(HDRTYPE* hdr) {
 				hc->LowPass  = 0.0/0.0;
 				hc->HighPass = 0.0/0.0;
 
-				hc->DigMax   = (1<<15)-1;
-				hc->DigMin   = -1<<15;
+				hc->DigMax   = ldexp( 1.0, 15) - 1.0;	//  2^15-1
+				hc->DigMin   = ldexp(-1.0, 15);		// -2^15
 				hc->LeadIdCode  = 0;
 				hc->PhysDimCode = 0;	// undefined
 				hc->bi   = bi;
