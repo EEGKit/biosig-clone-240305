@@ -1,30 +1,31 @@
 .TH pu 1
 .SH NAME
-pu/physicalunits - encodes and de-codes physical units a according to ISO/IEEE 11073-10101:2004 Tables A6.1 and A6.3
+physicalunits - encodes and de-codes physical units a according to ISO/IEEE 11073-10101:2004 Tables A6.1 and A6.3
+  physicalunits was formerly also known under "pu".
 
 .SH SYNOPSIS
-  pu [units_or_codes]
+  physicalunits [units_or_codes]
 
 .SH DESCRIPTION
 The output returns the <physical unit>:<TAB><decimal code><TAB><hexadecimal code><TAB><scaling><TAB><physical unit w/o prefix>, where <TAB> represents the character ascii(9)
 
 .SH Examples:
   Encoding of "microVolts", using text representation, decimal encoding and hexadecimal encoding:
-  pu mV
+  physicalunits mV
         uV	4275	0x10b3	1e-06	V
 
-  pu 4275
+  physicalunits 4275
         uV	4275	0x10b3	1e-06	V
 
-  pu 0x10b3
+  physicalunits 0x10b3
         uV	4275	0x10b3	1e-06	V
 
   Text representation containing spaces need to be quoted
-  pu "kg l-1"
+  physicalunits "kg l-1"
         kg l-1	2051	0x0803	1000	g l-1
 
   A list of units can be converted using multiple input arguments
-  pu mV nA 4180 kg dag degree rpm "mol mol-1" "kg l-1"
+  physicalunits mV nA 4180 kg dag degree rpm "mol mol-1" "kg l-1"
         mV	4274	0x10b2	0.001	V
         nA	4180	0x1054	1e-09	A
         nA	4180	0x1054	1e-09	A
@@ -35,7 +36,7 @@ The output returns the <physical unit>:<TAB><decimal code><TAB><hexadecimal code
         mol mol-1	864	0x0360	1	mol mol-1
         kg l-1	2051	0x0803	1000	g l-1
 
-   pu `seq 0 65535` |grep -v nan |grep -v null
+   physicalunits `seq 0 65535` |grep -v nan |grep -v null
         shows s complete table of defined units
 
 .SH AUTHOR

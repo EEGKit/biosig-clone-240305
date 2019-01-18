@@ -1,8 +1,8 @@
 ######## Makefile for "BioSig for C/C++" #####################
 ###
-###  Copyright (C) 2006-2017 Alois Schloegl <alois.schloegl@ist.ac.at>
+###  Copyright (C) 2006-2019 Alois Schloegl <alois.schloegl@ist.ac.at>
 ###  This file is part of the "BioSig for C/C++" repository
-###  (biosig4c++) at http://biosig.sf.net/
+###  (biosig4c++) at https://biosig.sourceforge.io/
 ###
 ##############################################################
 
@@ -99,10 +99,6 @@ PathToSigViewerWIN64 = ../sigviewer4win64
 
 CFLAGS       += -pipe -fPIC -fno-builtin-memcmp -O2 -Wno-unused-result
 CFLAGS       += -Wno-deprecated
-CFLAGS       += -D_GNU_SOURCE
-CFLAGS       += -D_XOPEN_SOURCE=700
-CFLAGS       += -D_DEFAULT_SOURCE
-CXXFLAGS     += $(CFLAGS)
 
 prefix        = @prefix@
 exec_prefix   = @exec_prefix@
@@ -112,6 +108,9 @@ libdir        = @libdir@
 includedir    = @includedir@
 bindir        = @bindir@
 mandir        = @mandir@
+
+CFLAGS       += -I$(includedir)
+CXXFLAGS     += $(CFLAGS)
 
 ## TARGET dependencies
 ifeq (,$(TARGET))
@@ -154,9 +153,9 @@ ifeq (Darwin,$(shell uname))
 	TAR	       = gtar
 	LD	       = $(CXX) -shared
 	CFLAGS        += -I$(prefix)/include
-	CFLAGS        += -mmacosx-version-min=10.9
+	CFLAGS        += -mmacosx-version-min=10.13
 	LDLIBS        += -liconv -lstdc++
-	SHAREDLIB      = -dylib -arch x86_64 #-macosx_version_min 10.9
+	SHAREDLIB      = -dylib -arch x86_64 #-macosx_version_min 10.13
 	LDFLAGS       += -L$(prefix)/lib/
 	DLEXT          = dylib
 	FULLDLEXT      = .dylib
@@ -489,9 +488,9 @@ endif
 
 first: $(IO_H_FILE2) lib tools
 ifeq (1,@HAVE_LIBB64@)
-  tools: save2gdf${BINEXT} pu${BINEXT} biosig_fhir${BINEXT}
+  tools: save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT}
 else
-  tools: save2gdf${BINEXT} pu${BINEXT}
+  tools: save2gdf${BINEXT} physicalunits${BINEXT}
 endif
 all:   first mex4o python R #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
 
@@ -668,8 +667,10 @@ tcl: libbiosig.$(LIBEXT) tcl/biosig.i
 
 # libraries are built in MXE
 
-## save2gdf, pdp2gdf, pu
+## save2gdf, pdp2gdf
 win32/%.exe: %.c
+	$(MinGWCXX) $(DEFINES) $(MinGWCFLAGS) "$<" $(MinGWLIBS) -o "$@"
+win32/physicalunits.exe: pu.c
 	$(MinGWCXX) $(DEFINES) $(MinGWCFLAGS) "$<" $(MinGWLIBS) -o "$@"
 
 win32: mexw32 win32mma
@@ -683,6 +684,8 @@ win32: mexw32 win32mma
 
 ## save2gdf, pdp2gdf, pu
 win64/%.exe: %.c
+	$(MinGW64CXX) $(DEFINES) $(MinGW64CFLAGS) "$<" $(MinGW64LIBS) -o "$@"
+win64/physicalunits.exe: pu.c
 	$(MinGW64CXX) $(DEFINES) $(MinGW64CFLAGS) "$<" $(MinGW64LIBS) -o "$@"
 
 win64: mexw64
@@ -708,6 +711,11 @@ libgdftime${FULLDLEXT}:gdftime.o
 
 libphysicalunits${FULLDLEXT}:physicalunits.o
 	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
+
+#ifneq (Darwin,$(shell uname))
+%.${DLEXT}: %${FULLDLEXT}
+	ln -sf "$<" "$@"
+#endif
 
 
 #############################################################
@@ -762,7 +770,7 @@ libbiosig.pc :
 %${BINEXT}: %.c libbiosig.a
 	$(CC) $(DEFINES) $(CFLAGS) "$<" libbiosig.a -lstdc++ $(LDLIBS) -o "$@"
 
-pu${BINEXT} : pu.c physicalunits.o
+physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
 
 biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.a
@@ -993,7 +1001,7 @@ clean:
 	-$(DELETE) t240/*.o*
 	-$(DELETE) t240/libcnsfef.a
 	-$(DELETE) libbiosig.* libbiosig2.*
-	-$(DELETE) pdp2gdf save2gdf pu biosig_fhir
+	-$(DELETE) pdp2gdf save2gdf physicalunits biosig_fhir
 	-$(DELETE) mma/sload.exe mma/*/sload.exe
 	-$(DELETE) mex/*.o mex/*.obj mex/*.o64 mex/core mex/octave-core mex/*.oct mex/*~ mex/*.mex* 
 	-$(MAKE) -C java clean
@@ -1039,7 +1047,7 @@ install_tools: tools doc/save2gdf.1
 	install heka2itx  		$(DESTDIR)$(bindir)
 	install save2aecg 		$(DESTDIR)$(bindir)
 	install save2scp  		$(DESTDIR)$(bindir)
-	install pu${BINEXT}		$(DESTDIR)$(bindir)
+	install physicalunits${BINEXT}		$(DESTDIR)$(bindir)
 	-install biosig_fhir${BINEXT}	$(DESTDIR)$(bindir)   # not available on MacOSX because libb64 required
 	mkdir -p  			$(DESTDIR)$(mandir)/man1
 	install doc/*.1  		$(DESTDIR)$(mandir)/man1
@@ -1049,12 +1057,12 @@ install_tools: tools doc/save2gdf.1
 
 uninstall_tools:
 	${RM} $(DESTDIR)$(bindir)/save2gdf${BINEXT}
-	${RM} $(DESTDIR)$(bindir)/pu${BINEXT}
+	${RM} $(DESTDIR)$(bindir)/physicalunits${BINEXT}
 	${RM} $(DESTDIR)$(bindir)/heka2itx
 	${RM} $(DESTDIR)$(bindir)/save2aecg
 	${RM} $(DESTDIR)$(bindir)/save2scp
 	${RM} $(DESTDIR)$(bindir)/biosig_fhir${BINEXT}
-	${RM} $(DESTDIR)$(mandir)/man1/pu.1
+	${RM} $(DESTDIR)$(mandir)/man1/physicalunits.1
 	${RM} $(DESTDIR)$(mandir)/man1/save2gdf.1
 	${RM} $(DESTDIR)$(mandir)/man1/heka2itx.1
 
