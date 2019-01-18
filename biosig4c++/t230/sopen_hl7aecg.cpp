@@ -213,7 +213,7 @@ EXTERN_C int sopen_HL7aECG_read(HDRTYPE* hdr) {
 		H = SierraECG2.FirstChild("dataacquisition").FirstChild("signalcharacteristics").FirstChild("numberchannelsallocated");
 		if (H.Element()) {
 			if (hdr->NS != atoi(H.Element()->GetText()) ) 
-				fprintf(stdout,"SierraECG: number of channels is ambigous\n");
+				fprintf(stdout,"SierraECG: number of channels is ambiguous\n");
 		}
 
 		H = SierraECG2.FirstChild("patient").FirstChild("generalpatientdata").FirstChild("patientid");
@@ -475,7 +475,7 @@ EXTERN_C int sopen_HL7aECG_read(HDRTYPE* hdr) {
 	    }
 	    else if (IHE.Element()) {
 
-		fprintf(stderr,"XML IHE: support for IHE XML is experimental - some important features are not implmented yet \n"); 
+		fprintf(stderr,"XML IHE: support for IHE XML is experimental - some important features are not implemented yet \n");
 
 		TiXmlHandle activityTime = IHE.FirstChild("activityTime");
 		TiXmlHandle recordTarget = IHE.FirstChild("recordTarget");

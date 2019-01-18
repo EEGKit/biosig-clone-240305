@@ -137,7 +137,7 @@ char *getlogin (void);
 #include "gdftime.h"
 
 /*
- * pack structures to fullfil following requirements:
+ * pack structures to fulfil following requirements:
  * (1) Matlab v7.3+ requires 8 byte alignment
  * (2) in order to use mingw-compiled libbiosig with MS' VisualStudio,
  *     the structurs must be packed in a MS compatible way.
