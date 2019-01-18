@@ -2,8 +2,7 @@
 #
 #    Converts units.csv into units.i
 #
-#    $Id$
-#    Copyright (C) 2011 Alois Schloegl <a.schloegl@ieee.org>
+#    Copyright (C) 2011-2019 Alois Schloegl <alois.schloegl@gmail.com>
 #    This file is part of the "BioSig for C/C++" repository
 #    (biosig4c++) at http://biosig.sf.net/
 #
