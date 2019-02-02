@@ -1,6 +1,6 @@
 ####### Makefile for "BioSig for C/C++" #####################
 ###
-###  Copyright (C) 2010,2018 Alois Schloegl <alois.schloegl@gmail.com>
+###  Copyright (C) 2018,2019 Alois Schloegl <alois.schloegl@gmail.com>
 ###  This file is part of the "BioSig for C/C++" repository
 ###  (biosig4c++) at http://biosig.sf.net/
 ###
@@ -9,32 +9,27 @@
 ### JNI ###
 # https://stackoverflow.com/questions/5963266/call-c-function-from-java
 
+JAVA_HOME ?= $(realpath $(dir $(realpath $(shell which javac)))/..)
 
-#JAVAC ?= /usr/lib/jvm/java-1.5.0-gcj-6-amd64/bin/javac
-JAVAC ?= /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
-JAVAC ?= /usr/lib/jvm/java-9-openjdk-amd64/bin/javac
-JAVAC ?= /usr/lib/jvm/java-10-openjdk-amd64/bin/javac
-JAVAC ?= /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-
-#JAVAH ?= /usr/lib/jvm/java-1.5.0-gcj-6-amd64/bin/javah
-#JAVAH ?= /usr/bin/gjavah
-JAVAH ?= /usr/lib/jvm/java-8-openjdk-amd64/bin/javah
-JAVAH ?= /usr/lib/jvm/java-9-openjdk-amd64/bin/javah
-
-
-
-run: libBiosig.so
-	#LD_LIBRARY_PATH=. java biosig
-	java -Djava.library.path=. Biosig "/home/as/data/test/edf/Mischa.edf"
+JAVA  ?= $(JAVA_HOME)/bin/java
+JAVAC ?= $(JAVA_HOME)/bin/javac
+CLASS_PATH ?= $(JAVA_HOME)/bin
 
 libBiosig.so: Biosig.h Biosig.c
-	$(CXX) -shared -fPIC -I/java/include Biosig.c -lbiosig -o libBiosig.so
+	$(CXX) -shared -fPIC \
+		-I$(JAVA_HOME)/include \
+		-I$(JAVA_HOME)/include/linux \
+		Biosig.c -lbiosig -o libBiosig.so
 
-Biosig.h: Biosig.class Biosig.java
-	$(JAVAC) Biosig.java -h .
+Biosig.h: Biosig.class
+	$(JAVAC) -h . Biosig.java
 
 Biosig.class: Biosig.java
 	$(JAVAC) Biosig.java
+
+test: libBiosig.so
+	#LD_LIBRARY_PATH=. java biosig
+	$(JAVA) -Djava.library.path=. Biosig "../data/Newtest17-256.bdf"
 
 clean: 
 	-rm *.h
