@@ -1220,16 +1220,10 @@ HDRTYPE* constructHDR(const unsigned NS, const unsigned N_EVENT)
    #endif
 #else	
 	char *username = NULL;
-/* TODO: check whether memory leak in glibc's getpwuid is fixed. 
-	for details see: http://sourceware.org/bugzilla/show_bug.cgi?id=14122
-
-	struct passwd *p = NULL; //getpwuid(geteuid());
+	struct passwd *p = getpwuid(geteuid());
 	if (p != NULL)
-		username = p->pw_gecos;
-*/
-	if (username == NULL) 
-		username = getlogin(); 
-	if (username) 
+		username = p->pw_name;
+	if (username)
 		hdr->ID.Technician = strdup(username); 
 		
 #endif 
@@ -12611,6 +12605,8 @@ size_t sread(biosig_data_type* data, size_t start, size_t length, HDRTYPE* hdr) 
 		count = hdr->NRec;
 	}
 #endif
+
+	if ((ssize_t)start < 0) start=hdr->FILE.POS;
 
 	if (start >= (size_t)hdr->NRec) return(0);
 

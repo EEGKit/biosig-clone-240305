@@ -217,7 +217,7 @@ DEFINES      += -D=WITH_FEF
 	# WITH_DCMTK is already configured by autoconf
 	# WITH_GDCM is experimental
 	# WITH_DICOM (internal implementation) is experimental
-DEFINES      += -D=WITH_DICOM
+DEFINES      += -D=WITH_DCMTK
 #DEFINES      += -D=WITH_GDCM
 #DEFINES      += -D=WITH_GSL
 #DEFINES      += -D=WITH_EEPROBE
@@ -242,7 +242,7 @@ ifeq (1,@HAVE_LIBCHOLMOD@)
 	  LDLIBS     += -lsuitesparseconfig
 	endif
 endif
-ifeq (1,@HAVE_DCMTK@)
+ifneq (,$(findstring WITH_DCMTK, $(DEFINES)))
 	DEFINES      += -D=WITH_DCMTK
 	LDLIBS       += -ldcmdata -loflog -lofstd
 	SOURCES      += t210/sopen_dcmtk_read.cpp
