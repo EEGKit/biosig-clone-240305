@@ -6,6 +6,10 @@ Currently, only the data samples are loaded.
 
 
 = Installation =
+# 0) Requirements
+
+       apt-get install r-base-dev
+
 # 1) Make sure libbiosig and libbiosig2 are installed 
      
  	make -C .. && sudo make -C .. install      
@@ -14,7 +18,7 @@ Currently, only the data samples are loaded.
 
 	make
 #    or 
-	R CMD SHLIB sload.c -lbiosig -lbiosig2
+	R CMD SHLIB sload.c -lbiosig
 
 # 3) Use of sload in R 
        
