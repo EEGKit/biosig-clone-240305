@@ -1,7 +1,8 @@
 /*
-% Copyright (C) 2010,2011,2013 Alois Schloegl <alois.schloegl@gmail.org>
-% This file is part of the "BioSig for C/C++" repository 
-% (biosig4c++) at http://biosig.sf.net/ 
+    Copyright (C) 2010-2019 Alois Schloegl <alois.schloegl@ist.ac.at>
+    This file is part of the "BioSig for C/C++" repository
+    (biosig4c++) at http://biosig.sourceforge.io
+
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -119,7 +120,7 @@ if (VERBOSE_LEVEL > 5)
 
 	// generate and write header information in JSON format
 	asprintf_hdr2json(&str, hdr);
-	MLPutFunction(stdlink,"ImportString",2);
+	MLPutFunction(stdlink,"Import",2);
 	  MLPutString(stdlink,str);
 	  MLPutString(stdlink,"JSON");
 	free(str);

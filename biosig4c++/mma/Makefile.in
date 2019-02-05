@@ -42,9 +42,9 @@ MLIVER := $(shell ${CC} mliver.c -I${MLINKDIR}/SystemFiles/Links/MathLink/Develo
 # Windows
 #MLINKDIR  = /usr/local/Wolfram/gridMathematicaServer/7.0/SystemFiles/Links/MathLink/DeveloperKit
 SYSwin       = Windows# Set this value with the result of evaluating $SystemID
-MLLIBwin     = ml32i3m# Set this to ML64i3 if using a 64-bit system
+MLLIBwin     = ml32i4m# Set this to ML64i3 if using a 64-bit system
 SYSwin64     = Windows-x86-64# Set this value with the result of evaluating $SystemID
-MLLIBwin64   = ml64i3m# Set this to ML64i3 if using a 64-bit system
+MLLIBwin64   = ml64i4m# Set this to ML64i3 if using a 64-bit system
 ###########################################
 
 CADDSDIR  = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYS}/CompilerAdditions
@@ -95,7 +95,7 @@ ${TARGET}.exe: ${TARGET}.o ${TARGET}tm.o
 
 CCw32        = $(CROSS)-gcc
 CADDSDIRwin  = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYSwin}/CompilerAdditions/mldev32
-INCDIRwin    = -I${CADDSDIRwin}/include  -I${MLINKDIR}../SystemFiles/IncludeFiles/C/
+INCDIRwin    = -I${CADDSDIRwin}/include  -I${MLINKDIR}/SystemFiles/IncludeFiles/C/
 LIBDIRwin    = ${CADDSDIRwin}/lib
 
 EXTRALIBSwin = -lgdi32 -lm -lstdc++ -lws2_32 $(LDLIBS) # Set these with appropriate libs for your system.
@@ -126,7 +126,7 @@ ${SYSwin}/${TARGET}.exe : ${TARGET}.obj ${TARGET}tm.obj
 
 CCw64         = $(CROSS64)-gcc
 CADDSDIRwin64 = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYSwin64}/CompilerAdditions/mldev64
-INCDIRwin64   = -I${CADDSDIRwin64}/include -I${MLINKDIR}../SystemFiles/IncludeFiles/C/
+INCDIRwin64   = -I${CADDSDIRwin64}/include -I${MLINKDIR}/SystemFiles/IncludeFiles/C/
 LIBDIRwin64   = ${CADDSDIRwin64}/lib
 
 MPREPwin64    = ${CADDSDIRwin64}/bin/mprep.exe
@@ -147,7 +147,7 @@ win64mma : ${SYSwin64}/${TARGET}.exe
 #${SYSwin64}/${TARGET}.exe : ${TARGET}.w64obj ${TARGET}tm.w64obj
 ${SYSwin64}/${TARGET}.exe : ${SYSwin}/${TARGET}.exe
 	mkdir -p ${SYSwin64}
-#	${CCw64} $^ -static-libgcc -static-libstdc++ -lbiosig -lssp -L${LIBDIRwin64} -l${MLLIBwin64} ${EXTRALIBSwin} -o "$@"
+	${CCw64} $^ -static-libgcc -static-libstdc++ -lbiosig -lssp -L${LIBDIRwin64} -l${MLLIBwin64} ${EXTRALIBSwin} -o "$@"
 	-cp "$<" "$@"
 
 

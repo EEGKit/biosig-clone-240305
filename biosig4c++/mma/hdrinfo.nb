@@ -112,7 +112,7 @@ Cell[BoxData[
         RowBox[{"sload", "[", "file", "]"}]}], ";", "\[IndentingNewLine]", 
        RowBox[{"Uninstall", "[", "link", "]"}], ";", "\[IndentingNewLine]", 
        RowBox[{"data", "=", " ", 
-        RowBox[{"ImportString", "[", 
+        RowBox[{"Import", "[",
          RowBox[{
           RowBox[{"data", "[", 
            RowBox[{"[", "3", "]"}], "]"}], ",", "\"\<JSON\>\""}], "]"}]}]}]}],
