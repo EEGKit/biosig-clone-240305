@@ -1,4 +1,4 @@
-function [V,d] = csp(ECM,arg2,arg3)
+function [V,D] = csp(ECM,arg2,arg3)
 % CSP computes common spatial patterns
 % 	this version supports multiple classes using a One-vs-Rest scheme
 %
@@ -32,8 +32,7 @@ function [V,d] = csp(ECM,arg2,arg3)
 % 	Volume 52,  Issue 9,  Sept. 2005 Page(s):1541 - 1548
 %	Digital Object Identifier 10.1109/TBME.2005.851521 
 
-%	$Id$
-%	Copyright (C) 2007,2008,2009 by Alois Schloegl <alois.schloegl@gmail.com>
+%	Copyright (C) 2007,2008,2009,2019 by Alois Schloegl <alois.schloegl@gmail.com>
 %	This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
 p = 2; 
@@ -55,9 +54,10 @@ if isempty(Mode),
 	Mode = 'CSP3';
 end; 	
 
-COV = zeros(size(ECM)-[1,1,0]);
+sz=size(ECM);
+COV = zeros(sz([2,3,1])-[1,1,0]);
 for k=1:sz(1),
-  	[mu,sd,COV(:,:,k),xc,N,R2]=decovm(squeeze(ECM(k,:,:)));
+	[mu,sd,COV(:,:,k),xc,N,R2]=decovm(squeeze(ECM(k,:,:)));
 end; 
 
 
@@ -73,7 +73,7 @@ elseif strcmpi(Mode,'CSP0');
 	V = repmat(NaN,sz(2)-1,2*sz(1));
 	d = V(1,:);
 	for k = 1:sz(1), 
-  		C = P * squeeze(COV(:,:,k)) * P';
+		C = P * squeeze(COV(:,:,k)) * P';
   		[R,d1]  = eig((C+C')/2);
 		[d1,ix] = sort(diag(d1)); 
 	
@@ -84,10 +84,22 @@ elseif strcmpi(Mode,'CSP0');
 elseif strcmpi(Mode,'CSP3');  
 	%% do actual CSP calculation as generalized eigenvalues
 	%% R = permute(COV,[2,3,1]);
-	for k = 1:sz(1), 
+	for k = 1:sz(1),
 		[W,D] = eig(COV(:,:,k),sum(COV,3));
 		V(:,2*k+[1-p:0]) = W(:,[1,end]);
 	end;
 end; 
 
+%!test
+%! c1=[ones(30,1), randn(30, 50)]; c2=[ones(30,1),randn(30, 50)];
+%! [v]=csp(c1'*c1, c2'*c2);
+%! [v]=csp(c1'*c1, c2'*c2);
+%! assert(all(size(v)==[51,4]))
+%! assert(all(size(v)==[51,4]),'ECM0')
+%! assert(all(size(v)==[51,4]),'ECM3')
+%! c1=randn(30, 50); c2=randn(30, 50);
+%! [v]=csp(c1, c2);
+%! assert(all(size(v)==[50,4]))
+%! assert(all(size(v)==[50,4]),'ECM0')
+%! assert(all(size(v)==[50,4]),'ECM3')
 
