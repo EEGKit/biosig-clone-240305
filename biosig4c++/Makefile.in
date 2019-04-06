@@ -141,7 +141,7 @@ else
 	endif
 endif
 
-SONAMEVERSION ?= 1.9.3
+SONAMEVERSION ?= 2
 
 ifeq (Darwin,$(shell uname))
 	## Homebrew:

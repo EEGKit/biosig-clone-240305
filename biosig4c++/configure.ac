@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([biosig], [1.9.2])
+AC_INIT([biosig], [1.9.4])
 AC_CONFIG_SRCDIR([biosig.c])
 AC_CONFIG_HEADERS([config.h])
 
