@@ -1395,6 +1395,7 @@ end;
 %%%%% introduce NaNs between segments %%%%%%%
 if STATE.FLAG_NUM_NAN,
 	%% NaN's between segments/sweeps are introduced, but only when argument NUMBER_OF_NAN_IN_BREAK is explicitely defined in the list of input arguments
+	warning('use of NUMBER_OF_NAN_IN_BREAK is deprecated - this feature will eventually be removed');
 	winlen = round(STATE.NUMBER_OF_NAN_IN_BREAK);
 	ix = [1; H.EVENT.POS(H.EVENT.TYP==hex2dec('7ffe')); size(signal,1)+1];
 	n  = length(ix) - 1;
