@@ -1,6 +1,6 @@
-function [kap,se,H,z,p0,SA,R]=kappa(d,c,arg3,w);
+function [kap,se,H,z,p0,SA,R]=kappa(d,c,arg3,w)
 % KAPPA estimates Cohen's kappa coefficient
-%   and related statistics 
+%   and related statistics
 %
 % [...] = kappa(d1,d2);
 %	NaN's are handled as missing values and are ignored
@@ -9,32 +9,37 @@ function [kap,se,H,z,p0,SA,R]=kappa(d,c,arg3,w);
 % [kap,sd,H,z,ACC,sACC,MI] = kappa(...);
 % X = kappa(...);
 %
-% d1    data of scorer 1 
-% d2    data of scorer 2 
+% d1    data of scorer 1
+% d2    data of scorer 2
 %
 % kap	Cohen's kappa coefficient point
 % se	standard error of the kappa estimate
 % H	Concordance matrix, i.e. confusion matrix
 % z	z-score
-% ACC	overall agreement (accuracy) 
-% sACC	specific accuracy 
+% ACC	overall agreement (accuracy)
+% sACC	specific accuracy
 % MI 	Mutual information or transfer information (in [bits])
 % X 	is a struct containing all the fields above
+%       For two classes, a number of additional summary statistics including
+%         TPR, FPR, FDR, PPV, NPF, F1, dprime, Matthews Correlation coefficient (MCC) or
+%	Phi coefficient (PHI=MCC), Specificity and Sensitivity
+%       are provided. Note, the positive category must the larger label (in d and c), otherwise
+%       the confusion matrix becomes transposed and the summary statistics are messed up.
+%
 %
 % Reference(s):
 % [1] Cohen, J. (1960). A coefficient of agreement for nominal scales. Educational and Psychological Measurement, 20, 37-46.
-% [2] J Bortz, GA Lienert (1998) Kurzgefasste Statistik f|r die klassische Forschung, Springer Berlin - Heidelberg. 
+% [2] J Bortz, GA Lienert (1998) Kurzgefasste Statistik f|r die klassische Forschung, Springer Berlin - Heidelberg.
 %        Kapitel 6: Uebereinstimmungsmasze fuer subjektive Merkmalsurteile. p. 265-270.
 % [3] http://www.cmis.csiro.au/Fiona.Evans/personal/msc/html/chapter3.html
-% [4] Kraemer, H. C. (1982). Kappa coefficient. In S. Kotz and N. L. Johnson (Eds.), 
+% [4] Kraemer, H. C. (1982). Kappa coefficient. In S. Kotz and N. L. Johnson (Eds.),
 %        Encyclopedia of Statistical Sciences. New York: John Wiley & Sons.
 % [5] http://ourworld.compuserve.com/homepages/jsuebersax/kappa.htm
-%
-%  
+% [6] http://en.wikipedia.org/wiki/Receiver_operating_characteristic
 
-%	$Id$
-%	Copyright (c) 1997-2006,2008,2009 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+%	Copyright (c) 1997-2006,2008,2009,2011,2019 by Alois Schloegl <alois.schloegl@gmail.com>
+%       This function is part of the NaN-toolbox
+%       http://pub.ist.ac.at/~schloegl/matlab/NaN/
 %
 %    BioSig is free software: you can redistribute it and/or modify
 %    it under the terms of the GNU General Public License as published by
@@ -50,17 +55,17 @@ function [kap,se,H,z,p0,SA,R]=kappa(d,c,arg3,w);
 %    along with BioSig.  If not, see <http://www.gnu.org/licenses/>.
 
 
-mode.ignoreNAN = 1; 
+mode.ignoreNAN = 1;
 kk = [];
 if nargin>2
 	if ischar(arg3)
 		if strcmpi(arg3,'notIgnoreNAN')
-			mode.ignoreNAN = 0; 
+			mode.ignoreNAN = 0;
 		 end
-	else 
-		kk = arg3; 
+	else
+		kk = arg3;
 	end
-end; 		 
+end; 		
 if nargin<4
 	w = [];
 end; 	
@@ -69,114 +74,117 @@ if nargin>1,
 	d = d(:);
 	c = c(:);
 	
-	tmp = [d;c];
-	maxCLASS = max(tmp); 
-	tmp(isnan(tmp)) = maxCLASS+1;
+	tmp    = [d;c];
+	maxtmp = max(tmp);
+	tmp(isnan(tmp)) = maxtmp+1;
 	[X.Label,i,j]   = unique(tmp);
 	c = j(1+numel(d):end);
 	d = j(1:numel(d));
+	kk = max(j);
+	maxCLASS = kk - any(tmp>maxtmp);
 
 	if mode.ignoreNAN,
-		if any(tmp>maxCLASS)
+		if any(j > maxCLASS)
 %			fprintf(2,'Warning KAPPA: some elements are NaN. These are handled as missing values and are ignored.\n');
 %			fprintf(2,'If NaN should be handled as just another label, use kappa(..,''notIgnoreNaN'').\n');
-			ix = find(c<=maxCLASS & d<=maxCLASS);
+			ix = find((c<=maxCLASS) & (d<=maxCLASS));
 			d = d(ix); c=c(ix);
-			if ~isempty(w) w = w(ix); end; 
+			if ~isempty(w), w = w(ix); end;
+			kk = kk - 1;
 		end;
-		X.Label(X.Label>maxCLASS) = []; 
-	else 
-		X.Label(X.Label>maxCLASS) = NaN; 
+		X.Label(X.Label>maxtmp) = [];
+	else
+		X.Label(X.Label>maxtmp) = NaN;
 	end;
-	
-    	N  = length(d);
-    	ku = max([d;c]); % upper range
-    	kl = min([d;c]); % lower range
-    	if isempty(w)
-    		w = ones(N,1);
-    	end; 	
-	
-    	if isempty(kk),
-            	kk = length(X.Label);  	% maximum element
-    	else
-            	if kk<ku;  	% maximum element
-                    	fprintf(2,'Error KAPPA: some element is larger than arg3(%i)\n',kk);
-            	end;
-    	end;
-    
-    	if 0,
-        	h = histo([d+c*kk; kk*kk+1; 1]); 
-        	H = reshape(h(1:length(h)-1));
-        	H(1,1) = H(1,1)-1;
-    	else
-		if 1;   % exist('OCTAVE_VERSION')>=5;
-	        	H = zeros(kk);
-    			for k = 1:N, 
-    				if ~isnan(d(k)) & ~isnan(c(k)),
-		    			H(d(k),c(k)) = H(d(k),c(k)) + w(k);
-		    		end;	
-        		end;
-		elseif isempty(w)
-			H = full(sparse(d(1:N),c(1:N),1,kk,kk));
-		else
-			H = full(sparse(d(1:N),c(1:N),w(1:N),kk,kk));
-    		end;
+
+	if isempty(w)
+		H = full( sparse (d, c, 1, kk, kk) );
+	elseif ~isempty(w),
+		H = full( sparse (d, c, w, kk, kk) );
 	end;
+
 else
 	X.Label = 1:min(size(d));
     	H = d(X.Label,X.Label);
+
 end;
-s = warning; 
+
+s = warning;
 warning('off');
 
-N = sum(H(:)); 
-p0  = sum(diag(H))/N;  %accuracy of observed agreement, overall agreement 
+N = sum(H(:));
+p0  = sum(diag(H))/N;  %accuracy of observed agreement, overall agreement
 %OA = sum(diag(H))/N);
 
-p_i = sum(H); %sum(H,1);
-pi_ = sum(H'); %sum(H,2)';
+p_i = sum(H,1);
+pi_ = sum(H,2)';
 
-SA  = 2*diag(H)'./(p_i+pi_); % specific agreement 
+SA  = 2*diag(H)'./(p_i+pi_); % specific agreement
 
 pe  = (p_i*pi_')/(N*N);  % estimate of change agreement
 
 px  = sum(p_i.*pi_.*(p_i+pi_))/(N*N*N);
 
-%standard error 
+%standard error
 kap = (p0-pe)/(1-pe);
 sd  = sqrt((pe+pe*pe-px)/(N*(1-pe*pe)));
 
-%standard error 
+%standard error
 se  = sqrt((p0+pe*pe-px)/N)/(1-pe);
-if ~isreal(se)
+if ~isreal(se),
 	z = NaN;
+else
+        z = kap/se;
 end
-z = kap/se;
-warning(s); 
 
-if ((1 < nargout) && (nargout<7)) return; end;
+if ((1 < nargout) && (nargout<7))
+	warning(s);
+	return;
+end;
 
 % Nykopp's entropy
 pwi = sum(H,2)/N;                       % p(x_i)
 pwj = sum(H,1)/N;                       % p(y_j)
-pji = H./repmat(sum(H,2),1,size(H,2));  % p(y_j | x_i) 
+pji = H./repmat(sum(H,2),1,size(H,2));  % p(y_j | x_i)
 R   = - sumskipnan(pwj.*log2(pwj)) + sumskipnan(pwi'*(pji.*log2(pji)));
 
-if (nargout>1) return; end; 
+if (nargout>1), return; end;
 
-X.kappa = kap; 
-X.kappa_se = se; 
-X.H = H;
-X.z = z; 
-X.ACC = p0; 
+X.kappa = kap;
+X.kappa_se = se;
+X.data = H;
+X.H    = X.data;
+X.z    = z;
+X.ACC  = p0;
 X.sACC = SA;
-X.MI = R;
+X.MI   = R;
+X.datatype = 'confusion';
 
 if length(H)==2,
-	X.FNR = H(2,1)/sum(H(2,:));
-	X.FPR = H(1,2)/sum(H(1,:));
-	X.TPR = H(2,2)/sum(H(2,:));
+	% see http://en.wikipedia.org/wiki/Receiver_operating_characteristic
+        % Note that the confusion matrix used here is has positive values in
+	% the 2nd row and column, moreover the true values are indicated by
+	% rows (transposed). Thus, in summary H(1,1) and H(2,2) are exchanged
+	% as compared to the wikipedia article.
+	X.TP  = H(2,2);
+	X.TN  = H(1,1);
+	X.FP  = H(1,2);
+	X.FN  = H(2,1);
+	X.FNR = H(2,1) / sum(H(2,:));
+	X.FPR = H(1,2) / sum(H(1,:));
+	X.TPR = H(2,2) / sum(H(2,:));
+	X.PPV = H(2,2) / sum(H(:,2));
+	X.NPV = H(1,1) / sum(H(:,1));
+	X.FDR = H(1,2) / sum(H(:,2));
+	X.MCC = det(H) / sqrt(prod([sum(H), sum(H')]));
+	X.PHI = X.MCC;
+	X.F1  = 2 * X.TP / (sum(H(2,:)) + sum(H(:,2)));
+	X.Sensitivity = X.TPR;	%% hit rate, recall
+	X.Specificity = 1 - X.FPR;
+	X.Precision   = X.PPV;
+	X.dprime = norminv(X.TPR) - norminv(X.FDR);
 end;
 
-kap = X;  
+kap = X; 
+warning(s);
 
