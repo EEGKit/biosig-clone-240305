@@ -1,14 +1,57 @@
-function [RES] = roc(d, c, varargin);
+function [argout1,argout2,argout3] = roc(d, c, varargin);
 % ROC plots receiver operator curve and computes derived statistics.
-%   In order to speed up the plotting, no more than 10000 data points are shown at most.
-%   [if you need more, you need to change the source code]
+%   computes the ROC curve, and a number of derived paramaters include
+%   AUC, optimal threshold values, corresponding confusion matrices, etc.
 %
-% Usage:
-% [...] = roc(d,c);
-% [...] = roc(d1,d0);
-% [...] = roc(...,s);
-% [SEN, SPEC, TH, ACC, AUC,Yi,idx]=roc(...);
-% RES = roc(...);
+% Remark: if the sample values in d are not unique, there is a certain
+%   ambiguity in the results; the results may vary depending on
+%   on the ordering of the samples. Usually, this is only an issue,
+%   if the number of unique data value is much smaller than the total
+%   number of samples.
+%
+% Tratitionally, ROC was defined in the "Biosig for Octave and matlab"
+%   toolbox, later an ROC function became available in Matlab's NNET
+%   (Deep Learning) toolbox with a different usage interface.
+%   Therfore, there different usage-styles.
+%
+% Usage (traditional/biosig style):
+%   RES = roc(d, c);
+%   RES = roc(d1, d0);
+%   RES = roc(...);
+%
+%   RES = roc(...,'flag_plot');
+%   RES = roc(..., s);
+%	plot ROC curve, including suggested thresholds
+%       In order to speed up the plotting, no more than 10000 data
+%       points are displayed. If you need more, you need to change
+%       the source code).
+%
+% Usage style compatible with matlab's roc implementation:
+%   [TPR, FPR, THRESHOLDS] = ROC(targets, outputs)
+%        matlab-style interface for compatibiliy with Matlab's ROC implementation;
+%        Note that the input arguments are reversed;
+%        targets correspond to c, and outputs correspond to d.
+%
+% INPUT:
+% d	DATA,
+% c	CLASS, vector with 0 and 1
+% d1	DATA of class 1
+% d2	DATA of class 0
+% s	line style (as used in plot)
+% targets  DATA, when using matlab-style ROC
+% outputs  CLASS when using matlab-style ROC
+%
+% OUTPUT:
+%   TPR   true positive rate
+%   FPR   false positive rate
+%   THRESHOLDS  corresponding Threshold values
+%   ACC     accuracy
+%   AUC     area under ROC curve
+%   Yi	  max(SEN+SPEC-1), Youden index
+%   c	  TH(c) is the threshold that maximizes Yi
+%
+%   RES is a structure and provides many more results
+%       including optimum threshold values, correpinding confusion matrices, etc.
 %   RES.THRESHOLD.FPR returns the threshold value to obtain
 %	the given FPR rate.
 %   RES.THRESHOLD.{maxYI,maxACC,maxKAPPA,maxMCC,maxMI,maxF1,maxPHI} return the
@@ -18,31 +61,9 @@ function [RES] = roc(d, c, varargin);
 %   RES.TH([RES.THRESHOLD.maxYIix, RES.THRESHOLD.maxACCix, RES.THRESHOLD.maxKAPPAix,
 %             RES.THRESHOLD.maxMCCix, RES.THRESHOLD.maxMIix, RES.THRESHOLD.maxF1ix])
 %       return the optimal threshold for the respective measure.
-%
-% RES = roc(...,'flag_plot');
-%	plot ROC curve, including suggested thresholds
-%
-% INPUT:
-% d	DATA
-% c	CLASS, vector with 0 and 1
-% d1	DATA of class 1
-% d2	DATA of class 0
-% s	line style (as used in plot)
-%
-% OUTPUT:
-% SEN     sensitivity
-% SPEC    specificity
-% TH      Threshold
-% ACC     accuracy
-% AUC     area under ROC curve
-% Yi	  max(SEN+SPEC-1), Youden index
-% c	  TH(c) is the threshold that maximizes Yi
-%
-%   Remark: if the sample values in d are not unique, there is a certain
-%      ambiguity in the results; the results may vary depending on
-%      on the ordering of the samples. Usually, this is only an issue,
-%      if the number of unique data value is much smaller than the total
-%      number of samples.
+%   RES.H_kappa: confusion matrix when Threshold of maximum Kappa is applied.
+%   RES.H_{yi,acc,kappa,mcc,mi,f1,phi}: confusion matrix when threshold of
+%       optimum {...} is applied.
 %
 % see also: AUC, PLOT, ROC
 %
@@ -57,7 +78,7 @@ function [RES] = roc(d, c, varargin);
 %     (Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.Müller;
 %     Towards Brain-Computer Interfacing, MIT Press, 2007, p.327-342
 
-%	Copyright (c) 1997-2003,2005,2007,2010,2011,2016-2018 Alois Schloegl <alois.schloegl@gmail.com>
+%	Copyright (c) 1997-2003,2005,2007,2010,2011,2016-2019 Alois Schloegl <alois.schloegl@gmail.com>
 %	This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 % This library is free software; you can redistribute it and/or
@@ -76,16 +97,52 @@ function [RES] = roc(d, c, varargin);
 % Boston, MA  02111-1307, USA.
 %
 
-MODE = all(size(d)==size(c)) && all(all((c==1) | (c==0) | isnan(c)));
-d=d(:);
-c=c(:);
+if all(size(d)==size(c)) && all(all((c==1) | (c==0) | isnan(c))),
+        MODE='biosig_traditional';
+elseif ( all(all( (d==1) | (d==0) )) && all(size(c)==size(d)) )
+        MODE='matlab_style';
+elseif ( (size(d,2)==1) && (size(c,2)==1) ),
+        MODE='biosig_2class';
+else
+        error('can not identify input data style')
+end
 
-if ~MODE
+
+if strcmp(MODE,'matlab_style')
+        warning('matlab style is not fully compatible yet');
+        % Matlab's roc functions seems to add (in certain circumstances) some weird
+        % 0 and 1 in its 'outputs' data (see thresholds). This seems wrong.
+        % We do not aim for bug-compatibility but for correctness.
+        % Therefore, this does not provide the exact same results.
+
+        [thresholds,I] = sort(c,2);
+        x = d(I);
+
+        tpr = 1-cumsum(x==1,2)./sum(x==1,2);
+        fpr = 1-cumsum(x==0,2)./sum(x==0,2);
+        tpr = tpr(:,end:-1:1);
+        fpr = fpr(:,end:-1:1);
+        thresholds = thresholds(:,end:-1:1);
+        if size(c,1)>1,
+                tpr=num2cell(tpr,2);
+                fpr=num2cell(fpr,2);
+                thresholds=num2cell(thresholds,2);
+        end;
+        argout1 = tpr;
+        argout2 = fpr;
+        argout3 = thresholds;
+        return;
+
+elseif strcmp(MODE,'biosig_2class')
+        d=d(:);
+        c=c(:);
         d2=c;
         c=[ones(size(d));zeros(size(d2))];
         d=[d;d2];
         fprintf(2,'Warning ROC: XXX\n')
-else
+elseif strcmp(MODE,'biosig_traditional')
+        d=d(:);
+        c=c(:);
 	ix = ~any(isnan([d,c]),2);
 	c = c(ix);
 	d = d(ix);
@@ -117,10 +174,10 @@ end;
 [D,I] = sort(d);
 x = c(I);
 
-FNR = cumsum(x==1)/sum(x==1);
+FNR = cumsum(x==1)./sum(x==1);
 TPR = 1-FNR;
 
-TNR = cumsum(x==0)/sum(x==0);
+TNR = cumsum(x==0)./sum(x==0);
 FPR = 1-TNR;
 
 FN = cumsum(x==1);
@@ -191,39 +248,39 @@ RES.LRN = FNR./TNR;
 [tmp,ix] = max(SEN+SPEC-1);
 RES.THRESHOLD.maxYI   = D(ix);
 RES.THRESHOLD.maxYIix = ix;
-RES.H_yi = [TP(ix),FN(ix);FP(ix),TN(ix)];
+RES.H_yi = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 [RES.maxKAPPA,ix] = max(kap);
 RES.THRESHOLD.maxKAPPA = D(ix);
 RES.THRESHOLD.maxKAPPAix = ix;
-RES.H_kappa = [TP(ix),FN(ix);FP(ix),TN(ix)];
+RES.H_kappa = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 [RES.maxMCC,ix] = max(mcc);
 RES.THRESHOLD.maxMCC = D(ix);
 RES.THRESHOLD.maxMCCix = ix;
-RES.H_mcc = [TP(ix),FN(ix);FP(ix),TN(ix)];
+RES.H_mcc = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 [RES.maxMI,ix] = max(RES.MI);
 RES.THRESHOLD.maxMI = D(ix);
 RES.THRESHOLD.maxMIix = ix;
-RES.H_mi = [TP(ix),FN(ix);FP(ix),TN(ix)];
+RES.H_mi = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 [tmp,ix] = max(ACC);
 RES.THRESHOLD.maxACC = D(ix);
 RES.THRESHOLD.maxACCix = ix;
-RES.H_acc = [TP(ix),FN(ix);FP(ix),TN(ix)];
+RES.H_acc = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 [tmp,ix] = max(RES.F1);
 RES.THRESHOLD.maxF1 = D(ix);
 RES.THRESHOLD.maxF1ix = ix;
-RES.H_f1 = [TP(ix),FN(ix);FP(ix),TN(ix)];
+RES.H_f1 = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 RES.THRESHOLD.FPR = NaN;
 if ~isnan(thFPR)
 	ix = max(1,min(N,round((1-thFPR)*N)));
 	RES.THRESHOLD.FPR = D(ix);
 	RES.THRESHOLD.FPRix = ix;
-	RES.H_fpr = [TP(ix),FN(ix);FP(ix),TN(ix)];
+	RES.H_fpr = [TN(ix),FN(ix);FP(ix),TP(ix)];
 end;
 
 
@@ -249,3 +306,11 @@ if FLAG_DISPLAY,
 	%ylabel('Sensitivity (true positive ratio) [%]');
 	%xlabel('1-Specificity (false positive ratio) [%]');
 end;
+
+argout1=RES;
+argout2=RES.FPR;
+argout3=D;
+
+%%% here are examples of strange results observed in Matlab's roc version
+%%! [tpr1,fpr1,thresholds1] = roc([0,1,1,1,0,0,0],-[0.5:7]-4);
+
