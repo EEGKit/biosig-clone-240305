@@ -154,7 +154,7 @@ end
 z = kap/se;
 warning(s); 
 
-if ((1 < nargout) & (nargout<7)) return; end; 
+if ((1 < nargout) && (nargout<7)) return; end;
 
 % Nykopp's entropy
 pwi = sum(H,2)/N;                       % p(x_i)
