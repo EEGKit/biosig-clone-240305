@@ -52,9 +52,12 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 				TimeStamp(N,1) = datenum(HDR.T0) + t0/(24*60);
 				continue;
 			end
-
-			s1 = t1(      1:ix(1)-1);
-			s2 = t1(ix(1)+1:ix(2)-1);
+			s1 = t1(1:ix(1)-1);
+			if length(ix)>1,
+				s2 = t1(ix(1)+1:ix(2)-1);
+			else
+				s2 = '';
+			end
 			s1(s1==21)=0;
 			t0 = str2double(s1);
 			if ((length(ix)>=2) && ((ix(1)+1)==ix(2)) && strcmp(HDR.reserved1(2:5),'DF+D') ) 
