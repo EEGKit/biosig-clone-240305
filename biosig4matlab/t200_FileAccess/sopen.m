@@ -969,9 +969,8 @@ end;
 			else
 				[t,c] = fread(HDR.FILE.FID, [sz,inf], [int2str(sz),'*uchar=>uchar'], HDR.AS.bpb-sz);
 			end;
-			t(length(t)+1:sz*ceil(length(t)/sz)) = 0;
 			t = reshape(char(t),sz,[]);
-                        HDR.EDFplus.ANNONS = t;
+			HDR.EDFplus.ANNONS = t;
 
                 elseif strcmp(HDR.TYPE,'BDF') && (length(strmatch('BDF Annotations',HDR.Label))==1),
                         % BDF+: 
