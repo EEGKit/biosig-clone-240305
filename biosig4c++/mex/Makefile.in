@@ -238,7 +238,7 @@ mexSOPEN.cpp : mexSLOAD.cpp
 	echo "#define mexSOPEN" > mexSOPEN.cpp
 	cat mexSLOAD.cpp >> mexSOPEN.cpp
 
-MEX_OBJECTS = mexSLOAD.cpp mexSOPEN.cpp mexSSAVE.cpp
+MEX_OBJECTS = mexSLOAD.cpp mexSOPEN.cpp mexSSAVE.cpp physicalunits.cpp
 
 mex4o: $(patsubst %.cpp, %.mex, $(MEX_OBJECTS))
 oct: $(patsubst %.cpp, %.oct, $(MEX_OBJECTS))
