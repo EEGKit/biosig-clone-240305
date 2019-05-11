@@ -137,6 +137,7 @@ else
 		OBJECTS += getlogin.o getline.o getdelim.o
 		LDLIBS  += -lssp
 		LDLIBS  += -liconv -lstdc++ -lws2_32
+		PKG_CONFIG_LIBS += -liconv -lws2_32
 		BINEXT   = .exe
 	endif
 endif
@@ -760,10 +761,9 @@ libbiosig.pc :
 	#
 	echo "Requires: "                   >> "$@"
 	echo "Requires.private: "           >> "$@"
-	echo "Cflags: $(DEFINES) -I$(includedir)"  >> "$@"
-	echo "Libs: -L$(libdir) -lbiosig"      >> "$@"
+	echo "Cflags: $(DEFINES) "          >> "$@"
+	echo "Libs: -lbiosig $(PKG_CONFIG_LIBS)" >> "$@"
 	echo "Libs.private: $(LDLIBS)"      >> "$@"
-
 
 ## save2gdf, pdp2gdf
 %${BINEXT}: %.c libbiosig.a
