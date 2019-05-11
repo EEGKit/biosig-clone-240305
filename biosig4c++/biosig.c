@@ -7370,7 +7370,96 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 
 #ifdef WITH_EMBLA
 	else if (hdr->TYPE==EMBLA) {
-		ifseek(hdr,48,SEEK_SET);
+
+		while (!ifeof(hdr)) {
+			size_t bufsiz = max(2*count, PAGESIZE);
+			hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, bufsiz+1);
+			count  += ifread(hdr->AS.Header+count, 1, bufsiz-count, hdr);
+		}
+		hdr->AS.Header[count]=0;
+		hdr->HeadLen = count;
+		ifclose(hdr);
+
+		count = 48;
+
+		hdr->NS = 1;
+		hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS * sizeof(CHANNEL_TYPE));
+		CHANNEL_TYPE* hc = hdr->CHANNEL;
+
+		int chan;
+		uint32_t cal;
+		float chan32;
+		uint16_t pdc=0;
+		while (count+8 < hdr->HeadLen) {
+			uint32_t tag = leu32p(hdr->AS.Header+count);
+			uint32_t len = leu32p(hdr->AS.Header+count+4);
+			count+=8;
+/*
+			uint32_t taglen[2];
+			uint32_t *tag = &taglen[0];
+			uint32_t *len = &taglen[1];
+			size_t c = ifread(taglen, 4, 2, hdr);
+			if (ifeof(hdr)) break;
+*/
+			if (VERBOSE_LEVEL > 7) {
+				int ssz = min(80,len);
+				char S[81];
+				strncpy(S, hdr->AS.Header+count, ssz); S[ssz]=0;
+				fprintf(stdout,"tag %8d [%d]: <%s>\n",tag,len, S);
+			}
+
+			switch (tag) {
+			case 32:
+				hdr->SPR = len/2;
+//				hdr->AS.rawdata = realloc(hdr->AS.rawdata,len);
+				break;
+			case 133:
+				chan = leu16p(hdr->AS.Header+count);
+				fprintf(stdout,"\tchan=%d\n",chan);
+				break;
+			case 134:	// Sampling Rate
+				hdr->SampleRate=leu32p(hdr->AS.Header+count)/1000.0;
+				fprintf(stdout,"\tFs=%g #134\n",hdr->SampleRate);
+				break;
+			case 135:	//
+				cal=leu32p(hdr->AS.Header+count)/1000.0;
+				hc->Cal = (cal==1 ? 1.0 : cal*1e-9);
+				break;
+			case 136:	// session count
+				fprintf(stdout,"\t%d (session count)\n",leu32p(hdr->AS.Header+count));
+				break;
+			case 137:	// Sampling Rate
+				hdr->SampleRate=lef64p(hdr->AS.Header+count);
+				fprintf(stdout,"\tFs=%g #137\n",hdr->SampleRate);
+				break;
+			case 141:
+				chan32 = lef32p(hdr->AS.Header+count);
+				fprintf(stdout,"\tchan32=%g\n",chan32);
+				break;
+			case 144:	// Label
+				strncpy(hc->Label, hdr->AS.Header+count, MAX_LENGTH_LABEL);
+				hc->Label[min(MAX_LENGTH_LABEL,len)]=0;
+				break;
+			case 153:	// Label
+				pdc=PhysDimCode(hdr->AS.Header+count);
+				fprintf(stdout,"\tpdc=0x%x\t<%s>\n",pdc,PhysDim3(pdc));
+				break;
+			case 208:	// Patient Name
+				if (!hdr->FLAG.ANONYMOUS)
+					strncpy(hdr->Patient.Name, hdr->AS.Header+count, MAX_LENGTH_NAME);
+					hdr->Patient.Name[min(MAX_LENGTH_NAME,len)]=0;
+				break;
+			case 209:	// Patient Name
+				strncpy(hdr->Patient.Id, hdr->AS.Header+count, MAX_LENGTH_PID);
+				hdr->Patient.Id[min(MAX_LENGTH_PID,len)]=0;
+				break;
+			default:
+				;
+			}
+			count+=len;
+		}
+
+
 		hdr->NS = 1;
 		hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS * sizeof(CHANNEL_TYPE));
 		for (k=0; k < hdr->NS; k++) {
@@ -7392,7 +7481,7 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 			hc->bi   = k*hdr->SPR*2;
 
 			char *label = (char*)(hdr->AS.Header+1034+k*512);
-			len    = min(16,MAX_LENGTH_LABEL);
+			const size_t len    = min(16,MAX_LENGTH_LABEL);
 			if ( (hdr->AS.Header[1025+k*512]=='E') && strlen(label)<13) {
 				strcpy(hc->Label, "EEG ");
 				strcat(hc->Label, label);		// Flawfinder: ignore
@@ -7403,26 +7492,9 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 			}
 		}
 
-		while (1) {
-			uint32_t taglen[2];
-			uint32_t *tag = &taglen[0];
-			uint32_t *len = &taglen[1];
-			size_t c = ifread(taglen, 4, 2, hdr);
-			if (ifeof(hdr)) break;
-			switch (*tag) {
-			case 32:
-				hdr->HeadLen = iftell(hdr);
-				hdr->SPR = *len/2;
-				hdr->AS.rawdata = realloc(hdr->AS.rawdata,*len);
-				ifread(hdr->AS.rawdata,2,*len/2,hdr);
-
-			default:
-				ifseek(hdr,*len,SEEK_CUR);
-			}
-			//strncpy(hdr->CHANNEL[k].Label,buf+0x116,MAX_LENGTH_LABEL);
-		}
 	}
-#endif
+
+#endif // EMBLA
 	else if (hdr->TYPE==EMSA) {
 		
 		hdr->NS = (uint8_t)hdr->AS.Header[3];
