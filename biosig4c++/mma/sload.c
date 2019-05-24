@@ -120,7 +120,7 @@ if (VERBOSE_LEVEL > 5)
 
 	// generate and write header information in JSON format
 	asprintf_hdr2json(&str, hdr);
-	MLPutFunction(stdlink,"Import",2);
+	MLPutFunction(stdlink,"ImportString",2);
 	  MLPutString(stdlink,str);
 	  MLPutString(stdlink,"JSON");
 	free(str);
