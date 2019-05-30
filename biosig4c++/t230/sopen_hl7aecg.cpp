@@ -265,6 +265,7 @@ EXTERN_C int sopen_HL7aECG_read(HDRTYPE* hdr) {
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
 			hc->GDFTYP   = 16;
 			sprintf(hc->Label,"#%i",k);
+			hc->Transducer[0] = 0;
 			hc->Cal      = Cal;
 			hc->Off      = 0.0;
 			hc->OnOff    = 1;
@@ -395,6 +396,7 @@ EXTERN_C int sopen_HL7aECG_read(HDRTYPE* hdr) {
 				hc->DigMin 	= (double)(int16_t)0x8000;			
 				hc->DigMax	= (double)(int16_t)0x7fff;	
 				strncpy(hc->Label, C->Attribute("lead"), MAX_LENGTH_LABEL);
+				hc->Transducer[0] = 0;
 
 				hc->LeadIdCode	= 0;
 				size_t j;

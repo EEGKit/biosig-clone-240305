@@ -4694,6 +4694,7 @@ fprintf(stdout,"ACQ EVENT: %i POS: %i\n",k,POS);
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
 			snprintf(hc->Label, MAX_LENGTH_LABEL+1, "%s %03i",label, chno2);
 
+			hc->Transducer[0] = 0;
 			hc->LeadIdCode = 0;
 			hc->SPR    = 1;
 			hc->Cal    = f1*f2;
@@ -5026,6 +5027,7 @@ fprintf(stdout,"ACQ EVENT: %i POS: %i\n",k,POS);
 					++hdr->NS;
 					hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS*sizeof(CHANNEL_TYPE));
 					cp = hdr->CHANNEL+hdr->NS-1;
+					cp->Transducer[0] = 0;
 					cp->bi = hdr->AS.bpb;
 					cp->PhysDimCode = 0;
 					cp->HighPass = NAN;
@@ -5294,6 +5296,7 @@ fprintf(stdout,"ACQ EVENT: %i POS: %i\n",k,POS);
 		hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL,hdr->NS*sizeof(CHANNEL_TYPE));
 		for (k=0; k<hdr->NS; k++) {
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
+			hc->Transducer[0] = 0;
 			sprintf(hc->Label,"#%03i",(int)k+1);
 			hc->Cal    = gain;
 			hc->Off    = offset;
@@ -6458,6 +6461,7 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 			hc->OnOff   = 1;
 
 			hc->PhysDimCode = 0;
+			hc->Transducer[0] = 0;
 		    	hc->DigMax	= ldexp( 1.0,31);
 		    	hc->DigMin	= ldexp(-1.0,31);
 		    	hc->PhysMax	= hc->DigMax * hc->Cal + hc->Off;
@@ -7240,6 +7244,7 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 			hc->GDFTYP = gdftyp;
 			hc->PhysDimCode = 4275;  // "uV"
 			hc->LeadIdCode  = 0;
+			hc->Transducer[0] = 0;
 			sprintf(hc->Label,"# %03i",(int)k);
 			hc->Cal	= PhysMax/ldexp(1,Bits);
 			hc->Off	= 0;
@@ -7381,10 +7386,6 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 		ifclose(hdr);
 
 		count = 48;
-
-		hdr->NS = 1;
-		hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS * sizeof(CHANNEL_TYPE));
-		CHANNEL_TYPE* hc = hdr->CHANNEL;
 
 		int chan;
 		uint32_t cal;
@@ -8503,6 +8504,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"MFER: TLV %i %i %i \n",tag,len,(int)hdr->NS
 					hc->Cal = 1.0;
 					hc->LeadIdCode = 0; 
 					hc->GDFTYP = 3;
+					hc->Transducer[0] = 0;
 				}
 			}
 			else if (tag==6) 	// 0x06 "number of sequences"
@@ -8979,6 +8981,7 @@ if (VERBOSE_LEVEL>2)
 	 			fprintf(stdout,"sopen(MFER): #%i\n",(int)k);
 
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
+			hc->Transducer[0] = 0;
 	 		if (!hc->PhysDimCode) hc->PhysDimCode = MFER_PhysDimCodeTable[UnitCode];
 	 		if (hc->Cal==1.0) hc->Cal = Cal;
 	 		hc->Off = Off * hc->Cal;
@@ -9466,6 +9469,7 @@ if (VERBOSE_LEVEL>2)
 
 						while (ns < ch) {
 							hdr->rerefCHANNEL[ns].Label[0] = 0;
+							hdr->rerefCHANNEL[ns].Transducer[0] = 0;
 							ns++;
 						}
 					}	 
@@ -9527,6 +9531,7 @@ if (VERBOSE_LEVEL>2)
 		hdr->CHANNEL[0].LowPass  = NAN;
 		hdr->CHANNEL[0].HighPass = NAN;
 		hdr->CHANNEL[0].Notch    = NAN;
+		hdr->CHANNEL[0].Transducer[0] = 0;
 
 	if (VERBOSE_LEVEL>7) fprintf(stdout,"NEURON 202: \n");
 
@@ -9710,6 +9715,7 @@ if (VERBOSE_LEVEL>2)
 				//neuralEventWaveform = identifier + 8;
 				CHANNEL_TYPE *hc = hdr->CHANNEL+(NS++);
 				sprintf(hc->Label,"#%d",leu16p(identifier + 8));	// electrodeId
+				hc->Transducer[0] = 0;
 				// (uint8_t)(identifier + 8 + 2);	// module
 				// (uint8_t)(identifier + 8 + 3);	// channel
 				hc->OnOff = 1;
@@ -9733,7 +9739,6 @@ if (VERBOSE_LEVEL>2)
 				hc->XYZ[1] = 0;
 				hc->XYZ[2] = 0;
 				hc->Impedance = NAN;
-
 				
 				hc->SPR = 0;
 				hc->bi = hdr->AS.bpb;
@@ -9818,6 +9823,7 @@ if (VERBOSE_LEVEL>2)
 
 			strncpy(hc->Label, hdr->AS.Header + H1LEN + k*H2LEN + 8, min(64,MAX_LENGTH_LABEL));
 			hc->Label[min(64, MAX_LENGTH_LABEL)] = 0;
+			hc->Transducer[0] = 0;
 
 			size_t n;
 			if (v==5) {
@@ -10042,6 +10048,8 @@ if (VERBOSE_LEVEL>2)
 		typeof (hdr->NS) k;
 		for (k=0; k<hdr->NS; k++) {
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
+			hc->Transducer[0] = 0;
+			hc->Label[0] = 0;
 			hc->GDFTYP = gdftyp;
 			hc->SPR    = hdr->SPR;
 			hc->Cal    = 1.0;
@@ -10454,6 +10462,7 @@ if (VERBOSE_LEVEL>2)
 			CHANNEL_TYPE *hc = hdr->CHANNEL + k;
 			hc->OnOff = 1;
 			strncpy(hc->Label,(char*)(hdr->AS.Header+32+24+8*k),8);
+			hc->Transducer[0] = 0;
 			hc->LeadIdCode = 0; 
 		}
     		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format RDF (UCSD ERPSS) not supported");
@@ -10599,7 +10608,9 @@ if (VERBOSE_LEVEL>2)
 	      		hc->XYZ[0]    = 0.0;
 		      	hc->XYZ[1]    = 0.0;
 		      	hc->XYZ[2]    = 0.0;
-			hc->LeadIdCode = 0; 
+			hc->LeadIdCode = 0;
+			hc->Transducer[0] = 0;
+			hc->Label[0] = 0;
 
 			unsigned k1;
 			for (k1 = sizeof(p)/sizeof(p[0]); k1>0; ) {
@@ -11306,6 +11317,7 @@ if (VERBOSE_LEVEL>2)
 		size_t bpb8=0;
 		for (k = 0; k < hdr->NS; k++) {
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
+			hc->Transducer[0] = 0;
 			hc->GDFTYP  =  gdftyp;
 			hc->OnOff   =  1;
 			hc->bi      =  bpb8>>3;
