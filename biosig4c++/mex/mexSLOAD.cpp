@@ -446,9 +446,9 @@ void mexFunction(
 #endif
 
 	if (hdr->FLAG.OVERFLOWDETECTION != FlagOverflowDetection)
-		mexPrintf("Warning mexSLOAD: Overflowdetection not supported in file %s\n",hdr->FileName);
+		mexPrintf("Warning %s: Overflowdetection not supported in file %s\n", __FILE__, hdr->FileName);
 	if (hdr->FLAG.UCAL != FlagUCAL)
-		mexPrintf("Warning mexSLOAD: Flag UCAL is %i instead of %i (%s)\n",hdr->FLAG.UCAL,FlagUCAL,hdr->FileName);
+		mexPrintf("Warning %s: Flag UCAL is %i instead of %i (%s)\n", __FILE__, hdr->FLAG.UCAL, FlagUCAL, hdr->FileName);
 
 
 	if (VERBOSE_LEVEL>7) 
