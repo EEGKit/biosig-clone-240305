@@ -1,5 +1,5 @@
 #
-#    Copyright (C) 2016 Alois Schloegl <alois.schloegl@gmail.com>
+#    Copyright (C) 2016,2019 Alois Schloegl <alois.schloegl@gmail.com>
 #    This file is part of the "BioSig for C/C++" repository
 #    (biosig4c++/libbiosig) at http://biosig.sf.net/
 #
@@ -19,15 +19,23 @@
 
 dyn.load("sload.so")
 
-sload <- function(filename,channels=0) {
-  result <- .Call("sload", filename, channels=0)
-  return(result)
+sload <- function(filename, channels=0) {
+	result <- .Call("sload", filename, channels=0)
+	return(result)
 }
 
+jsonHeader <- function(filename, channels=0) {
+	result <- .Call("jsonHeader", filename)
+	return(result)
+}
 
 # Usage:
-# x=sload("/home/as/data/test/cfs/BaseDemo/Leak.cfs");
-# plot(x[,1])
-# plot(x[,2])
-
+#   # read header information
+#   library(rjson)
+#   HDR = fromJSON(jsonHeader("../data/Newtest17-256.bdf"))
+#
+#   # read data
+#   data = sload("../data/Newtest17-256.bdf")
+#   plot(data[,1])
+#   plot(data[,2])
 
