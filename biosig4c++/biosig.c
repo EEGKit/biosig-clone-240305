@@ -968,14 +968,14 @@ void FreeTextEvent(HDRTYPE* hdr,size_t N_EVENT, const char* annotation) {
 	}
 
 	// Third, add event description if needed
-	if (flag) {
+	if (flag && (hdr->EVENT.LenCodeDesc < 256)) {
 		hdr->EVENT.TYP[N_EVENT] = hdr->EVENT.LenCodeDesc;
 		hdr->EVENT.CodeDesc[hdr->EVENT.LenCodeDesc] = annotation;
 		hdr->EVENT.LenCodeDesc++;
 	}
 
 	if (hdr->EVENT.LenCodeDesc > 255) {
-		biosigERROR(hdr, B4C_INSUFFICIENT_MEMORY, "Maximum number of user-defined events (256) exceeded");
+		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Maximum number of user-defined events (256) exceeded");
 	}
 }
 
