@@ -27,4 +27,8 @@ Currently, only the data samples are loaded.
 	  result <- .Call("sload", filename, channels=0)
 	  return(result)
 	}
-
+	info <- function(filename) {
+	  result <- .Call("jsonHeader", filename)
+	  return(result)
+	}
+	info("filename.gdf")
