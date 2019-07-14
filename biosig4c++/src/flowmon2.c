@@ -37,7 +37,6 @@
 */
 
 
-
 #include "../biosig.h"
 
 #include <errno.h>
@@ -197,11 +196,11 @@ char debugfile[] = "flowmonDD.log.txt";
 		"   devicename: default value is /dev/ttyS0\n"
 		"   outfile:    logs the recorded data\n"
                 "               If no outfile is provided, the data will be logged into daily files named flowmon<$date>.log.gdf \n"
-                "   debugfile:  logs the data in ascii text"
+                "   debugfile:  logs the data in ascii text\n"
                 "               If no outfile is provided, the data will be logged into daily files named flowmon<$day-of-month>.log.txt \n"
                 "   -V#		verbose level #=0 is no messages, #=9 is highest level(debugging) messages\n"
-                "   -h, --help:	display this help text"
-                "   -z		save outfile in gzipped format"  
+                "   -h, --help:        display this help text\n"
+                "   -z		save outfile in gzipped format\n"
                 " \n\n"
 	;
 	if (argc<2) {
@@ -261,7 +260,7 @@ char debugfile[] = "flowmonDD.log.txt";
         gdf_time2tm_time_r(gdfTime, &T);
 
 
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 010\n");
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 011\n");
 
         //open the device(com port) to be non-blocking (read will return immediately)
         fd = open(devicename, O_RDWR | O_NOCTTY | O_NONBLOCK);
@@ -271,8 +270,7 @@ char debugfile[] = "flowmonDD.log.txt";
         }
         tcgetattr(fd,&oldtio); // save current port settings
 
-
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
+        if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): fd=%d\n",__FILE__,__LINE__,fd);
 
         // set new port settings for canonical input processing
         // newtio.c_cflag = BAUD | CRTSCTS | DATABITS | STOPBITS | PARITYON | PARITY | CLOCAL | CREAD;
@@ -285,8 +283,7 @@ char debugfile[] = "flowmonDD.log.txt";
         tcflush(fd, TCIOFLUSH);
         tcsetattr(fd,TCSANOW,&newtio);
 
-if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
-
+        if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): fd=%d\n",__FILE__,__LINE__,fd);
 
 #if 1
 	if (debugFile)
@@ -296,27 +293,22 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
                 fid2 = fopen(debugfile,"a");
         }
 
-
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 031\n");
-
         {
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 032\n");
 		hdr = constructHDR(4 ,0);
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 035\n");
 		hdr->SampleRate = 1;
 		hdr->SPR     =  1;
 		hdr->NRec    = -1;
 		hdr->EVENT.N =  0;
 		hdr->FILE.COMPRESSION = 0;
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 042\n");
-                {
+
+		{
                         // channel 1: time stamp
 			CHANNEL_TYPE *hc = hdr->CHANNEL + 0;
 			hc->LeadIdCode = 0;
 			strcpy(hc->Label,"time ");
 			hc->GDFTYP  = 8;	// uint64
 			hc->SPR     = hdr->SPR;
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 044\n");
+
 			hc->PhysMax = ldexp(1,32);
 			hc->PhysMin = 0;
 			hc->DigMax  = ldexp(1,64);
@@ -325,9 +317,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
                         hdr->AS.bpb += GDFTYP_BITS[hc->GDFTYP]>>3;
 		}
 
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 046\n");
-
-                {
+		{
                         // channel 2: volume
 			CHANNEL_TYPE *hc = hdr->CHANNEL + 1;
 			hc->LeadIdCode = 0;
@@ -339,7 +329,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
 			hc->PhysMin = -hc->PhysMax;
 			hc->DigMax  = hc->PhysMax;
 			hc->DigMin  = hc->PhysMin;
-                        hdr->AS.bpb += GDFTYP_BITS[hc->GDFTYP]>>3;
+			hdr->AS.bpb += GDFTYP_BITS[hc->GDFTYP]>>3;
 
                         read_register(247, 3, 0x6384) ; // f32: Skalierung Totalisator, and s8: Einheit des Totalisatorwertes mit 4 Byte offset. 
                         //read_register(247, 3, 0x6386) ; // s8: Einheit des Totalisatorwertes
@@ -347,9 +337,9 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
                                 hc->PhysDimCode = PhysDimCode("l");
                         else 
                                 hc->PhysDimCode = 0; // "unknown"
-                        
 		}
-                {
+
+		{
                         // channel 3: flow
 			CHANNEL_TYPE *hc = hdr->CHANNEL + 2;
 			hc->LeadIdCode = 0;
@@ -383,7 +373,8 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
                         //read_register(247, 3, 0x6121) ; // u16: Heizleistung
                         //read_register(247, 3, 0x6122) ; // u16: Dynamik
 		}
-                {
+
+		{
                         // channel 4: temparature
 			CHANNEL_TYPE *hc = hdr->CHANNEL + 3;
 			hc->LeadIdCode = 0;
@@ -397,6 +388,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
                         hc->PhysDimCode = 6048; // degree Celsius
                         hdr->AS.bpb += GDFTYP_BITS[hc->GDFTYP]>>3;
 		}
+
                 if (hdr->NS > 4) {
                         // channel 5: type of gas
 			CHANNEL_TYPE *hc = hdr->CHANNEL + 4;
@@ -418,8 +410,6 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
 		}
 
 		hdr->AS.rawdata = (uint8_t*)realloc(hdr->AS.rawdata,hdr->AS.bpb);
-
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 017\n");
 
 		hdr->ID.Manufacturer.Name  = "Voegtlin";
 /*
@@ -452,18 +442,10 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
                 hdr->ID.Manufacturer.SerialNumber = hdr->ID.Manufacturer.Version+strlen(hdr->ID.Manufacturer.Version)+1;
                 sprintf((char*)(hdr->ID.Manufacturer.SerialNumber),"%d",beu32p(outPtr)); 
         
-
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 018\n");
-
-		        
 		hdr->FLAG.UCAL = 1;
 		hdr->TYPE      = GDF;
 		hdr->VERSION   = 2.0;
 		if (outFile) hdr->FileName  = strdup(outFile);
-
-
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 019\n");
-
         }
 #endif
 
@@ -476,7 +458,6 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
         read_register(247, 3, 0x000d) ; // u16: Hardwarefehler
         //read_register(247, 3, 0x000e) ; // u16: Regelmode
         //read_register(247, 3, 0x000f) ; // u16: Ramp
-                                 
          
         read_register(247, 3, 0x0013) ; // device address: default 247 (0xf7)
         //read_register(247, 3, 0x0020) ; 
@@ -490,7 +471,6 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
         //read_register(247, 3, 0x6382) ; // f32: Totalisator 2 - nicht rückstellbar
         read_register(247, 3, 0x6384) ; // f32: Skalierung Totalisator, and s8: Einheit des Totalisatorwertes mit 4 Byte offset. 
         //read_register(247, 3, 0x6386) ; // s8: Einheit des Totalisatorwertes
-        
 
         if (outFile) {
                 // open once write all data into single log file
@@ -498,24 +478,17 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
 		hdr = sopen(outFile, "a", hdr);
 		if (VERBOSE_LEVEL>7) hdr2ascii(hdr,stdout,4);
 
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 010 %i\n", (int)hdr->NRec);
-
 		if (serror2(hdr)) {
 			destructHDR(hdr); 
 			return(EXIT_FAILURE);
 		}
 
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
-
-//		if (VERBOSE_LEVEL>6) hdr2ascii(hdr, stdout, 3);
 		if (hdr->FILE.OPEN < 2) {
 			destructHDR(hdr);
 			hdr = NULL;
 			fprintf(stderr,"Could not open output file  %s\n", outFile);
 			exit(-1);
 		}
-
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 030\n");
 
 		hdr->AS.rawdata = (uint8_t*)realloc(hdr->AS.rawdata,hdr->AS.bpb);
 		if (hdr->NRec < 0) hdr->NRec = 0;
@@ -528,6 +501,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
          ***************************************************************************/
 
         fid = fdopen(fd, "r+");
+
         while (1) {
                 /***
                         get data
@@ -555,22 +529,16 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
                 if ( (newDay != oldDay) && !outFile) {
                         // open/close daily log file  
 
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 110\n");
-
                         sclose(hdr);
 			hdr->NRec = -1;
                         sprintf(logfile,"flowmon%04i%02i%02i.log.gdf",T.tm_year+1900,T.tm_mon+1,T.tm_mday);
                         hdr->FILE.COMPRESSION = flag_GZIP;
                         hdr = sopen(logfile, "a", hdr);
 
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 120 %p\n", hdr);
-
                         if (serror2(hdr)) {
 				destructHDR(hdr); 
 				return(EXIT_FAILURE);
                         }
-
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 125 %i\n", (int)hdr->NRec);
 
                         if (!hdr->FILE.OPEN) {
 				destructHDR(hdr);
@@ -578,13 +546,9 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
         			fprintf(stderr,"Could not open output file  %s\n", logfile);
 			}
 
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 130\n");
-
 			hdr->AS.rawdata = (uint8_t*)realloc(hdr->AS.rawdata,hdr->AS.bpb);
 			if (hdr->NRec<0) hdr->NRec = 0;
                 }
-
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 140\n");
 
                 if ( (newDay != oldDay) && !debugFile) {
                         // open/close daily debug file
@@ -593,14 +557,10 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
 			fid2 = fopen(debugfile,"a");
                 }
 
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 150\n");
-
                 if (newDay != oldDay) {
                         oldDay = newDay;
                 };
 
-
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 190\n");
 
                 /***
                         parse data
@@ -618,8 +578,6 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 020\n");
 
                         hdr->NRec += ifwrite(hdr->AS.rawdata, hdr->AS.bpb, 1, hdr);
                         ifflush(hdr);
-
-                if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 290 %i\n", (int)hdr->NRec);
 
 			/*******************************************************************
 			 * Write HTML file 
