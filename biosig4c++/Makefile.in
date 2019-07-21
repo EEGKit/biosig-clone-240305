@@ -932,6 +932,7 @@ save2aecg: save2gdf
 ###	TTL2TRIG
 ttltrig: bin/ttltrig
 bin/ttl2trig : src/ttl2trig.c gdf.o gdftime.o physicalunits.o
+	mkdir -p ./bin
 	$(CC) -D=WITH_BIOSIG $(DEFINE) $(CFLAGS) $^ -Wall -Wextra -lasound $(LDLIBS) -o "$@"
 
 ###	FLOWMON
@@ -940,6 +941,7 @@ flowmon.o: src/flowmon2.c
         
 flowmon: bin/flowmon
 bin/flowmon: flowmon.o gdf.o gdftime.o physicalunits.o
+	mkdir -p ./bin
 	$(CC) $^ $(LDLIBS) -o "$@"
 
 

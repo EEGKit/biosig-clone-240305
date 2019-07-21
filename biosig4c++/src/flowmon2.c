@@ -25,9 +25,10 @@
     + graceful handling of exit (close all handles even when stopped with <CTRL>-C
     + one file per day, appending
     + autostart
-    - file management, data compression
+    - file management, data compression, (/var/spool/... /etc/flowmon.conf
     - init.d (flowmon start/stop)
     - fix appending to *.log.gdf file after restart
+    - javascript interface
 
    Requirements:
         g++
@@ -91,16 +92,14 @@ void stop() {
         if (fid2) fclose(fid2);
 }
 
-uint8_t idata[300];
-uint8_t odata[300];
 const void *outPtr = odata+3; 
 
 /*
-        crc16_a001: computers crc of a modbus packet and writes it at the end;
+        crc16_a001: computes crc of a modbus packet and writes it at the end;
         (remark: its not CCITT's crc16 but uses 0xA001 polynomial) 
         input :
-                data  : packet with is crc
-                n     : lenght of data without the crc
+                data  : packet with its crc
+                n     : length of data without the crc
 
         ouput : crc16 value 
 */
@@ -132,7 +131,7 @@ uint16_t crc16_a001(uint8_t data[], size_t n)
 int read_register(uint8_t slave, uint8_t cmd, uint16_t reg) { 
  
         idata[0] = slave;		// address
-        idata[1] = 3; //cmd;	// read - 
+        idata[1] = 3; 			//cmd;	// read -
         *(uint16_t*)(idata+2) = bswap_16((uint16_t)reg);  // register 
         *(uint16_t*)(idata+4) = bswap_16(0x0004);  // length
         crc16_a001(idata,6); // compute crc and add at and
@@ -178,7 +177,7 @@ uint32_t oldDay=0, newDay;
 gdf_time gdfTime;
 char flag_GZIP = 0;
 
-char logfile[] = "flowmonYYYYMMDD.log.gdf";
+char logfile[48] = "flowmonYYYYMMDD.log.gdf";
 char debugfile[] = "flowmonDD.log.txt";
 
 
@@ -205,7 +204,7 @@ char debugfile[] = "flowmonDD.log.txt";
 	;
 	if (argc<2) {
 		fprintf(stdout,"%s",help);
-//		exit(0);
+		return(0);
 	}
 
 	/* Sanity checks of input arguments */
@@ -259,8 +258,7 @@ char debugfile[] = "flowmonDD.log.txt";
         newDay = gdfTime>>32;
         gdf_time2tm_time_r(gdfTime, &T);
 
-
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"FLOWMON 011\n");
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): err %d\n",__FILE__,__LINE__,errno);
 
         //open the device(com port) to be non-blocking (read will return immediately)
         fd = open(devicename, O_RDWR | O_NOCTTY | O_NONBLOCK);
@@ -283,7 +281,12 @@ char debugfile[] = "flowmonDD.log.txt";
         tcflush(fd, TCIOFLUSH);
         tcsetattr(fd,TCSANOW,&newtio);
 
-        if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): fd=%d\n",__FILE__,__LINE__,fd);
+        if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): err %d\n",__FILE__,__LINE__,errno);
+        if (errno) {
+                fprintf(stderr,"%s (line %d)  %d %s\n", __FILE__, __LINE__, errno, strerror(errno));
+                stop();
+                return(errno);
+        }
 
 #if 1
 	if (debugFile)
@@ -531,7 +534,7 @@ char debugfile[] = "flowmonDD.log.txt";
 
                         sclose(hdr);
 			hdr->NRec = -1;
-                        sprintf(logfile,"flowmon%04i%02i%02i.log.gdf",T.tm_year+1900,T.tm_mon+1,T.tm_mday);
+                        sprintf(logfile,"flowmon%04d%02d%02d.log.gdf",T.tm_year+1900,T.tm_mon+1,T.tm_mday);
                         hdr->FILE.COMPRESSION = flag_GZIP;
                         hdr = sopen(logfile, "a", hdr);
 
