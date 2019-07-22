@@ -240,8 +240,8 @@ mexSOPEN.cpp : mexSLOAD.cpp
 
 MEX_OBJECTS = mexSLOAD.cpp mexSOPEN.cpp mexSSAVE.cpp physicalunits.cpp
 
-mex4o: $(patsubst %.cpp, %.mex, $(MEX_OBJECTS))
-oct: $(patsubst %.cpp, %.oct, $(MEX_OBJECTS))
+mex4o:  $(patsubst %.cpp, %.mex, $(MEX_OBJECTS))
+oct:    $(patsubst %.cpp, %.oct, $(MEX_OBJECTS))
 mexw32: $(patsubst %.cpp, %.mexw32, $(MEX_OBJECTS))
 mexw64: $(patsubst %.cpp, %.mexw64, $(MEX_OBJECTS))
 
@@ -263,20 +263,26 @@ mex: mex4o mexw32 mexw64
 endif
 
 %.mex: %.cpp
-	$(OCT) $(DEFINES) $(shell $(PKGCONF) --cflags libbiosig) -v -g --mex "$<" -lbiosig $(shell $(PKGCONF) --libs libbiosig) -o "$@"
+	$(OCT) $(DEFINES) $(shell $(PKGCONF) --cflags libbiosig) -v -g --mex "$<" $(shell $(PKGCONF) --libs libbiosig) -o "$@"
 
 %.oct: %.cpp
-	$(OCT) $(DEFINES) $(shell $(PKGCONF) --cflags libbiosig) "$<" -lbiosig $(shell $(PKGCONF) --libs libbiosig) -o "$@"
+	$(OCT) $(DEFINES) $(shell $(PKGCONF) --cflags libbiosig) "$<" $(shell $(PKGCONF) --libs libbiosig) -o "$@"
 
-%.mexw32: %.cpp Makefile biosig.h biosig-dev.h
+%.mexw32: %.cpp
 	## $(CROSS)-g++ is used instead of $(CXX), so it can be called from biosig as well as mxe. 
 	$(CROSS)-g++ -shared $(GNUMEX)/mex.def -DMATLAB_MEX_FILE $(DEFINES) -x c++ \
 		-I$(prefix)/include \
-		-I$(W32MAT_INC) -O2 -o "$@" -L$(GNUMEX) -s "$<" -llibmx -llibmex -lbiosig -liconv -lssp $(LDLIBS) -lws2_32
+		-I$(W32MAT_INC) -O2 -o "$@" -L$(GNUMEX) -s "$<" -llibmx -llibmex $(shell $(CROSS)-pkg-config --libs libbiosig)
 
-%.mexw64: %.cpp Makefile biosig.h biosig-dev.h
+%.mexw64: %.cpp
 	$(CROSS64)-g++ -shared $(GNUMEX64)/mex.def -DMATLAB_MEX_FILE $(DEFINES) -x c++ \
 		-I$(prefix)/include \
-		-I$(W64MAT_INC) -O2 -o "$@" -L$(GNUMEX64) -s "$<" -llibmx -llibmex -lbiosig -liconv -lssp $(LDLIBS) -lws2_32
+		-I$(W64MAT_INC) -O2 -o "$@" -L$(GNUMEX64) -s "$<" -llibmx -llibmex $(shell $(CROSS64)-pkg-config --libs libbiosig)
+
+clean:
+	-$(DELETE) *.o *.obj *.o64 core octave-core *.oct *.mex* mexSOPEN.cpp
+
+distclean:
+	-$(DELETE) *.o *.obj *.o64 core octave-core *.oct *.mex* Makefile  mexSOPEN.cpp
 
 

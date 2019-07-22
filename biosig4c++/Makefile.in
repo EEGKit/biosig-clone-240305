@@ -504,7 +504,7 @@ libbiosig lib: $(LIB_OBJECTS)
 
 vpath %.c ./:./t210:./t220:./t240:./test0:./src:./mma
 
-vpath %.cpp ./:./t210:./t230:./XMLParser:./mex
+vpath %.cpp ./:./t210:./t230:./XMLParser
 
 .SUFFIXES: .o .c .cpp .cc .cxx .C
 
@@ -806,62 +806,13 @@ win64mma: mma/sload.tm mma/sload.c
 #	MEX-files for Octave and Matlab
 #############################################################
 
-# include directory for Win32-Matlab include
-W32MAT_INC = $(HOME)/bin/win32/Matlab/R2010b/extern/include/ -I../win32
-W64MAT_INC = $(HOME)/bin/win64/Matlab/R2010b/extern/include/ -I../win64
-# path to GNUMEX libraries, available from here http://sourceforge.net/projects/gnumex/
-GNUMEX   = $(HOME)/bin/win32/gnumex
-GNUMEX64 = $(HOME)/bin/win64/gnumex
+mex4o mex4m oct mex:
+	make -C mex $@
 
-mex/mexSOPEN.cpp : mex/mexSLOAD.cpp
-	echo "#define mexSOPEN" > mex/mexSOPEN.cpp
-	cat mex/mexSLOAD.cpp >> mex/mexSOPEN.cpp
-
-MEX_OBJECTS = mex/mexSLOAD.cpp mex/mexSOPEN.cpp mex/mexSSAVE.cpp mex/physicalunits.cpp
-
-mex4o: $(patsubst mex/%.cpp, mex/%.mex, $(MEX_OBJECTS)) $(OBJECTS)
-oct: $(patsubst mex/%.cpp, mex/%.oct, $(MEX_OBJECTS)) $(OBJECTS)
-mexw32: $(patsubst mex/%.cpp, mex/%.mexw32, $(MEX_OBJECTS))
-mexw64: $(patsubst mex/%.cpp, mex/%.mexw64, $(MEX_OBJECTS))
-
-ifdef MEX_EXT
-mex: mex4o mex4m mexw32 mexw64 $(OBJECTS)
-mex4m: $(patsubst mex/%.cpp, mex/%.$(MEX_EXT), $(MEX_OBJECTS)) $(OBJECTS)
-
-ifneq (Darwin,$(shell uname))
-mex/%.$(MEX_EXT): mex/%.cpp libbiosig.a
-	$(MEX) -I./ $(MEX_OPTION) $(shell $(PKGCONF) --cflags libbiosig) "$<" libbiosig.a $(LDLIBS) -output "$@"
-else
-mex/%.$(MEX_EXT): mex/%.cpp libbiosig.a
-	$(MEX) -I./ $(shell $(PKGCONF) --cflags libbiosig) -outdir mex "$<" libbiosig.a $(LDLIBS)
-endif
-	-$(COPY) $@ ../biosig4matlab/t200_FileAccess/
-
-else
-mex: mex4o mexw32 mexw64
-endif
-
-mex/%.mex: mex/%.cpp libbiosig.a
-	$(OCT) -I./ $(shell $(PKGCONF) --cflags libbiosig) -v -g --mex "$<" libbiosig.a $(LDLIBS) -o "$@"
-	-$(COPY) $@ ../biosig4matlab/t200_FileAccess/
-
-mex/%.oct: mex/%.cpp libbiosig.a
-	$(OCT) -I./ $(shell $(PKGCONF) --cflags libbiosig) "$<" libbiosig.a $(LDLIBS) -o "$@"
-	-$(COPY) $@ ../biosig4matlab/t200_FileAccess/
-
-mex/%.mexw32: mex/%.cpp Makefile biosig.h biosig-dev.h
-	## $(CROSS)-g++ is used instead of $(CXX), so it can be called from biosig as well as mxe. 
-	$(CROSS)-g++ -shared $(GNUMEX)/mex.def -DMATLAB_MEX_FILE $(DEFINES) -x c++  \
-		-I$(W32MAT_INC) -O2 -o "$@" -L$(GNUMEX) -s "$<" -llibmx -llibmex -lbiosig -liconv -lssp $(LDLIBS) -lws2_32
-	-$(COPY) $@ ../biosig4matlab/t200_FileAccess/
-
-mex/%.mexw64: mex/%.cpp Makefile biosig.h biosig-dev.h
-	$(CROSS64)-g++ -shared $(GNUMEX64)/mex.def -DMATLAB_MEX_FILE $(DEFINES) -x c++  \
-		-I$(W64MAT_INC) -O2 -o "$@" -L$(GNUMEX64) -s "$<" -llibmx -llibmex -lbiosig -liconv -lssp $(LDLIBS) -lws2_32
-	-$(COPY) $@ ../biosig4matlab/t200_FileAccess/
+mexw32 mexw64:
+	CROSS=$(CROSS) CROSS64=$(CROSS64) make -C mex $@
 
 mexbiosig: mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz
-
 
 mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	$(eval $@_TMP := $(shell mktemp -d /tmp/biosig.XXXXXX)/mexbiosig-$(BIOSIG_VERSION))
@@ -954,12 +905,11 @@ bin/flowmon: flowmon.o gdf.o gdftime.o physicalunits.o
 distclean: clean
 	-$(DELETE) -r autom4te.cache
 	-$(DELETE) aclocal.m4 config.h config.log config.status depcomp missing stamp-h1
-	-$(DELETE) Makefile.am doc/Makefile.am mex/Makefile.am python/Makefile.am
+	-$(DELETE) Makefile.am doc/Makefile.am python/Makefile.am
 	-$(DELETE) ltmain.sh
 	-$(DELETE) *.lib
 	-$(DELETE) *.so *.dylib
 	-$(DELETE) *.so.*
-	-$(DELETE) mex/mexSOPEN.cpp
 	-$(DELETE) libbiosig.pc
 	-$(DELETE) t5.scp t6.scp save2gdf gztest test_scp_decode biosig_server biosig_client
 	-$(DELETE) t?.[bge]df* t?.hl7* t?.scp* t?.cfw* t?.gd1* t?.*.gz *.fil $(TEMP_DIR)t1.* $(DATA_DIR)t1.*
@@ -970,9 +920,8 @@ distclean: clean
 	-$(DELETE) win32/*.a win32/*.lib win32/libbiosig.* win32/*.obj win32/*.exe
 	-$(DELETE) win64/*.a win64/*.lib win64/libbiosig.* win64/*.obj win64/*.exe
 	-$(DELETE) -rf win32/zlib
-	-$(DELETE) mex/*.o mex/*.obj mex/*.o64 mex/core mex/octave-core mex/*.oct mex/*~ mex/*.mex* 
 	-$(MAKE) -C java clean
-	-$(MAKE) -C matlab clean
+	-$(MAKE) -C mex clean
 	-$(MAKE) -C mma clean
 	-$(MAKE) -C perl clean
 	-$(MAKE) -C php clean
@@ -991,7 +940,6 @@ clean:
 	-$(DELETE) *.o
 	-$(DELETE) *.so *.dylib
 	-$(DELETE) *.so.*
-	-$(DELETE) *.mex*
 	-$(DELETE) *.oct
 	-$(DELETE) libbiosig.pc
 	-$(DELETE) $(TEMP_DIR)t1.*
@@ -1004,9 +952,8 @@ clean:
 	-$(DELETE) libbiosig.* libbiosig2.*
 	-$(DELETE) pdp2gdf save2gdf physicalunits biosig_fhir
 	-$(DELETE) mma/sload.exe mma/*/sload.exe
-	-$(DELETE) mex/*.o mex/*.obj mex/*.o64 mex/core mex/octave-core mex/*.oct mex/*~ mex/*.mex* 
 	-$(MAKE) -C java clean
-	-$(MAKE) -C matlab clean
+	-$(MAKE) -C mex clean
 	-$(MAKE) -C mma clean
 	-$(MAKE) -C php clean
 	-$(MAKE) -C perl clean
