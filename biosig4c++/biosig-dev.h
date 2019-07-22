@@ -537,6 +537,11 @@ extern const struct etd_t ETD [];
 extern const struct event_groups_t EventCodeGroups [];
 extern const struct FileFormatStringTable_t FileFormatStringTable [];
 
+typedef struct {
+	const char *free_text_event_limiter;
+} biosig_options_type;
+
+HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, biosig_options_type* options);
 
 /* reset structure packing to default settings */
 #pragma pack(pop)

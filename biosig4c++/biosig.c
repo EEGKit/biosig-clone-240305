@@ -3608,14 +3608,20 @@ int read_header(HDRTYPE *hdr) {
 /****************************************************************************/
 /**                     SOPEN                                              **/
 /****************************************************************************/
-HDRTYPE* sopen(const char* FileName, const char* MODE, HDRTYPE* hdr)
+HDRTYPE* sopen(const char* FileName, const char* MODE, HDRTYPE* hdr) {
+
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): sopen(%s,%s)\n",__func__,__LINE__, FileName, MODE);
+
+	return sopen_extended(FileName, MODE, hdr, NULL);
+}
+
+HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, biosig_options_type *biosig_options) {
 /*
 	MODE="r"
 		reads file and returns HDR
 	MODE="w"
 		writes HDR into file
  */
-{
 
 //    	unsigned int 	k2;
 //    	uint32_t	k32u;
@@ -3634,7 +3640,12 @@ HDRTYPE* sopen(const char* FileName, const char* MODE, HDRTYPE* hdr)
 	uint16_t	BCI2000_StatusVectorLength=0;	// specific for BCI2000 format
 #endif //ONLYGDF 
 
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"SOPEN( %s, %s) \n",FileName, MODE);
+	biosig_options_type default_options;
+	default_options.free_text_event_limiter="\0";
+
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s(%s,%s) (line %d): --delimiter=<%s> %p\n",__func__, FileName, MODE, __LINE__, biosig_options->free_text_event_limiter, biosig_options);
+
+	if (biosig_options==NULL) biosig_options = &default_options;
 
 	if (FileName == NULL) {
 		biosigERROR(hdr, B4C_CANNOT_OPEN_FILE, "no filename specified");
@@ -4273,6 +4284,13 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"%s(line %i): EDF+ line<%s>\n",__FILE__,__LI
 								return (hdr);
 							};
 						}
+
+						/*
+							This is a workaround to read BDF data with large number of free text events containing meta information
+							Free text is limited to the first occurence of limiter character, default is "\0" which does not remove anything
+						 */
+						s2 = strtok(s2, biosig_options->free_text_event_limiter);
+
 						switch (flag) {
 						case 0:
 							// EDF+C
@@ -7102,7 +7120,7 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 
 //						FreeTextEvent(hdr,hdr->EVENT.N,(char*)(LOG+lba+20+k1*45));
 					if (VERBOSE_LEVEL>7) {
-						  fprintf(stdout,"   <%s>\n   <%s>\n",(char*)(LOG+lba+9+k1*45),(char*)(LOG+lba+29+k1*45));
+						fprintf(stdout,"   <%s>\n   <%s>\n",(char*)(LOG+lba+9+k1*45),(char*)(LOG+lba+29+k1*45));
 						int kk; for (kk=0; kk<45; kk++) putchar(LOG[lba+9+k1*45+kk]);
 						putchar('\n');
 					}

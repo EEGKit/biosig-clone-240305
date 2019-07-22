@@ -55,6 +55,8 @@ int main(int argc, char **argv){
     HDRTYPE 	*hdr; 
     size_t 	count, k1, ne=0;
     char 	*source, *dest, *tmpstr; 
+    biosig_options_type   biosig_options;
+
     enum FileFormat SOURCE_TYPE; 		// type of file format
     struct {
 	enum FileFormat TYPE;
@@ -124,6 +126,7 @@ int main(int argc, char **argv){
 				"\tIt's recommended to pseudonize the data, or to use the patient identifier instead of patient name and birthday.\n"
 		);
 		fprintf(stdout,"   -CSV  \n\texports data into CSV file\n");
+		fprintf(stdout,"   --free-text-event-limiter=\";\"\n\tfree text of events limited to first occurence of \";\" (only EDF+/BDF+ format)\n");
 		fprintf(stdout,"   -DYGRAPH, -f=DYGRAPH  \n\tproduces JSON output for presentation with dygraphs\n");
 		fprintf(stdout,"   -JSON  \n\tshows header and events in JSON format\n");
 		fprintf(stdout,"   -z=#, -z#\n\t# indicates the compression level (#=0 no compression; #=9 best compression, default #=1)\n");
@@ -171,6 +174,9 @@ int main(int argc, char **argv){
 
 	else if (!strcasecmp(argv[k],"-DYGRAPH"))
 		FLAG_DYGRAPH = 1;
+
+	else if (!strncmp(argv[k],"--free-text-event-limiter=",26))
+		biosig_options.free_text_event_limiter = strstr(argv[k],"=") + 1;
 
     	else if (!strncmp(argv[k],"-f=",3))  	{
     		if (0) {}
@@ -306,7 +312,7 @@ int main(int argc, char **argv){
 		hdr->aECG = dest;
 	}
 
-	hdr = sopen(source, "r", hdr);
+	hdr = sopen_extended(source, "r", hdr, &biosig_options);
 #ifdef WITH_PDP 
 	if (hdr->AS.B4C_ERRNUM) {
 		biosigERROR(hdr, 0, NULL);  // reset error 
