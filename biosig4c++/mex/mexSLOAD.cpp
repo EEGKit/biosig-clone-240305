@@ -196,6 +196,9 @@ void mexFunction(
 	char		FlagOverflowDetection = 1, FlagUCAL = 0;
 	int		argSweepSel = -1;
 	
+	biosig_options_type biosig_options;
+	biosig_options.free_text_event_limiter="\0";	//  default value
+
 #ifdef CHOLMOD_H
 	cholmod_sparse RR,*rr=NULL;
 	double dummy;
@@ -210,6 +213,9 @@ void mexFunction(
 		mexPrintf("   Usage of mexSOPEN:\n");
 		mexPrintf("\tHDR = mexSOPEN(f)\n");
 		mexPrintf("   Input:\n\tf\tfilename\n");
+		mexPrintf("\t... = mexSLOAD(f,'--free-text-event-limiter',';')\n");
+		mexPrintf("\t'--free-text-event-limiter',';' : free text limited by first \";\", remainder is ignored."
+			"\n\t\tThis can help to reduce the number of distinct free text events.\n\n");
 		mexPrintf("   Output:\n\tHDR\theader structure\n\n");
 #else
 		mexPrintf("   Usage of mexSLOAD:\n");
@@ -226,6 +232,7 @@ void mexFunction(
 		mexPrintf("\t[s,HDR]=mexSLOAD(f,chan,'OUTPUT:SINGLE')\n");
 		mexPrintf("\t[s,HDR]=mexSLOAD(f,chan,'TARGETSEGMENT:<N>')\n");
 		mexPrintf("\t[s,HDR]=mexSLOAD(f,chan,'SWEEP',[NE, NG, NS])\n");
+		mexPrintf("\t[s,HDR]=mexSLOAD(f,chan,'--free-text-event-limiter',';')\n");
 		mexPrintf("   Input:\n\tf\tfilename\n");
 		mexPrintf("\tchan\tlist of selected channels; 0=all channels [default]\n");
 		mexPrintf("\tUCAL\tON: do not calibrate data; default=OFF\n");
@@ -234,6 +241,8 @@ void mexFunction(
 		mexPrintf("\tTARGETSEGMENT:<N>\n\t\tselect segment <N> in multisegment files (like Nihon-Khoden), default=1\n\t\tIt has no effect for other data formats.\n");
 		mexPrintf("\t[NE, NG, NS] are the number of the experiment, the series and the sweep, resp. for sweep selection in HEKA/PatchMaster files. (0 indicates all)\n");
 		mexPrintf("\t\t examples: [1,2,3] the 3rd sweep from the 2nd series of experiment 1; [1,3,0] selects all sweeps from experiment=1, series=3. \n\n");
+		mexPrintf("\t'--free-text-event-limiter',';' : free text limited by first \";\", remainder is ignored."
+			"\n\t\tThis can help to reduce the number of distinct free text events.\n\n");
 		mexPrintf("   Output:\n\ts\tsignal data, each column is one channel\n");
 		mexPrintf("\tHDR\theader structure\n\n");
 #endif
@@ -299,6 +308,8 @@ void mexFunction(
 				TARGETSEGMENT = atoi(mxArrayToString(prhs[k])+14);
 			else if (!strcasecmp(mxArrayToString(prhs[k]), "SWEEP") && (prhs[k+1] != NULL) && mxIsNumeric(prhs[k+1]))
 				argSweepSel = ++k;
+			else if (!strcasecmp(mxArrayToString(prhs[k]), "--free-text-event-limiter") && (prhs[k+1] != NULL) && mxIsChar(prhs[k+1]))
+				biosig_options.free_text_event_limiter = mxArrayToString(prhs[++k]);
 		}
 		else {
 #ifndef mexSOPEN
@@ -367,7 +378,7 @@ void mexFunction(
 	if (VERBOSE_LEVEL>7) 
 		mexPrintf("120: going to sopen\n");
 
-	hdr = sopen(FileName, "r", hdr);
+	hdr = sopen_extended(FileName, "r", hdr, &biosig_options);
 /*
 #ifdef WITH_PDP 
 	if (hdr->AS.B4C_ERRNUM) {
