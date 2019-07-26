@@ -823,7 +823,7 @@ mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	cp mex/README $($@_TMP)/doc/
 	sed -e 's#^Version.*$$#Version: $(BIOSIG_VERSION)#g' -e 's#^Date.*$$#Date: '$(shell date +%Y-%m-%d)'#g' mex/DESCRIPTION > $($@_TMP)/DESCRIPTION
 	cp COPYING $($@_TMP)/
-	cp mex/mex*.cpp mex/Makefile $($@_TMP)/src/
+	cp mex/*.cpp mex/Makefile $($@_TMP)/src/
 	### TODO
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
 	echo "mexSLOAD mexSOPEN mexSSAVE" > $($@_TMP)/INDEX
