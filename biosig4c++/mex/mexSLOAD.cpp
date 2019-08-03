@@ -241,8 +241,10 @@ void mexFunction(
 		mexPrintf("\tTARGETSEGMENT:<N>\n\t\tselect segment <N> in multisegment files (like Nihon-Khoden), default=1\n\t\tIt has no effect for other data formats.\n");
 		mexPrintf("\t[NE, NG, NS] are the number of the experiment, the series and the sweep, resp. for sweep selection in HEKA/PatchMaster files. (0 indicates all)\n");
 		mexPrintf("\t\t examples: [1,2,3] the 3rd sweep from the 2nd series of experiment 1; [1,3,0] selects all sweeps from experiment=1, series=3. \n\n");
+#if (BIOSIG_VERSION >= 10905)
 		mexPrintf("\t'--free-text-event-limiter',';' : free text limited by first \";\", remainder is ignored."
 			"\n\t\tThis can help to reduce the number of distinct free text events.\n\n");
+#endif
 		mexPrintf("   Output:\n\ts\tsignal data, each column is one channel\n");
 		mexPrintf("\tHDR\theader structure\n\n");
 #endif
@@ -308,8 +310,10 @@ void mexFunction(
 				TARGETSEGMENT = atoi(mxArrayToString(prhs[k])+14);
 			else if (!strcasecmp(mxArrayToString(prhs[k]), "SWEEP") && (prhs[k+1] != NULL) && mxIsNumeric(prhs[k+1]))
 				argSweepSel = ++k;
+#if (BIOSIG_VERSION >= 10905)
 			else if (!strcasecmp(mxArrayToString(prhs[k]), "--free-text-event-limiter") && (prhs[k+1] != NULL) && mxIsChar(prhs[k+1]))
 				biosig_options.free_text_event_limiter = mxArrayToString(prhs[++k]);
+#endif
 		}
 		else {
 #ifndef mexSOPEN
@@ -378,7 +382,12 @@ void mexFunction(
 	if (VERBOSE_LEVEL>7) 
 		mexPrintf("120: going to sopen\n");
 
+#if (BIOSIG_VERSION >= 10905)
 	hdr = sopen_extended(FileName, "r", hdr, &biosig_options);
+#else
+	hdr = sopen(FileName, "r", hdr);
+#endif
+
 /*
 #ifdef WITH_PDP 
 	if (hdr->AS.B4C_ERRNUM) {
