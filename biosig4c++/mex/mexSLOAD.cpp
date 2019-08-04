@@ -196,8 +196,10 @@ void mexFunction(
 	char		FlagOverflowDetection = 1, FlagUCAL = 0;
 	int		argSweepSel = -1;
 	
+#if (BIOSIG_VERSION >= 10905)
 	biosig_options_type biosig_options;
 	biosig_options.free_text_event_limiter="\0";	//  default value
+#endif
 
 #ifdef CHOLMOD_H
 	cholmod_sparse RR,*rr=NULL;
