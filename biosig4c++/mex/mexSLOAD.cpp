@@ -1,6 +1,6 @@
 /*
 
-    Copyright (C) 2007,2008,2009,2010,2013,2015 Alois Schloegl <alois.schloegl@ist.ac.at>
+    Copyright (C) 2007-2019 Alois Schloegl <alois.schloegl@ist.ac.at>
     This file is part of the "BioSig for C/C++" repository 
     (biosig4c++) at http://biosig.sf.net/ 
 
@@ -216,8 +216,10 @@ void mexFunction(
 		mexPrintf("\tHDR = mexSOPEN(f)\n");
 		mexPrintf("   Input:\n\tf\tfilename\n");
 		mexPrintf("\t... = mexSLOAD(f,'--free-text-event-limiter',';')\n");
+#if (BIOSIG_VERSION >= 10905)
 		mexPrintf("\t'--free-text-event-limiter',';' : free text limited by first \";\", remainder is ignored."
 			"\n\t\tThis can help to reduce the number of distinct free text events.\n\n");
+#endif
 		mexPrintf("   Output:\n\tHDR\theader structure\n\n");
 #else
 		mexPrintf("   Usage of mexSLOAD:\n");
@@ -467,7 +469,7 @@ void mexFunction(
 	RerefCHANNEL(hdr,rr,2);
 #endif
 
-	if (hdr->FLAG.OVERFLOWDETECTION != FlagOverflowDetection)
+	if (!hdr->FLAG.OVERFLOWDETECTION && FlagOverflowDetection)
 		mexPrintf("Warning %s: Overflowdetection not supported in file %s\n", __FILE__, hdr->FileName);
 	if (hdr->FLAG.UCAL != FlagUCAL)
 		mexPrintf("Warning %s: Flag UCAL is %i instead of %i (%s)\n", __FILE__, hdr->FLAG.UCAL, FlagUCAL, hdr->FileName);
