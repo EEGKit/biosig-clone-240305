@@ -1969,7 +1969,7 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
 	else if (!memcmp(Header1,".snd",5))
 		hdr->TYPE = SND;
 
-	else if (!memcmp(Header1,"\x54\x44\x53\x6d",4))
+	else if (!memcmp(Header1,"TDSm",4))
 		hdr->TYPE = TDMS; 	// http://www.ni.com/white-paper/5696/en
 
 	else if ((hdr->HeadLen>30) && !memcmp(Header1,"POLY SAMPLE FILEversion ",24) && !memcmp(Header1+28, "\x0d\x0a\x1a",3))
@@ -10743,13 +10743,12 @@ if (VERBOSE_LEVEL>2)
 		}
 	}
 
-	else if (hdr->TYPE==TDMS) {
 #if defined(WITH_TDMS)
+	else if (hdr->TYPE==TDMS) {
 		sopen_tdms_read(hdr);
-#else
-		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "TDMS (NI): data format is not supported");
-#endif
 	}
+#endif
+
 	else if (hdr->TYPE==TMS32) {
 		hdr->VERSION 	= leu16p(hdr->AS.Header+31);
 		hdr->SampleRate = leu16p(hdr->AS.Header+114);

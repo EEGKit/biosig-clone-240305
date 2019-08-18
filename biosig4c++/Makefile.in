@@ -451,10 +451,10 @@ ifneq (,$(findstring WITH_FEF, $(MinGWDEF)))
   MinGWOBJECTS += win32/sopen_fef_read.obj
 endif
 
-ifneq (,$(findstring WITH_FEF, $(DEFINES)))
+ifneq (,$(findstring WITH_TDMS, $(DEFINES)))
   OBJECTS      += sopen_tdms_read.o
 endif
-ifneq (,$(findstring WITH_FEF, $(MinGWDEF)))
+ifneq (,$(findstring WITH_TDMS, $(MinGWDEF)))
   MinGWOBJECTS += win32/sopen_tdms_read.obj
 endif
 
@@ -1072,7 +1072,7 @@ testtms: $(DATA_DIR)t1.scp
 	./save2gdf -f=TMSi $(DATA_DIR)t1.scp $(TEMP_DIR)t2.log
 	cat $(TEMP_DIR)t2.log
 
-fetchdata: $(TEMP_DIR)scp/redred/PFE103.scp  $(TEMP_DIR)Osas2002plusQRS.edf $(DATA_DIR)Newtest17-2048.bdf $(DATA_DIR)2003-12\ Schema/example/Example\ aECG.xml
+fetchdata: $(TEMP_DIR)Osas2002plusQRS.edf $(DATA_DIR)Newtest17-2048.bdf
 
 $(TEMP_DIR)scp/redred/PFE103.scp:
 	# scp example data sets
