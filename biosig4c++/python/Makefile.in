@@ -24,8 +24,8 @@ test:
 	## get ../data/Newtest17-256.bdf
 	make -C .. fetchdata
 	## need to run from different directory, because
-	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ $(PYTHON) -c 'import biosig; print biosig.header("data/Newtest17-256.bdf")')
-	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ $(PYTHON) -c 'import biosig; print biosig.data("data/Newtest17-256.bdf")')
+	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ $(PYTHON) -c 'import biosig; print(biosig.header("data/Newtest17-256.bdf"))')
+	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ $(PYTHON) -c 'import biosig; print(biosig.data("data/Newtest17-256.bdf"))')
 	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ python$(PYVER) < python/demo2.py)
 
 clean:
