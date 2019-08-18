@@ -56,6 +56,7 @@ int main(int argc, char **argv){
     size_t 	count, k1, ne=0;
     char 	*source, *dest, *tmpstr; 
     biosig_options_type   biosig_options;
+    biosig_options.free_text_event_limiter = "";	// default is no delimiter
 
     enum FileFormat SOURCE_TYPE; 		// type of file format
     struct {
