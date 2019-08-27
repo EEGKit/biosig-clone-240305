@@ -767,8 +767,8 @@ libbiosig.pc :
 	echo "Libs.private: $(LDLIBS)"      >> "$@"
 
 ## save2gdf, pdp2gdf
-%${BINEXT}: %.c libbiosig.a
-	$(CC) $(DEFINES) $(CFLAGS) "$<" libbiosig.a -lstdc++ $(LDLIBS) -o "$@"
+%${BINEXT}: %.c libbiosig.so
+	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 
 physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
