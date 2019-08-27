@@ -1125,8 +1125,8 @@ void biosigERROR(HDRTYPE *hdr, enum B4C_ERROR errnum, const char *errmsg) __attr
 	therefore not exported to standard user applications. 
 */
 
-void struct2gdfbin(HDRTYPE *hdr);
-int gdfbin2struct(HDRTYPE *hdr);
+void struct2gdfbin(HDRTYPE *hdr) __attribute__ ((visibility ("default") ));
+int gdfbin2struct(HDRTYPE *hdr) __attribute__ ((visibility ("default") ));
 /* struct2gdfbin and gdfbin2struct
 	convert between the streamed header information (as in a GDF file or 
 	on a network connection) and the header structure HDRTYPE 
@@ -1136,14 +1136,14 @@ int gdfbin2struct(HDRTYPE *hdr);
 	event table itself. 
  ------------------------------------------------------------------------*/
 
-size_t hdrEVT2rawEVT(HDRTYPE *hdr);
-void rawEVT2hdrEVT(HDRTYPE *hdr, size_t length_rawEventTable);
+size_t hdrEVT2rawEVT(HDRTYPE *hdr) __attribute__ ((visibility ("default") ));
+void rawEVT2hdrEVT(HDRTYPE *hdr, size_t length_rawEventTable) __attribute__ ((visibility ("default") ));
 /* rawEVT2hdrEVT and hdrEVT2rawEVT
 	convert between streamed event table and the structure
 	HDRTYPE.EVENT.
  ------------------------------------------------------------------------*/
 
-int NumberOfChannels(HDRTYPE *hdr); 
+int NumberOfChannels(HDRTYPE *hdr) __attribute__ ((visibility ("default") ));
 /*
         returns the number of channels returned by SREAD. 
         This might be different than the number of data channels in the file
@@ -1162,7 +1162,7 @@ void FreeGlobalEventCodeTable();
 	free memory allocated for global event code
  ------------------------------------------------------------------------*/
 
-size_t	sread_raw(size_t START, size_t LEN, HDRTYPE* hdr, char flag, void *buf, size_t bufsize);
+size_t	sread_raw(size_t START, size_t LEN, HDRTYPE* hdr, char flag, void *buf, size_t bufsize) __attribute__ ((visibility ("default") ));
 /* sread_raw: 
 	LEN data segments are read from file associated with hdr, starting from 
 	segment START.
@@ -1186,7 +1186,7 @@ size_t	sread_raw(size_t START, size_t LEN, HDRTYPE* hdr, char flag, void *buf, s
 	block and the number of blocks, respectively.  
  --------------------------------------------------------------- */
 
-size_t bpb8_collapsed_rawdata(HDRTYPE *hdr);
+size_t bpb8_collapsed_rawdata(HDRTYPE *hdr) __attribute__ ((visibility ("default") ));
 /* bpb8_collapsed_rawdata
 	computes the bits per block when rawdata is collapsed
 --------------------------------------------------------------- */

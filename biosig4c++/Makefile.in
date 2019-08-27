@@ -773,8 +773,8 @@ libbiosig.pc :
 physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
 
-biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.a
-	$(CC) $(DEFINES) $(CFLAGS) "$<" libbiosig.a -lstdc++ -lb64 $(LDLIBS) -o "$@"
+biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.so
+	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
 
 bscs: biosig_client${BINEXT} biosig_server${BINEXT} sandbox.o biosig.o
 biosig_client${BINEXT}: biosig_client.c libbiosig.$(LIBEXT) biosig-network.o
