@@ -69,8 +69,9 @@ int main(int argc, char **argv){
     int		COMPRESSION_LEVEL=0;
     int		status; 	
     uint16_t	k;
-    int		TARGETSEGMENT=1; 	// select segment in multi-segment file format EEG1100 (Nihon Kohden)
-    int 	VERBOSE	= 0; 
+    uint16_t	chansel = 0;
+    int 	TARGETSEGMENT=1; 	// select segment in multi-segment file format EEG1100 (Nihon Kohden)
+    int 	VERBOSE	= 0;
     char	FLAG_ANON = 1;
     char	FLAG_CSV = 0;
     char	FLAG_JSON = 0; 
@@ -134,6 +135,7 @@ int main(int argc, char **argv){
 		fprintf(stdout,"   -s=#\tselect target segment # (in the multisegment file format EEG1100)\n");
 		fprintf(stdout,"   -SWEEP=ne,ng,ns\n\tsweep selection of HEKA/PM files\n\tne,ng, and ns select the number of experiment, the number of group, and the sweep number, resp.\n");
 		fprintf(stdout,"   -VERBOSE=#, verbosity level #\n\t0=silent [default], 9=debugging\n");
+		fprintf(stdout,"   --chan=CHAN\n\tselect channel CHAN (0: all channels, 1: first channel, etc.)\n");
 		fprintf(stdout,"\n\n");
 		return(0);
 	}	
