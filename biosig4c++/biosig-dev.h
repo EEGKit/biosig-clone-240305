@@ -44,7 +44,7 @@ extern "C" {
 #ifdef NDEBUG
 #define VERBOSE_LEVEL 0 	// turn off debugging information, but its only used without NDEBUG
 #else
-extern int VERBOSE_LEVEL; 	// used for debugging, variable is always defined
+extern int VERBOSE_LEVEL __attribute__ ((visibility ("default") )); 	// used for debugging, variable is always defined
 #endif
 
 
@@ -533,15 +533,15 @@ struct NomenclatureAnnotatedECG_t {
 	const char *refid;
 } ATT_MSSTRUCT;
 
-extern const struct etd_t ETD [];
-extern const struct event_groups_t EventCodeGroups [];
+extern const struct etd_t ETD [] __attribute__ ((visibility ("default") ));
+extern const struct event_groups_t EventCodeGroups [] __attribute__ ((visibility ("default") ));
 extern const struct FileFormatStringTable_t FileFormatStringTable [];
 
 typedef struct {
 	const char *free_text_event_limiter;
 } biosig_options_type;
 
-HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, biosig_options_type* options);
+HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, biosig_options_type* options) __attribute__ ((visibility ("default") ));
 
 /* reset structure packing to default settings */
 #pragma pack(pop)
@@ -1062,6 +1062,8 @@ typedef struct aecg {
 /**                                                                        **/
 /****************************************************************************/
 
+#pragma GCC visibility push(default)
+
 /*
         file access wrapper: use ZLIB (if available) or STDIO
  */
@@ -1088,6 +1090,8 @@ int             iferror(HDRTYPE* hdr);
 uint32_t gcd(uint32_t A, uint32_t B);
 uint32_t lcm(uint32_t A, uint32_t B);
 
+#pragma GCC visibility pop
+
 extern const uint16_t GDFTYP_BITS[];
 extern const char *LEAD_ID_TABLE[];
 
@@ -1108,7 +1112,7 @@ int month_string2int(const char *s);
 
 int u32cmp(const void *a, const void *b); 
 
-void biosigERROR(HDRTYPE *hdr, enum B4C_ERROR errnum, const char *errmsg);
+void biosigERROR(HDRTYPE *hdr, enum B4C_ERROR errnum, const char *errmsg) __attribute__ ((visibility ("default") ));
 /*
 	sets the local and the (deprecated) global error variables B4C_ERRNUM and B4C_ERRMSG
 	the global error variables are kept for backwards compatibility.
@@ -1197,11 +1201,11 @@ HDRTYPE* getfiletype(HDRTYPE* hdr);
 		hdr->VERSION	is defined for some selected formats e.g. ACQ, EDF, BDF, GDF
  --------------------------------------------------------------- */
 
-const char* GetFileTypeString(enum FileFormat FMT);
+const char* GetFileTypeString(enum FileFormat FMT) __attribute__ ((visibility ("default") ));
 /*	returns a string with file format
  --------------------------------------------------------------- */
 
-enum FileFormat GetFileTypeFromString(const char *);
+enum FileFormat GetFileTypeFromString(const char *) __attribute__ ((visibility ("default") ));
 /*	returns file format from string
  --------------------------------------------------------------- */
 

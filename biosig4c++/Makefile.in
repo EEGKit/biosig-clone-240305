@@ -99,6 +99,7 @@ PathToSigViewerWIN64 = ../sigviewer4win64
 
 CFLAGS       += -pipe -fPIC -fno-builtin-memcmp -O2 -Wno-unused-result
 CFLAGS       += -Wno-deprecated
+CFLAGS       += -fvisibility=hidden
 
 prefix        = @prefix@
 exec_prefix   = @exec_prefix@
