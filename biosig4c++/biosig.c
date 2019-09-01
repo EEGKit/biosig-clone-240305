@@ -10487,28 +10487,7 @@ if (VERBOSE_LEVEL>2)
 	}
 
 	else if (hdr->TYPE==RHD2000) {
-		float minor = leu16p(hdr->AS.Header+6);
-		minor      *= (minor < 10) ? 0.1 : 0.01;
-		hdr->VERSION = leu16p(hdr->AS.Header+4) + minor;
-
-		hdr->NS = 1;
-		hdr->SampleRate = lef32p(hdr->AS.Header+8);
-
-		float HighPass = ( leu16p(hdr->AS.Header+12) ? 0.0 : lef32p(hdr->AS.Header+14) );
-		      HighPass = max( HighPass, lef32p(hdr->AS.Header+18) );
-		float LowPass = lef32p(hdr->AS.Header+22);
-		const int ListNotch[] = {0,50,60};
-		uint16_t tmp = leu16p(hdr->AS.Header+34);
-		if (tmp>2) tmp=0;
-		float Notch = ListNotch[tmp];
-		float fZ    = lef32p(hdr->AS.Header+40);
-
-		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format Intan RHD2000 not supported");
-
-		/*
-		hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS * sizeof(CHANNEL_TYPE));
-		CHANNEL_TYPE *hc = hdr->CHANNEL;
-		*/
+		sopen_rhd2000_read(hdr);
 	}
 
 	else if (hdr->TYPE==SCP_ECG) {

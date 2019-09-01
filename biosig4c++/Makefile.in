@@ -369,6 +369,7 @@ SOURCES      += biosig.c \
 		t210/sopen_cfs_read.c \
 		t210/sopen_heka_read.c \
 		t210/sopen_igor.c \
+		t210/sopen_rhd2000_read.c \
 		t210/sopen_scp_read.c \
 		t210/sopen_tdms_read.c \
 		t210/sopen_famos_read.c \
@@ -404,6 +405,7 @@ OBJECTS      += \
 		sopen_cfs_read.o \
 		sopen_heka_read.o \
 		sopen_igor.o \
+		sopen_rhd2000_read.o \
 		sopen_scp_read.o \
 		sopen_abf_read.o \
 		sopen_alpha_read.o \
@@ -424,6 +426,7 @@ MinGWOBJECTS  = \
 		win32/sopen_cfs_read.obj \
 		win32/sopen_heka_read.obj \
 		win32/sopen_igor.obj \
+		win32/sopen_rhd2000_read.obj \
 		win32/sopen_scp_read.obj \
 		win32/sopen_abf_read.obj \
 		win32/sopen_alpha_read.obj \
