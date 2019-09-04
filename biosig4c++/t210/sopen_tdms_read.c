@@ -161,7 +161,38 @@ void read_tdms_objects(tdms_object_store_t O, void *ptr, uint32_t numObj) {
 					// property value
 					int32_t val_i32;
 					switch (propType) {
-					case 0x20:
+					case tdsTypeVoid:
+					case tdsTypeI8:
+					case tdsTypeI16:
+
+					case tdsTypeI32: {
+						// int32
+						int32_t val = lei32p(ptr);
+						ptr += 4;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeI64:
+					case tdsTypeU8:
+					case tdsTypeU16:
+
+					case tdsTypeU32: {
+						// uint32
+						uint32_t val = leu32p(ptr);
+						ptr += 4;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+
+					case tdsTypeU64:
+					case tdsTypeSingleFloat:
+					case tdsTypeDoubleFloat:
+					case tdsTypeExtendedFloat:
+					case tdsTypeSingleFloatWithUnit: // =0x19,
+					case tdsTypeDoubleFloatWithUnit:
+					case tdsTypeExtendedFloatWithUnit:
+
+					case tdsTypeString: 	// case 0x20:
 						plen = leu32p(ptr);
 						propVal  = realloc(propVal,plen+1);
 						memcpy(propVal,ptr+4,plen);
@@ -170,20 +201,18 @@ void read_tdms_objects(tdms_object_store_t O, void *ptr, uint32_t numObj) {
 	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(string)=<%s>\n",__func__,__LINE__, k, p,propName, propVal);
 						break;
 
-					case 0x03: {
-						// int32
-						int32_t val = lei32p(ptr);
-						ptr += 4;
-	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
+					case tdsTypeBoolean:
+
+					case tdsTypeTimeStamp: // = 0x44
+						ptr += 4+plen;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(string)=<%s>\n",__func__,__LINE__, k, p,propName, propVal);
 						break;
-						}
-					case 0x07: {
-						// uint32
-						uint32_t val = leu32p(ptr);
-						ptr += 4;
-	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
-						break;
-						}
+
+					case tdsTypeFixedPoint: // 0x4F,
+					case tdsTypeComplexSingleFloat: // =0x08000c,
+					case tdsTypeComplexDoubleFloat: // =0x10000d,
+					case tdsTypeDAQmxRawData: // =0xFFFFFFFF
+
 					default:
 	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %d property %d <%s>type=0x%x not supported. Skip %d bytes\n",__func__,__LINE__, k, p,propName,propType, plen);
 					}
@@ -301,9 +330,11 @@ EXTERN_C void sopen_tdms_read(HDRTYPE* hdr) {
 	if (VERBOSE_LEVEL > 7) {
 		// show index table segTable
 		fprintf(stdout, "#seg\tTMDs\tmask\tver\tnumObj\tnextSegOff\trawDataOffset\tDataPosition\tsize\n");
+		char tmpstr[8]; tmpstr[4]=0;
 		for (int k = 0; k < currentSegment; k++) {
+			memcpy(tmpstr,&segTable[k].TDMSCONST,4);
 			fprintf(stdout, "%d\t%04s\t0x%04x\t%d\t%d\t%9ld\t%9ld\t%9ld\t%ld\n", k,
-				(char*)&(segTable[k].TDMSCONST), segTable[k].toc_mask, segTable[k].version, segTable[k].numObjects,
+				tmpstr, segTable[k].toc_mask, segTable[k].version, segTable[k].numObjects,
 				segTable[k].nextSegmentOffset, segTable[k].rawDataOffset, segTable[k].data_position, segTable[k].size);
 		}
 	}
@@ -313,7 +344,7 @@ EXTERN_C void sopen_tdms_read(HDRTYPE* hdr) {
 	pos = 28;
 
 	/***** Meta data *****/
-	if (0) {
+	if (1) {
 	//while (pos<RawDataOffset) {
 			uint32_t numberOfObjects = leu32p(hdr->AS.Header+pos);
 			pos += 4;
@@ -344,16 +375,97 @@ EXTERN_C void sopen_tdms_read(HDRTYPE* hdr) {
 					propName[plen]=0;
 					pos += 4+plen;
 
-	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i/%i <%s>\n",__func__,__LINE__, k, p, numberOfProperties, propName);
-
 					// property type
 					uint32_t propType = leu32p(hdr->AS.Header+pos);
 					pos += 4;
 
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i/%i %d<%s> 0x%08x\n",__func__,__LINE__, k, p, numberOfProperties, plen,propName, propType);
+
+
 					// property value
 					int32_t val_i32;
 					switch (propType) {
-					case 0x20:
+					case tdsTypeVoid:
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(void)\n",__func__,__LINE__, k, p,propName);
+						break;
+					case tdsTypeI8: {
+						int8_t val = (int8_t)hdr->AS.Header[pos];
+						pos += 1;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int8)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeI16: {
+						int16_t val = lei16p(hdr->AS.Header+pos);
+						pos += 2;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int16)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeI32: {
+						// int32
+						int32_t val = lei32p(hdr->AS.Header+pos);
+						pos += 4;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeI64: {
+						// int64
+						int64_t val = lei64p(hdr->AS.Header+pos);
+						pos += 8;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int64)=%ld\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeU8: {
+						uint8_t val = (uint8_t)hdr->AS.Header[pos];
+						pos += 1;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(uint8)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeU16: {
+						uint16_t val = leu16p(hdr->AS.Header+pos);
+						pos += 1;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(uint16)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+
+					case tdsTypeU32: {	// case 0x07:
+						// uint32
+						uint32_t val = leu32p(hdr->AS.Header+pos);
+						pos += 4;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+
+					case tdsTypeU64: {
+						// uint64
+						uint64_t val = leu64p(hdr->AS.Header+pos);
+						pos += 8;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(uint64)=%ld\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeSingleFloat: {
+						float val = lef32p(hdr->AS.Header+pos);
+						pos += 4;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(float32)=%g\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeDoubleFloat: {
+						// double
+						double val = lef64p(hdr->AS.Header+pos);
+						pos += 8;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(float64)=%ld\n",__func__,__LINE__, k, p,propName,val);
+						break;
+						}
+					case tdsTypeExtendedFloat:{
+						// double
+						// double val = lef128p(hdr->AS.Header+pos);
+						pos += 16;
+						break;
+						}
+					case tdsTypeSingleFloatWithUnit: // =0x19,
+					case tdsTypeDoubleFloatWithUnit:
+					case tdsTypeExtendedFloatWithUnit:
+
+					case tdsTypeString:	// case 0x20:
 						plen = leu32p(hdr->AS.Header+pos);
 						propVal  = realloc(propVal,plen+1);
 						memcpy(propVal,hdr->AS.Header+pos+4,plen);
@@ -362,20 +474,53 @@ EXTERN_C void sopen_tdms_read(HDRTYPE* hdr) {
 	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(string)=<%s>\n",__func__,__LINE__, k, p,propName, propVal);
 						break;
 
-					case 0x03: {
-						// int32
-						int32_t val = lei32p(hdr->AS.Header+pos);
-						pos += 4;
-	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
+					case tdsTypeBoolean: {
+						uint8_t val = (uint8_t)hdr->AS.Header[pos];
+						pos += 1;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(boolean)=%i\n",__func__,__LINE__, k, p,propName,val);
 						break;
 						}
-					case 0x07: {
-						// uint32
-						uint32_t val = leu32p(hdr->AS.Header+pos);
-						pos += 4;
-	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(int32)=%i\n",__func__,__LINE__, k, p,propName,val);
+
+					case tdsTypeTimeStamp: {	//=0x44
+						// NI Timestamps according to http://www.ni.com/product-documentation/7900/en/
+						int64_t time_seconds = lei64p(hdr->AS.Header+pos);
+						uint64_t time_fraction = leu64p(hdr->AS.Header+pos+8);
+						gdftime_t T0 = ldexp((time_seconds+ldexp(time_fraction,-64))/(24.0*3600.0)+695422,32);
+						pos += 16;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i timestamp %ld %.8g \n",__func__,__LINE__, k, time_seconds, ldexp(time_fraction,-64));
 						break;
 						}
+
+					case tdsTypeFixedPoint: // 0x4F,
+						pos += 8;
+						break;
+
+					case 0x61:
+						//plen = leu32p(hdr->AS.Header+pos);
+						pos += 16;
+						break;
+
+					case tdsTypeComplexSingleFloat: { // =0x08000c,
+						float val[2];
+						val[0] = lef32p(hdr->AS.Header+pos);
+						val[1] = lef32p(hdr->AS.Header+pos);
+						pos += 16;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(float64)=%g + i%h\n",__func__,__LINE__, k, p, propName, val[0], val[1]);
+						break;
+						}
+					case tdsTypeComplexDoubleFloat: {// =0x10000d,
+						double val[2];
+						val[0] = lef64p(hdr->AS.Header+pos);
+						val[1] = lef64p(hdr->AS.Header+pos);
+						pos += 16;
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %i property %i <%s>(float64)=%g + i%h\n",__func__,__LINE__, k, p, propName, val[0], val[1]);
+						break;
+						}
+					case tdsTypeDAQmxRawData: { // =0xFFFFFFFF
+	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %d property %d <%s>type=0x%x not supported. Skip %d bytes\n",__func__,__LINE__, k, p,propName,propType, plen);
+						break;
+						}
+
 					default:
 	if (VERBOSE_LEVEL>6) fprintf(stdout,"%s (line %i): object %d property %d <%s>type=0x%x not supported. Skip %d bytes\n",__func__,__LINE__, k, p,propName,propType, plen);
 					}
