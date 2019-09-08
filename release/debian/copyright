@@ -1,8 +1,7 @@
-
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: biosig4c++
-Upstream-Contact: Alois Schloegl <alois.schloegl@ist.ac.at>
-Source: git clone git://git.code.sf.net/p/biosig/code biosig-code 
+Upstream-Contact: Alois Schloegl <alois.schloegl@gmail.com>
+Source: https://biosig.svn.sourceforge.net/svnroot/biosig/trunk/biosig4c++
 
 Files: *
 Copyright: 2003-2007, Lev Walkin <vlm@lionet.info>
@@ -10,15 +9,15 @@ Copyright: 2003-2007, Lev Walkin <vlm@lionet.info>
            2003,2004, X/IO Labs (xiolabs.com)
            2003,2004,2006, Eugenio Cervesato
            2005,2006, Franco Chiarugi
-           2005-2017, Alois Schloegl <alois.schloegl@gmail.com>
+           2005-2019, Alois Schloegl <alois.schloegl@gmail.com>
            2007, Elias Apostolopoulos
-License: GPL-3.0+
+License: GPL-3+
 
 Files: XMLParser/tiny*
 Copyright: 2000-2007, Lee Thomason <leethomason@mindspring.com>
            2002-2004, Yves Berquin <yvesb@users.sourceforge.net>
            2005, Tyge Lovset
-           2007-2010, Alois Schloegl <alois.schloegl@gmail.com>
+           2007-2019, Alois Schloegl <alois.schloegl@gmail.com>
 License: ZLIB
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any
@@ -39,12 +38,62 @@ License: ZLIB
   3. This notice may not be removed or altered from any source
   distribution.
 
+Files: t240/ANY*
+       t240/BIT_STRING*
+       t240/General*
+       t240/INTEGER*
+       t240/Native*
+       t240/OBJECT_IDENTIFIER*
+       t240/OCTET_STRING*
+       t240/REAL*
+       t240/UTF8String*
+       t240/asn_*
+       t240/ber_*
+       t240/constr*
+       t240/der_*
+       t240/per_*
+       t240/xer_*
+Copyright: 2003-2006 Lev Walkin <vlm@lionet.info>
+License: BSD-4-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. All advertising materials mentioning features or use of this software
+    must display the following acknowledgement:
+    This product includes software developed by the <organization>.
+ 4. Neither the name of the <organization> nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY <COPYRIGHT HOLDER> ''AS IS'' AND ANY
+ EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Comment:
+ The file headers state "the BSD license", but it is not specified which BSD
+ license. Assuming BSD-4-clause which is addressed as 'original "BSD License"'
+ in https://en.wikipedia.org/wiki/BSD_licenses is meant.
+
 Files: debian/*
 Copyright: 2011, Yaroslav Halchenko <debian@onerussian.com>
-           2014-2017, Alois Schloegl <alois.schloegl@ist.ac.at>
-License: GPL-3.0+
+License: GPL-3+
 
-License: GPL-3.0+
+Files: debian/upstream-extern
+Copyright: 2005-2019, Alois Schloegl <alois.schloegl@gmail.com>
+License: GPL-3+
+Note: Copied from BioSig project
+
+License: GPL-3+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or

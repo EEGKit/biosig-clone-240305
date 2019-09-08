@@ -28,6 +28,7 @@ SRCDIR=`pwd`"/../.."
 echo "== clone biosig =="
 git clone $SRCDIR/biosig-code biosig-code 
 mv biosig-code/biosig4matlab $BIOSIG4M_DIR
+rm biosig-code/biosig4c++/{CMakeLists.txt,biosig.pro}
 mv biosig-code/biosig4c++    $BIOSIG4C_DIR
 
 echo "==  make biosig4c++-$1.src.tar.gz =="

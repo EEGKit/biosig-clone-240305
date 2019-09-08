@@ -1,1 +1,2 @@
-python/demo2.py
+python/demo*.py
+python/example.py
