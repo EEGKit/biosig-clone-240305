@@ -19,9 +19,8 @@ function [HDR] = getfiletype(arg1)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	(C) 2004,2005,2007,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+%  (C) 2004,2005,2007,2008,2019 by Alois Schloegl <alois.schloegl@gmail.com>
+%  This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 
 if ischar(arg1),
@@ -382,7 +381,7 @@ else
                 elseif (c>10) && strcmp(ss([1:4,9:11]),'FORMAIF'); 
                         HDR.TYPE='AIF';
                         HDR.Endianity = 'ieee-be';
-                elseif (c>11) && strcmp(ss([1:4,9:12]),'RIFFAVI '); 
+                elseif (c>11) && strcmp(ss([1:4,9:12]),'RIFFAVI ');
                         HDR.TYPE='AVI';
                         HDR.Endianity = 'ieee-le';
                 elseif (c>20) && all(s([1:4,9:21])==[abs('RIFFRMIDMThd'),0,0,0,6,0]); 
@@ -391,7 +390,7 @@ else
                 elseif all(s(1:9)==[abs('MThd'),0,0,0,6,0]) && any(s(10)==[0:2]); 
                         HDR.TYPE='MIDI';
 			HDR.Endianity = 'ieee-be';
-                elseif (c>15) && ~isempty(findstr(ss(1:16),'8SVXVHDR')); 
+                elseif (c>15) && ~isempty(strfind(ss(1:16),'8SVXVHDR'));
                         HDR.TYPE='8SVX';
                 elseif strcmp(ss([1:4,9:12]),'RIFFILBM'); 
                         HDR.TYPE='ILBM';
@@ -741,15 +740,15 @@ else
                         
                 elseif strncmp(lower(ss),'<?php',5)
                         HDR.TYPE='PHP';
-		elseif ~isempty(findstr(ss,'<AnnotatedECG xmlns="urn:hl7-org:v3" xmlns:voc="urn:hl7-org:v3/voc"'))
+		elseif ~isempty(strfind(ss,'<AnnotatedECG xmlns="urn:hl7-org:v3" xmlns:voc="urn:hl7-org:v3/voc"'))
                         HDR.TYPE='HL7aECG';
                 elseif strncmp(ss,'<WORLD>',7)
                         HDR.TYPE='XML';
                 elseif all(s(1:2)==[255,254]) && all(s(4:2:end)==0)
                         HDR.TYPE='XML-UTF16';
-                elseif ~isempty(findstr(ss,'?xml version'))
+                elseif ~isempty(strfind(ss,'?xml version'))
                         HDR.TYPE='XML-UTF8';
-                elseif ~isempty(findstr(ss,'Serial number'))
+                elseif ~isempty(strfind(ss,'Serial number'))
                         HDR.TYPE='ASCII:IBI';
 
                 elseif strncmp(ss,'ABF',3)
@@ -1019,7 +1018,7 @@ else
 				HDR.MAT4.opentyp = 'cray';
                         end;
 			
-                elseif ~isempty(findstr(ss,'### Table of event codes.'))
+                elseif ~isempty(strfind(ss,'### Table of event codes.'))
                         fseek(fid,0,-1);
                         line = fgetl(fid);
                         N1 = 0; N2 = 0; 
@@ -1129,7 +1128,7 @@ else
                         % MIT-ECG / Physiobank format
                 	HDR.TYPE='MIT';
 
-		elseif length(HDR.FILE.Ext) && ~isempty(strmatch(HDR.FILE.Ext,{'16a','abp','al','apn','ari','atr','atr-','ecg','pap','ple','qrs','qrsc','sta','stb','stc'},'exact')),  
+		elseif length(HDR.FILE.Ext) && ~isempty(strncmp(HDR.FILE.Ext,{'16a','abp','al','apn','ari','atr','atr-','ecg','pap','ple','qrs','qrsc','sta','stb','stc'})),
 			% Physiobank annotation files 
 			HDR.TYPE='MIT-ATR';
 			
@@ -1217,10 +1216,10 @@ else
 	                	HDR.TYPE = 'BCI2002b';
                 	end;end;end;end; 
                         
-                elseif strcmpi(HDR.FILE.Ext,'txt') && (any(strfind(HDR.FILE.Path,'a34lkt')) || any(strfind(HDR.FILE.Path,'egl2ln'))) && any(strmatch(HDR.FILE.Name,{'Traindata_0','Traindata_1','Testdata'}))
+                elseif strcmpi(HDR.FILE.Ext,'txt') && (any(strfind(HDR.FILE.Path,'a34lkt')) || any(strfind(HDR.FILE.Path,'egl2ln'))) && any(strncmp(HDR.FILE.Name,{'Traindata_0','Traindata_1','Testdata'}))
                         HDR.TYPE = 'BCI2003_Ia+b';
                         
-                elseif any(strmatch(HDR.FILE.Name,{'x_train','x_test'}))
+                elseif any(strcmp(HDR.FILE.Name,{'x_train','x_test'}))
                         HDR.TYPE = 'BCI2003_III';
                         
                 elseif strcmpi(HDR.FILE.Ext,'hdm')
