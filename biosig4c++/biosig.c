@@ -131,7 +131,14 @@ int sclose_HL7aECG_write(HDRTYPE* hdr);
 void sopen_ibw_read    (HDRTYPE* hdr);
 void sopen_itx_read    (HDRTYPE* hdr);
 void sopen_smr_read    (HDRTYPE* hdr);
+#ifdef WITH_INTAN
+void sopen_rhd2000_read (HDRTYPE* hdr);
+void sopen_rhs2000_read (HDRTYPE* hdr);
+void sopen_intan_clp_read (HDRTYPE* hdr);
+#endif
+#ifdef WITH_TDMS
 void sopen_tdms_read   (HDRTYPE* hdr);
+#endif
 int sopen_trc_read   (HDRTYPE* hdr);
 int sopen_unipro_read   (HDRTYPE* hdr);
 #ifdef WITH_FEF

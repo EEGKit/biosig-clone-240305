@@ -129,7 +129,6 @@ int sopen_intan_clp_read(HDRTYPE* hdr) {
 	switch (datatype) {
 	case 0:
 		// If this is the standard data file (including clamp and measured data),
-		HeadLen=leu16p(hdr->AS.Header+10);
 		/* TODO:
 			read chips
 			read settings
@@ -137,16 +136,13 @@ int sopen_intan_clp_read(HDRTYPE* hdr) {
 		break;
 	case 1:
 		// If this is the aux data file (including Digital Ins/Outs and ADC data)
-		NumADCs=leu16p(hdr->AS.Header+10);
-		HeadLen=leu16p(hdr->AS.Header+12);
-
-		hdr->SampleRate = lef32p(hdr->AS.Header+24);
 	default:
 		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format Intan CLP - datatype unknown");
 		return -1;
 	}
 
-	if (datatype==0) {
+	switch (datatype) {
+	case 0: {
 		// read chips
 		pos = 24;
 		NumChips=leu16p(hdr->AS.Header+pos);
@@ -167,12 +163,12 @@ int sopen_intan_clp_read(HDRTYPE* hdr) {
 		hdr->AS.bpb= 16;
 
 		hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS * sizeof(CHANNEL_TYPE));
-		strcpy(hdr->CHANNEL[0].Label,"Time");
+		// see below // strcpy(hdr->CHANNEL[0].Label,"Time");
 		strcpy(hdr->CHANNEL[1].Label,"Clamp");
 		strcpy(hdr->CHANNEL[2].Label,"TotalClamp");
 		strcpy(hdr->CHANNEL[3].Label,"Measured");
 
-		for (int k=0; k<4; k++) {
+		for (int k=0; k < hdr->NS; k++) {
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
 			hc->Transducer[0]='\0';
 			hc->OnOff=1;
@@ -182,15 +178,60 @@ int sopen_intan_clp_read(HDRTYPE* hdr) {
 			hc->Cal=1;
 			hc->Off=0;
 		}
-		hdr->CHANNEL[0].GDFTYP=6;	//uint32
-		hdr->CHANNEL[0].DigMax=ldexp(1l,32)-1;	//uint32
-		hdr->CHANNEL[0].DigMin=0.0;	//uint32
-		hdr->CHANNEL[0].Cal=1.0/hdr->SampleRate;	//uint32
-		for (int k=0; k<4; k++) {
+		break;
+	    }
+	case 1: {
+		hdr->NS    = NumADCs;
+		hdr->SPR   = 1;
+		hdr->NRec  = -1;
+		hdr->AS.bpb= 4 + 2 + 2 + 2 * NumADCs;
+
+		hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS * sizeof(CHANNEL_TYPE));
+		for (int k=0; k < hdr->NS; k++) {
 			CHANNEL_TYPE *hc = hdr->CHANNEL+k;
-			hc->PhysMax = hc->DigMax * hc->Cal + hc->Off;
-			hc->PhysMin = hc->DigMin * hc->Cal + hc->Off;
+			sprintf(hdr->CHANNEL[3].Label, "ADC%d", k-2);
+			hc->Transducer[0]='\0';
+			hc->OnOff=1;
+			hc->GDFTYP=4;
+			hc->DigMax=65535.0;
+			hc->DigMin=0;
+			hc->Cal = (k < 3) ? 1.0 : 0.0003125;
+			hc->Off = (k < 3) ? 0.0 : -10.24;
 		}
+		// see below // strcpy(hdr->CHANNEL[0].Label, "Time");
+		strcpy(hdr->CHANNEL[1].Label,"DigitalIn");
+		strcpy(hdr->CHANNEL[2].Label,"DigitalOut");
+		break;
+	    }
+	default:
+		;
+	}
+
+	hdr->CHANNEL[0].OnOff=2;	//uint32
+	hdr->CHANNEL[0].GDFTYP=6;	//uint32
+	hdr->CHANNEL[0].DigMax=ldexp(1l,32)-1;	//uint32
+	hdr->CHANNEL[0].DigMin=0.0;	//uint32
+	hdr->CHANNEL[0].Cal=1.0/hdr->SampleRate;	//uint32
+	hdr->CHANNEL[0].PhysDimCode = 2176;	//uint32
+	strcpy(hdr->CHANNEL[0].Label, "Time");
+
+	hdr->AS.bpb = 0;
+	for (int k = 0; k < hdr->NS; k++) {
+		CHANNEL_TYPE *hc = hdr->CHANNEL+k;
+		hc->PhysMax   = hc->DigMax * hc->Cal + hc->Off;
+		hc->PhysMin   = hc->DigMin * hc->Cal + hc->Off;
+		hc->LeadIdCode = 0;
+		hc->PhysDimCode = 0;
+		hc->TOffset   = 0;
+		hc->LowPass   = NAN;
+		hc->HighPass  = NAN;
+		hc->Notch     = NAN;
+		hc->Impedance = NAN;
+		hc->fZ        = NAN;
+		hc->SPR       = 1;
+		memset(hc->XYZ, 0, 12);
+		hc->bi        = hdr->AS.bpb;
+		hdr->AS.bpb  += (GDFTYP_BITS[hc->GDFTYP]*(size_t)hc->SPR) >> 3;
 	}
 
 	biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format Intan/CLP not supported");
