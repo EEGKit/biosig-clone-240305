@@ -15,7 +15,7 @@ build:
 	-python2 setup.py build
 	-python3 setup.py build
 
-install: module
+install: build
 	$(PYTHON) setup.py install
 	-python2 setup.py install
 	-python3 setup.py install
@@ -30,3 +30,12 @@ test:
 
 clean:
 	rm -rf build/*
+
+# https://packaging.python.org/tutorials/packaging-projects/
+release:
+	$(PYTHON) setup.py sdist bdist_wheel
+	-python2 setup.py sdist bdist_wheel
+	-python3 setup.py sdist bdist_wheel
+
+check: release
+	twine check dist/*
