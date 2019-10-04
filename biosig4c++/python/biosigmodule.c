@@ -1,7 +1,33 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 
-#include <biosig.h>
+#if defined(_MSC_VER)
+	// Visual Studio Compiler can not read biosig.h/biosig-dev.h //
+	#define BIOSIG_FLAG_COMPRESSION        0x0001
+	#define BIOSIG_FLAG_UCAL               0x0002
+	#define BIOSIG_FLAG_OVERFLOWDETECTION  0x0004
+	#define BIOSIG_FLAG_ROW_BASED_CHANNELS 0x0008
+	typedef double biosig_data_type;
+	typedef void HDRTYPE;
+
+	HDRTYPE* sopen(const char* FileName, const char* MODE, HDRTYPE* hdr);
+	size_t   sread(biosig_data_type* DATA, size_t START, size_t LEN, HDRTYPE* hdr);
+	int      serror2(HDRTYPE* hdr);
+	int      asprintf_hdr2json(char **str, HDRTYPE* hdr);
+	void     destructHDR(HDRTYPE* hdr);
+
+	long     biosig_get_number_of_channels(HDRTYPE *hdr);
+	size_t   biosig_get_number_of_samples(HDRTYPE *hdr);
+	size_t   biosig_get_number_of_records(HDRTYPE *hdr);
+	size_t   biosig_get_number_of_segments(HDRTYPE *hdr);
+
+	int      biosig_get_flag(HDRTYPE *hdr, unsigned flags);
+	int      biosig_set_flag(HDRTYPE *hdr, unsigned flags);
+	int      biosig_reset_flag(HDRTYPE *hdr, unsigned flags);
+#else
+	#include <biosig.h>
+#endif
+
 
 #define BIOSIG_MODULE
 #include "biosigmodule.h"
@@ -89,16 +115,10 @@ static int PyBiosig_Data(const char *filename, PyObject **D) {
 	}
 
         *D = PyArray_SimpleNew(nd, dims, type_num);
-	hdr->FLAG.ROW_BASED_CHANNELS = 1;
+	biosig_set_flag(hdr, BIOSIG_FLAG_ROW_BASED_CHANNELS);
 
-	/*
-	*D = PyArray_New(&PyArray_Type, nd, dims, type_num, NULL, NULL, 0, NPY_ARRAY_CARRAY, NULL);
-	hdr->FLAG.ROW_BASED_CHANNELS = 0;
-	*/
-	size_t count = sread((double*)(((PyArrayObject *)(*D))->data), 0, biosig_get_number_of_records(hdr), hdr);
-//	size_t count = sread((double*)(PyArray_Data(D)), 0, biosig_get_number_of_records(hdr), hdr);
+	size_t count = sread((void*)(((PyArrayObject *)(*D))->data), 0, biosig_get_number_of_records(hdr), hdr);
 
-	hdr->data.block = NULL;
 	destructHDR(hdr);
 
 	return 0;
