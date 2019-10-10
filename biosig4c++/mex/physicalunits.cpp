@@ -112,119 +112,145 @@ const char HELPTEXT[] =
      *************************************************************/
     mxClassID Type = mxGetClassID(prhs[0]);
 	/* process input arguments */
-    switch (Type) {
-    case mxSTRUCT_CLASS: {
-            mxPhysDim_Input = mxGetField(prhs[0], 0, "PhysDim");
+	switch (Type) {
+	case mxSTRUCT_CLASS: {
+		mxPhysDim_Input = mxGetField(prhs[0], 0, "PhysDim");
 	        mxPhysDimCode_Input = mxGetField(prhs[0], 0, "PhysDimCode");
-            break;
-            }
-    case mxINT16_CLASS: 
-    case mxINT32_CLASS: 
-    case mxINT64_CLASS: 
-    case mxUINT16_CLASS: 
-    case mxUINT32_CLASS: 
-    case mxUINT64_CLASS: 
-    case mxSINGLE_CLASS: 
-    case mxDOUBLE_CLASS: {
-            mxPhysDimCode_Input = prhs[0];
-            break;
-            }
+		break;
+		}
+	case mxINT16_CLASS:
+	case mxINT32_CLASS:
+	case mxINT64_CLASS:
+	case mxUINT16_CLASS:
+	case mxUINT32_CLASS:
+	case mxUINT64_CLASS:
+	case mxSINGLE_CLASS:
+	case mxDOUBLE_CLASS: {
+		mxPhysDimCode_Input = prhs[0];
+		break;
+		}
     //case mxCHAR_CLASS:
-    case mxCELL_CLASS: {
-            mxPhysDim_Input = prhs[0];
-            break;
-            }
-    default: {
-            mexPrintf("input arguments not supported\n");
-            return;
-            }
-    }
+	case mxCELL_CLASS: {
+		mxPhysDim_Input = prhs[0];
+		break;
+		}
+	default: {
+		mexPrintf("input arguments not supported\n");
+		return;
+		}
+	}
 
     // Get dimensions of input argument and set dimensions of output
 	if (mxPhysDimCode_Input && !mxPhysDim_Input) {
-        nDims  = mxGetNumberOfDimensions(mxPhysDimCode_Input);
-        SZ     = mxGetDimensions(mxPhysDimCode_Input);
-    }
-	else if (mxPhysDim_Input && !mxPhysDimCode_Input && mxIsCell(mxPhysDim_Input) ) {
-        nDims  = mxGetNumberOfDimensions(mxPhysDim_Input);
-        SZ     = mxGetDimensions(mxPhysDim_Input);
-    }
+		nDims  = mxGetNumberOfDimensions(mxPhysDimCode_Input);
+		SZ     = mxGetDimensions(mxPhysDimCode_Input);
+		Numel  = mxGetNumberOfElements(mxPhysDimCode_Input);
+	}
+	else if (mxPhysDim_Input && !mxPhysDimCode_Input ) {
+		nDims  = mxGetNumberOfDimensions(mxPhysDim_Input);
+		SZ     = mxGetDimensions(mxPhysDim_Input);
+		Numel  = mxGetNumberOfElements(mxPhysDim_Input);
+	}
+
 	else if (!mxPhysDim_Input && !mxPhysDimCode_Input) {
-        // FIXME
-        mexPrintf("ERROR %s line %d: %p %p\n",__FILE__,__LINE__);
-        return;
-    }
-    else {
-        // FIXME
-        mexPrintf("ERROR %s line %d: %p %p\n",__FILE__,__LINE__);
-        return;
-    }
+		mexPrintf("Warning %s(..): Neither PhysDim nor PhysDimCode defined\n",__FILE__);
+		plhs[0] = mxDuplicateArray(prhs[0]);
+		return;
+	}
+	else if (!mxIsCell(mxPhysDim_Input) ) {
+		mexErrMsgIdAndTxt(__FILE__":PhysDim_not_a_cell_array", "ERROR: PhysDim must be a cell array, but is not.\n");
+		return;
+	}
+	else {
+		Numel = mxGetNumberOfElements(mxPhysDimCode_Input);
+		if (Numel != mxGetNumberOfElements(mxPhysDim_Input)) {
+			mexErrMsgIdAndTxt(__FILE__":Size_of_PhysDim_PhysDimCode_do_not_match", "ERROR: number of elements in PhysDim and PhysDimCode do not match.\n");
+			return;
+		}
 
-    // number of elements 
-    for (k=0; k<nDims; k++) Numel *= SZ[k];
+		int errorFlag=0;
+		for (k=0; k < Numel; k++) {
+			uint16_t PDC1 = getUINT16(mxPhysDimCode_Input, k);
 
-    // allocate 2nd output argument
+			const int STRLEN=63;
+			char tmpstring[STRLEN+1];
+			mxArray *tmpArr = mxGetCell(mxPhysDim_Input, k);
+			mxGetString(tmpArr, tmpstring, STRLEN);
+			uint16_t PDC2 = PhysDimCode(tmpstring);
+			if (PDC1 != PDC2) {
+				mexPrintf("ERROR %s(...): element %d doe not match %d~=%d, <%s>~=<%s>\n",__FILE__, k, PDC1,PDC2,PhysDim3(PDC1),tmpstring);
+				errorFlag=1;
+			}
+		}
+		if (errorFlag) {
+			mexErrMsgIdAndTxt(__FILE__":some_elements_in_PhysDim_PhysDimCode_do_not_match", "ERROR: some elements in PhysDim and PhysDimCode do not match.\n");
+			return;
+		}
+		return;
+	}
+
+	// allocate 2nd output argument
 	if ((nlhs > 1) && (nrhs > 0)) {
-        mxScale = mxCreateNumericArray(nDims, SZ, mxDOUBLE_CLASS, mxREAL);
-        plhs[1] = mxScale;
+		mxScale = mxCreateNumericArray(nDims, SZ, mxDOUBLE_CLASS, mxREAL);
+		plhs[1] = mxScale;
 	}
 
     /*************************************************************
          Conversion
      *************************************************************/
-	if (mxPhysDimCode_Input && !mxPhysDim_Input) {
-        mxPhysDim_Output = mxCreateCellArray(nDims, SZ);
-        // Conversion: PhysDimCode -> PhysDim
-        for (k=0; k < Numel; k++) {
-            uint16_t PDC = getUINT16(mxPhysDimCode_Input, k);
-            mxSetCell(mxPhysDim_Output, k, mxCreateString( PhysDim3( PDC )));
-            if (mxScale != NULL)
-                *((double*)mxGetData(mxScale)+k) = PhysDimScale(PDC);
-        }
-    }
-	else if (mxPhysDim_Input && !mxPhysDimCode_Input && mxIsCell(mxPhysDim_Input) ) {
-        mxPhysDimCode_Output = mxCreateNumericArray(nDims, SZ, mxUINT16_CLASS, mxREAL);
-        // Conversion: PhysDim -> PhysDimCode
-        for (k=0; k < Numel; k++) {
-            const int STRLEN=63;
-            char tmpstring[STRLEN+1];
+	if ( mxPhysDimCode_Input && !mxPhysDim_Input ) {
+		mxPhysDim_Output = mxCreateCellArray(nDims, SZ);
+		// Conversion: PhysDimCode -> PhysDim
+		for (k=0; k < Numel; k++) {
+		    uint16_t PDC = getUINT16(mxPhysDimCode_Input, k);
+		    mxSetCell(mxPhysDim_Output, k, mxCreateString( PhysDim3( PDC )));
+		    if (mxScale != NULL)
+		        *((double*)mxGetData(mxScale)+k) = PhysDimScale(PDC);
+		}
+	}
+	else if ( mxPhysDim_Input && !mxPhysDimCode_Input && mxIsCell(mxPhysDim_Input) ) {
+		mxPhysDimCode_Output = mxCreateNumericArray(nDims, SZ, mxUINT16_CLASS, mxREAL);
+		// Conversion: PhysDim -> PhysDimCode
+		for (k=0; k < Numel; k++) {
+		    const int STRLEN=63;
+		    char tmpstring[STRLEN+1];
 
-            mxArray *tmpArr = mxGetCell(mxPhysDim_Input, k);
-            mxGetString(tmpArr, tmpstring, STRLEN);
-            uint16_t PDC = PhysDimCode(tmpstring);
+		    mxArray *tmpArr = mxGetCell(mxPhysDim_Input, k);
+		    mxGetString(tmpArr, tmpstring, STRLEN);
+		    uint16_t PDC = PhysDimCode(tmpstring);
 
-            *(((uint16_t*)mxGetData(mxPhysDimCode_Output))+k) = PDC;
-            if (mxScale != NULL)
-                *((double*)mxGetData(mxScale)+k) = PhysDimScale(PDC);
-        }
-    }
-    else {
-        mexPrintf("ERROR %s line %d: %p %p\n",__FILE__,__LINE__);
-        return;
-    }
+		    *(((uint16_t*)mxGetData(mxPhysDimCode_Output))+k) = PDC;
+		    if (mxScale != NULL)
+		        *((double*)mxGetData(mxScale)+k) = PhysDimScale(PDC);
+		}
+	}
+	else {
+		mexPrintf("ERROR %s line %d\n",__FILE__,__LINE__);
+		return;
+	}
 
-    /*************************************************************
-         Output
-     *************************************************************/
+	/*************************************************************
+		Output
+	 *************************************************************/
 	if ( mxIsStruct(prhs[0]) ) {
-        plhs[0] = mxDuplicateArray(prhs[0]);
-        if (mxPhysDimCode_Output) {
-             int n = mxAddField( plhs[0], "PhysDimCode");
-             mxSetFieldByNumber( plhs[0], 0, n, mxDuplicateArray(mxPhysDimCode_Output) );
-        }
-        if (mxPhysDim_Output) {
-             int n = mxAddField( plhs[0], "PhysDim");
-             mxSetFieldByNumber( plhs[0], 0, n, mxDuplicateArray(mxPhysDim_Output) );
-        }
-    }
+		plhs[0] = mxDuplicateArray(prhs[0]);
+		if (mxPhysDimCode_Output) {
+		     int n = mxAddField( plhs[0], "PhysDimCode");
+		     mxSetFieldByNumber( plhs[0], 0, n, mxDuplicateArray(mxPhysDimCode_Output) );
+		}
+		if (mxPhysDim_Output) {
+		     int n = mxAddField( plhs[0], "PhysDim");
+		     mxSetFieldByNumber( plhs[0], 0, n, mxDuplicateArray(mxPhysDim_Output) );
+		}
+	}
 	else if (mxPhysDim_Input && !mxPhysDimCode_Input) {
-        plhs[0] = mxPhysDimCode_Output;
-    }
+		plhs[0] = mxPhysDimCode_Output;
+	}
 	else if (mxPhysDimCode_Input && !mxPhysDim_Input) {
-        plhs[0] = mxPhysDim_Output;
-    }
-    else {
-        mexPrintf("ERROR %s line %d: %p %p\n",__FILE__,__LINE__);
-        return;
-    }
+		plhs[0] = mxPhysDim_Output;
+	}
+	else {
+		mexPrintf("ERROR %s line %d\n",__FILE__,__LINE__);
+		return;
+	}
 }
