@@ -958,7 +958,7 @@ clean:
 	-$(DELETE) win64/*.exe win64/*.o* win64/*.lib win64/*.a
 	-$(DELETE) t240/*.o*
 	-$(DELETE) t240/libcnsfef.a
-	-$(DELETE) libbiosig.* libbiosig2.*
+	-$(DELETE) libbiosig.* libbiosig${SONAMEVERSION}.*
 	-$(DELETE) pdp2gdf save2gdf physicalunits biosig_fhir
 	-$(DELETE) mma/sload.exe mma/*/sload.exe
 	-$(MAKE) -C java clean
@@ -991,7 +991,7 @@ install_libbiosig.a: libbiosig.a libphysicalunits.a libbiosig.pc
 install_libbiosig.$(DLEXT): libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 	install -d 			$(DESTDIR)$(libdir)/pkgconfig/
 	install libbiosig$(FULLDLEXT)  $(DESTDIR)$(libdir)
-	(cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig2.$(DLEXT))
+	(cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig${SONAMEVERSION}.$(DLEXT))
 ifneq (Darwin,$(shell uname))
 	cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 endif
@@ -1068,7 +1068,7 @@ uninstall remove: uninstall_mexbiosig uninstall_tools
 	-$(DELETE) $(DESTDIR)$(includedir)/gdftime.h
 	-$(DELETE) $(DESTDIR)$(includedir)/physicalunits.h
 	-$(DELETE) $(DESTDIR)$(libdir)/libbiosig.*
-	-$(DELETE) $(DESTDIR)$(libdir)/libbiosig2.*
+	-$(DELETE) $(DESTDIR)$(libdir)/libbiosig${SONAMEVERSION}.*
 	-$(DELETE) $(DESTDIR)$(libdir)/libphysicalunits.*
 	-$(DELETE) $(DESTDIR)$(libdir)/pkgconfig/libbiosig.pc
 
