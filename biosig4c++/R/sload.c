@@ -38,12 +38,13 @@ SEXP sload(SEXP filename, SEXP channels) {
 	if (serror2(hdr)) return R_NilValue;
 
 	long NS = biosig_get_number_of_channels(hdr);
+	size_t SPR = biosig_get_number_of_samples(hdr);
 
 	// allocate memory for results
-	SEXP result = PROTECT(allocMatrix(REALSXP, hdr->SPR*hdr->NRec, NS));
+	SEXP result = PROTECT(allocMatrix(REALSXP, SPR, NS));
 
 	// read data from file and write into result
-	int status = sread(REAL(result), 0, hdr->SPR*hdr->NRec, hdr);
+	int status = sread(REAL(result), 0, SPR, hdr);
 	if (serror2(hdr)) {
 		destructHDR(hdr);
 		Free(result);
@@ -81,4 +82,3 @@ SEXP jsonHeader (SEXP filename) {
 	UNPROTECT(1);
 	return result;
 }
-
