@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2010-2019 Alois Schloegl <alois.schloegl@ist.ac.at>
     This file is part of the "BioSig for C/C++" repository
-    (biosig4c++) at http://biosig.sourceforge.io
+    (biosig4c++) at https://biosig.sourceforge.io
 
 
     This program is free software; you can redistribute it and/or
@@ -121,7 +121,118 @@ if (VERBOSE_LEVEL > 5)
 	// generate and write header information in JSON format
 	asprintf_hdr2json(&str, hdr);
 	MLPutFunction(stdlink,"ImportString",2);
-	  MLPutString(stdlink,str);
+	  MLPutUTF8String(stdlink,str,strlen(str));
+	  MLPutString(stdlink,"JSON");
+	free(str);
+
+	if (VERBOSE_LEVEL > 5) {
+		for (k=0; k<numberChannels; k++)
+			fprintf(stdout,"%f ",data[k]);
+		fprintf(stdout,"\n\nopen filename <%s>@%p sz=[%zd,%zd]\n", fn, data, sz[1],sz[0]);
+	}
+
+	// *********** close file *********************
+	destructHDR(hdr);
+	return;
+}
+
+
+void uload(const char *fn, int *SZ, long SZlen) {
+
+	uint16_t numberChannels;
+	size_t k=0;
+	size_t numberSamples;
+	double samplerate;
+	double *t;
+	char *str = NULL;
+	long int sz[2];
+	biosig_data_type *data=NULL;
+#ifdef __LIBBIOSIG2_H__
+	size_t rowcol[2];
+#endif
+
+	HDRTYPE *hdr = constructHDR(0,0);
+
+if (VERBOSE_LEVEL > 5)
+	fprintf(stdout,"=== start uload ===\n");
+
+/* contains [experiment,series,sweep,trace] numbers for selecting data. */
+
+	while ((k < SZlen) && (k < 5)) {
+#ifdef __LIBBIOSIG2_H__
+		biosig_set_segment_selection(hdr, k+1, SZ[k]);
+#else
+		hdr->AS.SegSel[k] = (uint32_t)SZ[k];
+#endif
+		k++;
+	}
+
+	// ********* open file and read header ************
+	hdr = sopen(fn, "r", hdr);
+	if (serror2(hdr)) {
+		destructHDR(hdr);
+		MLEvaluate(stdlink,"Message[uload::failed]");
+		MLNextPacket(stdlink);
+		MLNewPacket(stdlink);
+		MLPutSymbol(stdlink,"$Failed");
+		return;
+	}
+
+	// do NOT apply calibration/scaling factor
+	biosig_set_flag(hdr, BIOSIG_FLAG_UCAL);
+
+#ifdef __LIBBIOSIG2_H__
+	numberChannels = biosig_get_number_of_channels(hdr);
+	numberSamples = biosig_get_number_of_samples(hdr);
+	samplerate = biosig_get_samplerate(hdr);
+	biosig_reset_flag(hdr, BIOSIG_FLAG_ROW_BASED_CHANNELS);
+#else
+	numberChannels = hdr->NS;
+	numberSamples = hdr->NRec * hdr->SPR;
+	samplerate = hdr->SampleRate;
+	hdr->FLAG.ROW_BASED_CHANNELS = 0;
+#endif
+
+if (VERBOSE_LEVEL > 5)
+	fprintf(stdout,"open filename <%s>NoOfChans=%i\n", fn, numberChannels);
+
+	// ********** read data ********************
+	sread(NULL, 0, numberSamples, hdr);
+	if (serror2(hdr)) {
+		destructHDR(hdr);
+		MLEvaluate(stdlink,"Message[uload::failed]");
+		MLNextPacket(stdlink);
+		MLNewPacket(stdlink);
+		MLPutSymbol(stdlink,"$Failed");
+		return;
+	}
+
+#ifdef __LIBBIOSIG2_H__
+	biosig_get_datablock(hdr, &data, &rowcol[0], &rowcol[1]);
+	sz[0] = rowcol[1];
+	sz[1] = rowcol[0];
+#else
+	sz[0] = hdr->data.size[1];
+	sz[1] = hdr->data.size[0];
+	data  = hdr->data.block;
+#endif
+
+	MLPutFunction(stdlink, "List", 3);
+	// write data matrix
+	MLPutRealArray(stdlink, data, sz, NULL, 2);
+
+	// generate and write time axis
+	t = (double*)malloc(numberSamples * sizeof(double));
+	for (k=0; k < numberSamples;k++) {
+		t[k] = (k+1)/samplerate;
+	}
+	MLPutRealList(stdlink, t, numberSamples);
+	free(t);
+
+	// generate and write header information in JSON format
+	asprintf_hdr2json(&str, hdr);
+	MLPutFunction(stdlink,"ImportString",2);
+	  MLPutUTF8String(stdlink,str,strlen(str));
 	  MLPutString(stdlink,"JSON");
 	free(str);
 

@@ -1,7 +1,9 @@
 This is Biosig's interface to Mathematica through the MathLink interface.
 
 The function sload.exe provides interface for Mathematica through MathLink to 
-the biosig4c+/libbiosig library. The supported data formats according to the column C/C++ in [1] 
+the biosig4c+/libbiosig library. The supported data formats according to the column C/C++ in [1].
+sload and uload are both loading the data, sload scales the data, 
+uload does not apply scaling, and returns unscaled integer numbers (there are exceptions)
 
 Usage:
   Start mathematica and type
@@ -9,12 +11,15 @@ Usage:
    link=Install["sload.exe"]
    ?sload
 
+   link=Install["uload.exe"]
+   ?uload
+
 
 Compilation:
    see INSTALL file
 
 
-Copyright (C) 2011,2015 Alois Schloegl
+Copyright (C) 2011,2015,2019 Alois Schloegl
 [1] http://pub.ist.ac.at/~schloegl/biosig/TESTED
 
 

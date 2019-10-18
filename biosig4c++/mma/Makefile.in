@@ -1,6 +1,6 @@
 ####### Makefile to compile sload.exe for loading data supported by libbiosig into Mathematica
 ###
-###  Copyright (C) 2010,2011,2012,2013,2015,2016 Alois Schloegl <alois.schloegl@gmail.com>
+###  Copyright (C) 2010-2019 Alois Schloegl <alois.schloegl@gmail.com>
 ###  This file is part of the "BioSig for C/C++" repository
 ###  (biosig4c++) at http://biosig.sf.net/
 ###
@@ -8,7 +8,7 @@
 
 
 ###########################################
-# user-defined variables 
+# user-defined variables
 ###########################################
 CROSS   ?= /home/schloegl/src/mxe.github.schloegl/usr/bin/i686-w64-mingw32.static
 CROSS64 ?= /home/schloegl/src/mxe.github.schloegl/usr/bin/x86_64-w64-mingw32.static
@@ -16,10 +16,8 @@ CROSS64 ?= /home/schloegl/src/mxe.github.schloegl/usr/bin/x86_64-w64-mingw32.sta
 ###########################################
 ## set Mathematica variables
 
-#MLINKDIR = /usr/local/Wolfram/gridMathematicaServer/7.0
-#MLINKDIR = /usr/local/Wolfram/Mathematica/8.0
-#MLINKDIR = /usr/local/Wolfram/Mathematica/9.0
 #MLINKDIR = /usr/local/Wolfram/Mathematica/10.0
+MLINKDIR = /usr/local/Wolfram/Mathematica/12.0
 
 ifeq (Darwin,$(shell uname))
 MLINKDIR := /Applications/Mathematica.app/Contents/
@@ -27,7 +25,7 @@ SYS       = MacOSX-x86-64
 LDFLAGS  += -demangle -dynamic -arch x86_64
 LDFLAGS  += -framework CoreFoundation -framework CoreVideo -framework VideoDecodeAcceleration
 else
-MLINKDIR := $(dir $(shell readlink -f $(shell which mathematica) ) )..
+MLINKDIR ?= $(dir $(shell readlink -f $(shell which mathematica) ) )..
 SYS 	  = $(notdir $(shell ls -1d $(MLINKDIR)/SystemFiles/Links/MathLink/DeveloperKit/*))
 ifneq (1,$(words ${SYS}))
 SYS       = Linux-x86-64# Set this value with the result of evaluating $SystemID
@@ -40,11 +38,10 @@ MLIVER := $(shell ${CC} mliver.c -I${MLINKDIR}/SystemFiles/Links/MathLink/Develo
 
 #
 # Windows
-#MLINKDIR  = /usr/local/Wolfram/gridMathematicaServer/7.0/SystemFiles/Links/MathLink/DeveloperKit
 SYSwin       = Windows# Set this value with the result of evaluating $SystemID
 MLLIBwin     = ml32i4m# Set this to ML64i3 if using a 64-bit system
 SYSwin64     = Windows-x86-64# Set this value with the result of evaluating $SystemID
-MLLIBwin64   = ml64i4m# Set this to ML64i3 if using a 64-bit system
+MLLIBwin64   = ml64i4# Set this to ML64i3 if using a 64-bit system
 ###########################################
 
 CADDSDIR  = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYS}/CompilerAdditions
@@ -70,92 +67,84 @@ endif
 
 MPREP     = ${CADDSDIR}/mprep
 
-TARGET = sload
+TARGET    = biosig
 
-all : ${TARGET}.exe ${SYSwin}/${TARGET}.exe ${SYSwin64}/${TARGET}.exe
-mma : ${TARGET}.exe
+# make Linux-x86-64
+mma : $(patsubst %, ${SYS}/%.exe, $(TARGET))
+# make Linux-x86-64, Windows, Windows-x86-64
+all : $(patsubst %, ${SYS}/%.exe, $(TARGET)) $(patsubst %, ${SYSwin}/%.exe, $(TARGET)) $(patsubst %, ${SYSwin64}/%.exe, $(TARGET))
 
 .c.o:
-	${CC} ${CFLAGS} $(shell pkg-config --cflags libbiosig) -c ${INCDIR} "$<"
+	${CC} ${CFLAGS} $(shell pkg-config --cflags libbiosig) ${INCDIR} -c "$<"
 
-${TARGET}tm.c: ${TARGET}.tm
+%tm.c: %.tm
 	${MPREP} "$<" -o "$@"
-	# enable macro expansion
-	${SED} -i 's# __DATE__# ",__DATE__," ",__TIME__,"#' "$@"
+	${SED} -i 's# __DATE__# ",__DATE__," ",__TIME__,"#g' "$@"
 
-${TARGET}.exe: ${TARGET}.o ${TARGET}tm.o
+${SYS}/%.exe: %.o %tm.o
 	mkdir -p ${SYS}
-	${LD} ${LDFLAGS} ${TARGET}tm.o ${TARGET}.o ${LIBDIR} -l${MLLIB} ${EXTRALIBS} -lbiosig $(shell pkg-config --libs libbiosig) -o ${SYS}/"$@"
-	ln -sf ${SYS}/"$@"
+	${LD} ${LDFLAGS} $? ${LIBDIR} -l${MLLIB} ${EXTRALIBS} $(shell pkg-config --libs libbiosig) -o "$@"
+	ln -sf "$@"
 
 
 ###########################################
-#   Win32 - cross-compilation 
+#   Win32 - cross-compilation
 ###########################################
 
 CCw32        = $(CROSS)-gcc
-CADDSDIRwin  = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYSwin}/CompilerAdditions/mldev32
-INCDIRwin    = -I${CADDSDIRwin}/include  -I${MLINKDIR}/SystemFiles/IncludeFiles/C/
-LIBDIRwin    = ${CADDSDIRwin}/lib
+CADDSDIRwin  = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYSwin}/CompilerAdditions
+INCDIRwin    = -I${CADDSDIRwin}
+LIBDIRwin    = ${CADDSDIRwin}
 
 EXTRALIBSwin = -lgdi32 -lm -lstdc++ -lws2_32 $(LDLIBS) # Set these with appropriate libs for your system.
 
-MPREPwin     = ${CADDSDIRwin}/bin/mprep.exe
+MPREPwin     = ${CADDSDIRwin}/mprep.exe
 
-${TARGET}tm.win32.c : ${TARGET}.tm
+%tm.win32.c : %.tm
 	WINEPREFIX=${HOME}/.wine32.mma wine ${MPREPwin} "$<" -o "$@"
-	sed -i 's# __DATE__# ",__DATE__," ",__TIME__,"#' "$@"
+	${SED} -i 's# __DATE__# ",__DATE__," ",__TIME__,"#g' "$@"
 
-${TARGET}.obj : ${TARGET}.c
-	${CCw32} -c ${INCDIRwin} "$<" -o "$@"
-${TARGET}tm.obj : ${TARGET}tm.win32.c
-	${CCw32} -c ${INCDIRwin} "$<" -o "$@"
+${SYSwin}/%.obj : %.c
+	${CCw32} -o "$@" -c "$<" $(shell $(CROSS)-pkg-config --cflags libbiosig) ${INCDIRwin}
 
-win32mma : ${SYSwin}/${TARGET}.exe
+win32mma : $(patsubst %, ${SYSwin}/%, $(TARGET))
 
-${SYSwin}/${TARGET}.exe : ${TARGET}.obj ${TARGET}tm.obj
+#${SYSwin}/%.exe : ${SYSwin}/%.obj ${SYSwin}/%tm.obj		# uses MPREP
+${SYSwin}/%.exe : ${SYSwin}/%.obj ${SYSwin}/%tm.win32.obj	# uses MPREPwin
 	mkdir -p ${SYSwin}
-	${CCw32} $^ -mwindows -static-libgcc -static-libstdc++ -lbiosig -lssp -L${LIBDIRwin} -l${MLLIBwin} ${EXTRALIBSwin} -o "$@"
-	# copy to users directory if available
-	-cp -r ${SYSwin} ~/K/Software/MathematicaTools/${TARGET}
+	${CCw32} $? -mwindows -static-libgcc -static-libstdc++ $(shell $(CROSS)-pkg-config --libs libbiosig) -lssp -L${LIBDIRwin} -l${MLLIBwin} ${EXTRALIBSwin} -o "$@"
 
 
 ###########################################
-#   Win64 - cross-compilation 
+#   Win64 - cross-compilation
 ###########################################
 
 CCw64         = $(CROSS64)-gcc
-CADDSDIRwin64 = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYSwin64}/CompilerAdditions/mldev64
-INCDIRwin64   = -I${CADDSDIRwin64}/include -I${MLINKDIR}/SystemFiles/IncludeFiles/C/
-LIBDIRwin64   = ${CADDSDIRwin64}/lib
+CADDSDIRwin64 = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYSwin64}/CompilerAdditions
+INCDIRwin64   = -I${CADDSDIRwin64}
+LIBDIRwin64   = ${CADDSDIRwin64}
 
-MPREPwin64    = ${CADDSDIRwin64}/bin/mprep.exe
+#MPREPwin64    = ${CADDSDIRwin64}/mprep.exe
 
-${TARGET}tm.win64.c : ${TARGET}.tm
-	WINEPREFIX=${HOME}/.wine64.mma wine64 ${MPREPwin64} "$<" -o "$@"
+#%tm.win64.c : %.tm
+#	WINEPREFIX=${HOME}/.wine64.mma wine64 ${MPREPwin64} "$<" -o "$@"
 	#${MPREP} "$<" -o "$@"
-	sed -i 's# __DATE__# ",__DATE__," ",__TIME__,"#' "$@"
+#	${SED}  -i 's# __DATE__# ",__DATE__," ",__TIME__,"#' "$@"
 
-${TARGET}.w64obj : ${TARGET}.c
-	${CCw64} -c ${INCDIRwin64} "$<" -o "$@"
-${TARGET}tm.w64obj : ${TARGET}tm.win64.c
-	${CCw64} -c ${INCDIRwin64} "$<" -o "$@"
+${SYSwin64}/%.obj : %.c
+	${CCw64} -o "$@" -c "$<" $(shell $(CROSS64)-pkg-config --cflags libbiosig) ${INCDIRwin64}
 
-win64mma : ${SYSwin64}/${TARGET}.exe
+win64mma : $(patsubst %, ${SYSwin64}/%, $(TARGET))
 
-### curentlly the 64bit MXE cross-compilation does not work - use instead use 32bit version i
-#${SYSwin64}/${TARGET}.exe : ${TARGET}.w64obj ${TARGET}tm.w64obj
-${SYSwin64}/${TARGET}.exe : ${SYSwin}/${TARGET}.exe
+#${SYSwin64}/%.exe : ${SYSwin64}/%.obj ${SYSwin64}/%tm.win64.obj	# uses MPREPwin64
+${SYSwin64}/%.exe : ${SYSwin64}/%.obj ${SYSwin64}/%tm.obj		# uses MPREP
 	mkdir -p ${SYSwin64}
-	${CCw64} $^ -static-libgcc -static-libstdc++ -lbiosig -lssp -L${LIBDIRwin64} -l${MLLIBwin64} ${EXTRALIBSwin} -o "$@"
-	-cp "$<" "$@"
+	${CCw64} $? -static-libgcc -static-libstdc++ $(shell $(CROSS64)-pkg-config --libs libbiosig) -lssp -L${LIBDIRwin64} -l${MLLIBwin64} ${EXTRALIBSwin} -o "$@"
 
 
 ###########################################
 clean:
-	-$(RM) *.o
-	-$(RM) *.obj
-	-$(RM) *tm.c
-	-$(RM) ${SYSwin64}/${TARGET}.exe ${SYSwin32}/${TARGET}.exe
-	-$(RM) ${SYS}/${TARGET} ${SYS}/${TARGET}.exe
-	
+	-$(RM) *.o* */*.o*
+	-$(RM) *tm.c */*tm.c
+	-$(RM) *.exe */*.exe
+
