@@ -4,8 +4,7 @@
 
 
 try:
-    from setuptools import setup
-    from setuptools import Extension
+    from setuptools import setup, Extension
 except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
@@ -36,7 +35,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup (name = 'Biosig',
-        version = '1.9',
+        version = '1.9.1',
         description = 'This is a Biosig package',
         author = 'Alois Schloegl',
         author_email = 'alois.schloegl@gmail.com',
@@ -45,8 +44,9 @@ setup (name = 'Biosig',
         #long_description='Import filters of biomedical signal formats',
         long_description=read('README.md'),
         long_description_content_type="text/markdown",
+        include_package_data = True,
         keywords = 'EEG ECG EKG EMG EOG Polysomnography ECoG biomedical signals SCP EDF GDF HEKA CFS ABF',
-        install_requires=['numpy','pkgconfig','setuptools'],
+        install_requires=['numpy','pkgconfig','setuptools>=6.0'],
         classifiers=[
           'Programming Language :: Python',
           'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',

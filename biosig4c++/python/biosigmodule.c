@@ -1,7 +1,8 @@
 #include <Python.h>
+//#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 
-#if defined(_MSC_VER)
+#if 1 //defined(_MSC_VER)
 	// Visual Studio Compiler can not read biosig.h/biosig-dev.h //
 	#define BIOSIG_FLAG_COMPRESSION        0x0001
 	#define BIOSIG_FLAG_UCAL               0x0002
@@ -27,7 +28,6 @@
 #else
 	#include <biosig.h>
 #endif
-
 
 #define BIOSIG_MODULE
 #include "biosigmodule.h"
@@ -138,7 +138,7 @@ static PyObject *biosig_data(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef BiosigMethods[] = {
-    {"header",  biosig_json_header, METH_VARARGS, "load biosig header and export as JSON ."},
+    {"header",  biosig_json_header, METH_VARARGS, "load biosig header and export as JSON string."},
     {"data",    biosig_data,        METH_VARARGS, "load biosig data."},
 /*
     {"base64",  biosig_json_header, METH_VARARGS, "load biosig header and export as JSON ."},
@@ -157,7 +157,7 @@ const char module___doc__[] = "Biosig - a tool for loading biomedical signal dat
 			      "  read into a JSON structure with the function\n"
 			      "         header = biosig.header(filename)\n";
 
-#if PY_MAJOR_VERSION >= 3
+#if 0 // PY_MAJOR_VERSION >= 3
     static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
         "biosig",     /* m_name */
