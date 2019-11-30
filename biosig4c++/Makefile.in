@@ -145,7 +145,7 @@ endif
 
 SONAMEVERSION ?= 3
 
-ifneq (,$(findstring Darwin, $(shell uname)
+ifneq (,$(findstring Darwin, $(shell uname)))
 	## Homebrew:
 	##	brew install gawk
 	##	brew install gnu-tar
