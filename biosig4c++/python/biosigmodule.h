@@ -13,7 +13,7 @@ extern "C" {
 
 #define PyBiosig_Data_NUM 1
 #define PyBiosig_Data_RETURN int
-#define PyBiosig_Data_PROTO (const char *filename, PyObject **data)
+#define PyBiosig_Data_PROTO (const char *filename, PyArrayObject **data)
 
 /* Total number of C API pointers */
 #define PyBiosig_API_pointers 2

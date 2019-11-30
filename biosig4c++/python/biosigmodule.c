@@ -1,5 +1,5 @@
 #include <Python.h>
-//#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 
 #if 1 //defined(_MSC_VER)
@@ -51,10 +51,8 @@
 static PyObject *BiosigError;
 
 static int PyBiosig_Header(const char *filename, char **jsonstr) {
-	// open file 
 	HDRTYPE *hdr = NULL;
 	hdr = sopen(filename, "r", hdr);
-
 	if (serror2(hdr)) {
 	        PyErr_SetString(BiosigError, "could not open file");
 		destructHDR(hdr);
@@ -64,30 +62,21 @@ static int PyBiosig_Header(const char *filename, char **jsonstr) {
 	// convert to json-string
 	char *str = NULL;
 	asprintf_hdr2json(&str, hdr);
-
 	destructHDR(hdr);
-
 	*jsonstr = strdup(str);
 	return 0;
 }
 
 static PyObject *biosig_json_header(PyObject *self, PyObject *args) {
-	// get input arguments 
-
 	const char *filename = NULL;
 	char *str = NULL;
-
 	if (!PyArg_ParseTuple(args, "s", &filename)) return NULL;
-
 	if (PyBiosig_Header(filename, &str)) return NULL;
-
 	return Py_BuildValue("s", str);
 }
 
-static int PyBiosig_Data(const char *filename, PyObject **D) {
-	// open file
+static int PyBiosig_Data(const char *filename, PyArrayObject **D) {
 	HDRTYPE *hdr = sopen(filename, "r", NULL);
-
 	if (serror2(hdr)) {
 	        PyErr_SetString(BiosigError, "could not open file");
 		destructHDR(hdr);
@@ -113,27 +102,18 @@ static int PyBiosig_Data(const char *filename, PyObject **D) {
 		break;
 #endif
 	}
-
-        *D = PyArray_SimpleNew(nd, dims, type_num);
+        *D = (PyArrayObject*) PyArray_SimpleNew(nd, dims, type_num);
 	biosig_set_flag(hdr, BIOSIG_FLAG_ROW_BASED_CHANNELS);
-
-	size_t count = sread((void*)(((PyArrayObject *)(*D))->data), 0, biosig_get_number_of_records(hdr), hdr);
-
+        size_t count = sread( PyArray_DATA(*D), 0, biosig_get_number_of_records(hdr), hdr);
 	destructHDR(hdr);
-
 	return 0;
 }
 
 static PyObject *biosig_data(PyObject *self, PyObject *args) {
-	// get input arguments
 	const char *filename = NULL;
-
 	if (!PyArg_ParseTuple(args, "s", &filename)) return NULL;
-
-	PyObject* Data;
-
+	PyArrayObject* Data;
 	if (PyBiosig_Data(filename, &Data)) return NULL;
-
 	return Data;
 }
 
