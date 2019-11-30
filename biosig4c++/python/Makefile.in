@@ -10,7 +10,7 @@ PYTHON ?= python
 PYVER  := $(shell $(PYTHON) -c "import sys; print(sys.version[:3])")
 
 
-build:
+build: setup.py biosigmodule.c
 	$(PYTHON) setup.py build
 	-python2 setup.py build
 	-python3 setup.py build
@@ -33,10 +33,11 @@ clean:
 	rm *.so
 
 # https://packaging.python.org/tutorials/packaging-projects/
-release:
+release: setup.py biosigmodule.c
 	$(PYTHON) setup.py sdist bdist_wheel
 	-python2 setup.py sdist bdist_wheel
 	-python3 setup.py sdist bdist_wheel
 
 check: release
 	twine check dist/*
+

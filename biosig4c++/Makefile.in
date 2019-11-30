@@ -643,10 +643,10 @@ win64/sigviewer.exe: win64/libbiosig.a win64/libbiosig.dll
 ## biosig4python based on module extensions
 biosig4python : python
 
-python:
+python: libbiosig.$(LIBEXT)
 	make -C python build
 
-install_python: libbiosig.$(LIBEXT)
+install_python: python
 	make -C python install
 
 
@@ -996,7 +996,7 @@ ifneq (Darwin,$(shell uname))
 	cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 endif
 
-install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_tools
+install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_tools install_python
 
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
