@@ -799,15 +799,15 @@ biosig_server${BINEXT}: biosig_server.c libbiosig.$(LIBEXT) biosig-network.o
 mmaall: mma/sload.tm mma/sload.c
 	$(MAKE) -C mma CROSS=$(CROSS) CROSS64=$(CROSS64) LDLIBS="$(LDLIBS) -liconv" all
 
-mma : mma/sload.exe
+mma : mma/biosig.exe
 
-mma/sload.exe: mma/sload.tm mma/sload.c
+mma/biosig.exe: mma/biosig.tm mma/biosig.c
 	$(MAKE) -C mma CROSS=$(CROSS) CROSS64=$(CROSS64) mma
 
-win32mma: mma/sload.tm mma/sload.c
+win32mma: mma/biosig.tm mma/biosig.c
 	$(MAKE) -C mma CROSS=$(CROSS) LDLIBS="$(LDLIBS) -liconv" win32mma
 
-win64mma: mma/sload.tm mma/sload.c
+win64mma: mma/biosig.tm mma/biosig.c
 	$(MAKE) -C mma CROSS64=$(CROSS64) LDLIBS="$(LDLIBS) -liconv" win64mma
 
 
@@ -837,8 +837,9 @@ mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
 	echo "mexSLOAD mexSOPEN mexSSAVE" > $($@_TMP)/INDEX
 	$(TAR) cvfz "$@" $($@_TMP)/../mexbiosig-$(BIOSIG_VERSION)
-	-(cp "$@" ~/L/public_html/biosig/prereleases/ )
 	-rm -rf $(shell dirname $($@_TMP) )
+	echo "###  In order to publish release, run ### "
+	echo "#    cp "$@" ~/L/public_html/biosig/prereleases/"
 
 #############################################################
 #	R/sload
@@ -960,7 +961,7 @@ clean:
 	-$(DELETE) t240/libcnsfef.a
 	-$(DELETE) libbiosig.* libbiosig${SONAMEVERSION}.*
 	-$(DELETE) pdp2gdf save2gdf physicalunits biosig_fhir
-	-$(DELETE) mma/sload.exe mma/*/sload.exe
+	-$(DELETE) mma/biosig.exe mma/*/biosig.exe
 	-$(MAKE) -C java clean
 	-$(MAKE) -C mex clean
 	-$(MAKE) -C mma clean
@@ -1044,16 +1045,16 @@ uninstall_mex:
 	cd $(DESTDIR)$(datadir) && rmdir -p biosig/mex
 
 ### Install Biosig for Mathematica
-install_mma : mma/sload.exe
+install_mma : mma/biosig.exe
 	mkdir -p $(DESTDIR)$(datadir)/biosig/mathematica
-	install mma/sload.exe	$(DESTDIR)$(datadir)/biosig/mathematica/
-	@echo "  Biosig for Mathematica is installed in $(datadir)/biosig/mathematica/sload.exe";
+	install mma/biosig.exe	$(DESTDIR)$(datadir)/biosig/mathematica/
+	@echo "  Biosig for Mathematica is installed in $(datadir)/biosig/mathematica/biosig.exe";
 	@echo "  Usage: Start Mathematica and run";
-	@echo "\tlink=Install[\"$(datadir)/biosig/mathematica/sload.exe\"];";
+	@echo "\tlink=Install[\"$(datadir)/biosig/mathematica/biosig.exe\"];";
 	@echo "\t?sload";
 
 uninstall_mma:
-	${RM} $(DESTDIR)$(datadir)/biosig/mathematica/sload.exe
+	${RM} $(DESTDIR)$(datadir)/biosig/mathematica/{sload,biosig}.exe
 	cd $(DESTDIR)$(datadir) && rmdir -p biosig/mathematica
 
 uninstall remove: uninstall_mexbiosig uninstall_tools

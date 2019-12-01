@@ -1,4 +1,4 @@
-####### Makefile to compile sload.exe for loading data supported by libbiosig into Mathematica
+####### Makefile to compile biosig.exe for loading data supported by libbiosig into Mathematica
 ###
 ###  Copyright (C) 2010-2019 Alois Schloegl <alois.schloegl@gmail.com>
 ###  This file is part of the "BioSig for C/C++" repository
@@ -15,17 +15,18 @@ CROSS64 ?= /home/schloegl/src/mxe.github.schloegl/usr/bin/x86_64-w64-mingw32.sta
 
 ###########################################
 ## set Mathematica variables
+MATHEMATICA_EXE=$(shell which mathematica)
+ifeq (,$(MATHEMATICA_EXE))
+        $(error "mathematica not found in $$PATH - cannot compile biosig for Mathematica")
+endif
+MLINKDIR ?= $(shell dirname $(shell dirname $(shell readlink -f $(MATHEMATICA_EXE) ) ) )
 
-#MLINKDIR = /usr/local/Wolfram/Mathematica/10.0
-MLINKDIR = /usr/local/Wolfram/Mathematica/12.0
-
-ifeq (Darwin,$(shell uname))
+ifneq (,$(findstring Darwin,$(shell uname)))
 MLINKDIR := /Applications/Mathematica.app/Contents/
 SYS       = MacOSX-x86-64
 LDFLAGS  += -demangle -dynamic -arch x86_64
 LDFLAGS  += -framework CoreFoundation -framework CoreVideo -framework VideoDecodeAcceleration
 else
-MLINKDIR ?= $(dir $(shell readlink -f $(shell which mathematica) ) )..
 SYS 	  = $(notdir $(shell ls -1d $(MLINKDIR)/SystemFiles/Links/MathLink/DeveloperKit/*))
 ifneq (1,$(words ${SYS}))
 SYS       = Linux-x86-64# Set this value with the result of evaluating $SystemID
@@ -107,7 +108,7 @@ MPREPwin     = ${CADDSDIRwin}/mprep.exe
 ${SYSwin}/%.obj : %.c
 	${CCw32} -o "$@" -c "$<" $(shell $(CROSS)-pkg-config --cflags libbiosig) ${INCDIRwin}
 
-win32mma : $(patsubst %, ${SYSwin}/%, $(TARGET))
+win32mma : $(patsubst %, ${SYSwin}/%.exe, $(TARGET))
 
 #${SYSwin}/%.exe : ${SYSwin}/%.obj ${SYSwin}/%tm.obj		# uses MPREP
 ${SYSwin}/%.exe : ${SYSwin}/%.obj ${SYSwin}/%tm.win32.obj	# uses MPREPwin
@@ -134,7 +135,7 @@ LIBDIRwin64   = ${CADDSDIRwin64}
 ${SYSwin64}/%.obj : %.c
 	${CCw64} -o "$@" -c "$<" $(shell $(CROSS64)-pkg-config --cflags libbiosig) ${INCDIRwin64}
 
-win64mma : $(patsubst %, ${SYSwin64}/%, $(TARGET))
+win64mma : $(patsubst %, ${SYSwin64}/%.exe, $(TARGET))
 
 #${SYSwin64}/%.exe : ${SYSwin64}/%.obj ${SYSwin64}/%tm.win64.obj	# uses MPREPwin64
 ${SYSwin64}/%.exe : ${SYSwin64}/%.obj ${SYSwin64}/%tm.obj		# uses MPREP
@@ -147,4 +148,3 @@ clean:
 	-$(RM) *.o* */*.o*
 	-$(RM) *tm.c */*tm.c
 	-$(RM) *.exe */*.exe
-
