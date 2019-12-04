@@ -47,6 +47,7 @@ path([BIOSIG_DIR,'/t200_FileAccess'],path);		% dataformat
 path([BIOSIG_DIR,'/t210_Events'],path);			% event table
 path([BIOSIG_DIR,'/t250_ArtifactPreProcessingQualityControl'],path);		% trigger and quality control
 path([BIOSIG_DIR,'/t300_FeatureExtraction'],path);		% signal processing and feature extraction
+path([BIOSIG_DIR,'/t330_StimFit'],path);		% signal processing and feature extraction
 path([BIOSIG_DIR,'/t400_Classification'],path);		% classification
 path([BIOSIG_DIR,'/t450_MultipleTestStatistic'],path);		% statistics, false discovery rates
 path([BIOSIG_DIR,'/t490_EvaluationCriteria'],path);		% evaluation criteria
