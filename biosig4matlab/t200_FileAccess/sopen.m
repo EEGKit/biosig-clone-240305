@@ -161,10 +161,6 @@ elseif any(HDR.FILE.PERMISSION=='w'),
         HDR.FILE.FID  = -1;
 	HDR.ErrNum  = 0; 
 	HDR.ErrMsg = '';
-	
-	if isfield(HDR,'NS') && (HDR.NS>0), 
-	        HDR = physicalunits(HDR); 
-	end;         
 end;
 
 %% Initialization
@@ -1425,10 +1421,12 @@ end;
 
                         if isfield(HDR,'PhysDimCode')
 				HDR.PhysDimCode = HDR.PhysDimCode(1:HDR.NS);
+			else
+				HDR.PhysDimCode = zeros(HDR.NS,1);
 			end;	
                         PhysDim = char(32+zeros(HDR.NS,8));
                         if ~isfield(HDR,'PhysDim')
-                                HDR.PhysDim=repmat({' '},HDR.NS,1);
+				HDR.PhysDim = physicalunits(HDR.PhysDimCode);
 	                        PhysDim = char(32+zeros(HDR.NS,8));
                                 if HDR.NS>0,
                                         fprintf(HDR.FILE.stderr,'Warning SOPEN (GDF/EDF/BDF)-W: HDR.PhysDim not defined\n');
@@ -1453,7 +1451,6 @@ end;
                         tmp = min(8,size(PhysDim,2));
                         PhysDim = [PhysDim(1:HDR.NS,1:tmp), char(32+zeros(HDR.NS,8-tmp))];
 
-                        HDR = physicalunits(HDR);
                         if ~all(HDR.PhysDimCode>0)
                                 fprintf(HDR.FILE.stderr,'Warning SOPEN: HDR.PhysDimCode of the following channel(s) is(are) not defined:\n');
                                 fprintf(HDR.FILE.stderr,'%i ',find(~HDR.PhysDimCode));  
@@ -10768,7 +10765,6 @@ end;
 
 % identify type of signal, complete header information
 if HDR.NS>0,
-        HDR = physicalunits(HDR); % complete information on PhysDim, and PhysDimCode
         HDR = leadidcodexyz(HDR); % complete information on LeadIdCode and Electrode positions of EEG channels.
         if ~isfield(HDR,'Label')
                 HDR.Label = cellstr([repmat('#',HDR.NS,1),int2str([1:HDR.NS]')]);
