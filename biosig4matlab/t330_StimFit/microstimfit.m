@@ -350,14 +350,17 @@ for k=1:N;
 		fitResult = [];
 		fExp      = option.fitfun;
 
-		pInit = [peak(k), 0, 1/(mean(t50BReal) - mean(t50AReal))];
+		pInit = [peak(k), base, 1/(mean(t50BReal) - mean(t50AReal))];
+		LB = [-inf, -inf, 0];
+		UB = [+inf, +inf, 10*Fs];
+
 		%% settings = optimset ('lbound',[-inf,-inf,0]','ubound',[inf,inf,Fs*10]');
 		%opts = optimset('Algorithm','levenberg-marquardt');
 		%opts = optimset('Jacobian',default.fitfunJ);
 		%opts = optimset('Algorithm','levenberg-marquardt','Jacobian',default.fitfunJ);
 		try
 			decay = data(results.peakTime(k)*Fs+evtpos(k)+t);
-			[fitResult, model_values, cvg, outp] = lsqcurvefit (option.fitfun, pInit', t, decay);
+			[fitResult, model_values, cvg, outp] = lsqcurvefit (option.fitfun, pInit', t, decay, LB, UB);
 			results.data(k, 18:20) = [fitResult(1), fitResult(2), 1/fitResult(3)];
 		catch
 			warning('fitting failed; optimization toolbox or optim package missing')
