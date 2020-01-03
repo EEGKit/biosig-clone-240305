@@ -704,7 +704,7 @@ win64: mexw64
 #	GNU/Linux - Shared Libaries
 #############################################################
 
-ifneq (Darwin,$(shell uname))
+ifeq (,$(findstring Darwin, $(shell uname)))   # not on MacOSX
 %.${DLEXT}:%${FULLDLEXT}
 	ln -sf "$<" "$@"
 endif
@@ -721,10 +721,6 @@ libgdftime${FULLDLEXT}:gdftime.o
 libphysicalunits${FULLDLEXT}:physicalunits.o
 	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
 
-#ifneq (Darwin,$(shell uname))
-%.${DLEXT}: %${FULLDLEXT}
-	ln -sf "$<" "$@"
-#endif
 
 
 #############################################################
@@ -775,13 +771,13 @@ libbiosig.pc :
 	echo "Libs.private: $(LDLIBS)"      >> "$@"
 
 ## save2gdf, pdp2gdf
-%${BINEXT}: %.c libbiosig.so
+%${BINEXT}: %.c libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 
 physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
 
-biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.so
+biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
 
 bscs: biosig_client${BINEXT} biosig_server${BINEXT} sandbox.o biosig.o

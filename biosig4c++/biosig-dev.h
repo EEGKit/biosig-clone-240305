@@ -1,6 +1,6 @@
 /*
 
-% Copyright (C) 2005-2018 Alois Schloegl <alois.schloegl@gmail.com>
+% Copyright (C) 2005-2020 Alois Schloegl <alois.schloegl@gmail.com>
 % This file is part of the "BioSig for C/C++" repository 
 % (biosig4c++) at http://biosig.sf.net/ 
 
@@ -44,7 +44,7 @@ extern "C" {
 #ifdef NDEBUG
 #define VERBOSE_LEVEL 0 	// turn off debugging information, but its only used without NDEBUG
 #else
-extern int VERBOSE_LEVEL __attribute__ ((visibility ("default") )); 	// used for debugging, variable is always defined
+extern int VERBOSE_LEVEL; 	// used for debugging, variable is always defined
 #endif
 
 
@@ -230,16 +230,6 @@ enum FileFormat {
 	LastPlaceHolder, invalid=0xffff
 };
 
-
-/*
-This part has moved into biosig-dev.h in v1.4.1, because VERBOSE_LEVEL is just
-used for debugging and should not be exposed to common applications
-#ifdef NDEBUG
-#define VERBOSE_LEVEL 0		// turn off debugging information
-#else
-extern int VERBOSE_LEVEL; 	// used for debugging
-#endif
-*/
 
 /****************************************************************************/
 /**                                                                        **/
@@ -950,11 +940,6 @@ static inline void bef64a(  double i, void* r) {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	global constants and variables
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#ifndef VERBOSE_LEVEL
-extern int   VERBOSE_LEVEL; 	// used for debugging
-#endif
-
 
 
 /****************************************************************************/
