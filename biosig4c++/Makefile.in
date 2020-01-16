@@ -47,7 +47,7 @@
 ##### Target: Win64
 ## make win64      - makes save2gdf.exe,libbiosig.lib,libbiosig.dll, for MSWindows, requires MinGW
 ## make mexw64 mex/mexSLOAD.mexw64   - requires MCE-W64 and GNUMEX libraries from Matlab/Win64
-## make win64/sigviewer.exe 	- requires sources of SigViewer and MCE-W64, make suitesparse zlib qt 
+## make win64/sigviewer.exe 	- requires sources of SigViewer and MCE-W64, make suitesparse zlib qt
 
 ##### Target: MacOSX w/ homebrew
 ## make install_homebrew	installs libbiosig and save2gdf
@@ -69,7 +69,7 @@ LIBEXT        = a
 ###############################
 
 ### User-specified options: its likely you want to change this
-# settings for cross compiler: tested with MXE and mce-w64 with make suitesparse zlib qt ; 
+# settings for cross compiler: tested with MXE and mce-w64 with make suitesparse zlib qt ;
 CROSS   = $(HOME)/src/mxe.github.schloegl/usr/bin/i686-w64-mingw32.static
 ## local MXE
 ifeq "$(wildcard $(CROSS)-gcc)" ""
@@ -125,7 +125,7 @@ else ifeq (intel,$(TARGET))
 	CXX     := /opt/intel/bin/icc
 	LD      := /opt/intel/bin/xild
 	AR      := /opt/intel/bin/xiar crs
-else 
+else
 	PREFIX  := $(subst /bin/,/,$(dir $(shell which $(TARGET)-gcc)))
 	CC      := $(TARGET)-gcc
 	CXX     := $(TARGET)-g++
@@ -222,7 +222,7 @@ DEFINES      += -D=WITH_FEF
 #DEFINES      += -D=WITH_GDCM
 #DEFINES      += -D=WITH_GSL
 #DEFINES      += -D=WITH_EEPROBE
-#DEFINES      += -D=WITH_INTAN
+DEFINES      += -D=WITH_INTAN
 #DEFINES      += -D=WITH_TDMS
 DEFINES      += -D=WITH_ATF
 #DEFINES      += -D=WITH_AVI
@@ -280,7 +280,7 @@ endif
 ifneq (,$(findstring stack-protector, $(CFLAGS)))
 ifneq (,$(findstring CYGWIN, $(shell uname)))
   LDLIBS     += -lssp
-endif 
+endif
 ifneq (,$(findstring MINGW, $(shell uname)))
   LDLIBS     += -lssp
 endif
@@ -315,8 +315,8 @@ endif
 # use environment variable to define OCTAVE_VERSION
 #   e.g. export OCTAVE_VERSION=-3.6.2
 # Octave - global install  (e.g. from debian package)
-#OCTAVE_VERSION = 
-# Octave - local install (e.g. compiled from sources) 
+#OCTAVE_VERSION =
+# Octave - local install (e.g. compiled from sources)
 #OCTAVE_VERSION = -3.6.1
 
 OCT           := mkoctfile$(OCTAVE_VERSION)
@@ -335,7 +335,7 @@ PathToMinGW64 = $(dir $(CROSS64))..$(nondir $(CROSS64))
 
 MinGWCC      = $(CROSS)-gcc
 MinGWCXX     = $(CROSS)-g++
-MinGWDEF     = $(DEFINES) 
+MinGWDEF     = $(DEFINES)
 MinGWCFLAGS  = -pipe -fPIC  -D_REENTRANT -D=BUILD_DLL $(MinGWDEF) -Iwin32 -I$(PathToMinGW)/include/
 MinGWLIBS    = win32/libbiosig.a -L$(PathToMinGW)/lib/ $(LDLIBS) # static
 MinGWLINK    = $(MinGWCXX)
@@ -396,7 +396,7 @@ ifneq (1,@HAVE_LIBTINYXML@)
   SOURCES    +=	XMLParser/tinyxml.cpp \
 		XMLParser/tinyxmlparser.cpp \
 		XMLParser/tinyxmlerror.cpp \
-		XMLParser/tinystr.cpp 
+		XMLParser/tinystr.cpp
 endif
 
 OBJECTS      += \
@@ -483,8 +483,8 @@ endif
 
 ifeq (,$(findstring WITH_LIBTINYXML, $(DEFINES)))
   ## build with TinyXML when libtinyxml is not available
-  OBJECTS    += tinyxml.o tinyxmlparser.o tinyxmlerror.o tinystr.o 
-  MinGWOBJECTS += win32/tinyxml.obj win32/tinyxmlparser.obj win32/tinyxmlerror.obj win32/tinystr.obj 
+  OBJECTS    += tinyxml.o tinyxmlparser.o tinyxmlerror.o tinystr.o
+  MinGWOBJECTS += win32/tinyxml.obj win32/tinyxmlparser.obj win32/tinyxmlerror.obj win32/tinystr.obj
 endif
 
 
@@ -496,11 +496,7 @@ ifeq (,$(findstring mingw,$(TARGET)))
 endif
 
 first: $(IO_H_FILE2) lib tools
-ifeq (1,@HAVE_LIBB64@)
-  tools: save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT}
-else
-  tools: save2gdf${BINEXT} physicalunits${BINEXT}
-endif
+tools: save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT}
 all:   first mex4o python R #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
 
 .PHONY : libbiosig lib python mex4m mex4o
@@ -510,6 +506,14 @@ libbiosig lib: $(LIB_OBJECTS)
 #############################################################
 #	Compilation: Implicit, default rules
 #############################################################
+CHKSUM_LIBB64 = 20106f0ba95cfd9c35a13c71206643e3fb3e46512df3e2efb2fdbf87116314b2
+libb64-1.2.1.zip:
+	curl -SLO https://downloads.sourceforge.net/project/libb64/libb64/libb64/libb64-1.2.1.zip
+	test $(shell sha256sum libb64-1.2.1.zip | cut -d " " -f 1) = $(CHKSUM_LIBB64) || rm libb64-1.2.1.zip
+
+libb64-1.2.1/src/cencode.c: libb64-1.2.1.zip
+	test $(shell sha256sum libb64-1.2.1.zip | cut -d " " -f 1) = $(CHKSUM_LIBB64) && unzip -o libb64-1.2.1.zip -d .
+	touch $@
 
 vpath %.c ./:./t210:./t220:./t240:./test0:./src:./mma
 
@@ -545,7 +549,7 @@ win32/%.obj: %.c
 win32/%.obj: %.cpp
 	$(MinGWCXX) -c $(DEFINES) $(MinGWCFLAGS) -o "$@" "$<"
 
-win32/%.obj: win32/%.c 
+win32/%.obj: win32/%.c
 	$(MinGWCC) -c $(DEFINES) $(MinGWCFLAGS) -I win32 -o "$@" "$<"
 
 
@@ -556,7 +560,7 @@ win64/%.obj: %.c
 win64/%.obj: %.cpp
 	$(MinGW64CXX) -c $(DEFINES) $(MinGW64CFLAGS) -o "$@" "$<"
 
-win64/%.obj: win32/%.c 
+win64/%.obj: win32/%.c
 	$(MinGW64CC) -c $(DEFINES) $(MinGW64CFLAGS) -I win32 -o "$@" "$<"
 
 
@@ -594,7 +598,7 @@ gdf.o: biosig.c biosig-dev.h eventcodes.i units.i 11073-10102-AnnexB.i
 win32/gdf.obj: biosig.c biosig-dev.h
 	$(MinGWCC) -c -D=ONLYGDF $(DEFINES) $(MinGWCFLAGS) -o "$@" "$<"
 
-$(PathToSigViewerWIN32): 
+$(PathToSigViewerWIN32):
 	svn co https://sigviewer.svn.sourceforge.net/svnroot/sigviewer/trunk ../sigviewer4win32
 
 $(PathToSigViewerWIN32)/src/src.pro: $(PathToSigViewerWIN32)
@@ -617,13 +621,13 @@ win32/sigviewer.exe: win32/libbiosig.a win32/libbiosig.dll
 win64/gdf.obj: biosig.c biosig-dev.h
 	$(MinGW64CC) -c -D=ONLYGDF $(DEFINES) $(MinGW64CFLAGS) -o "$@" "$<"
 
-$(PathToSigViewerWIN64): 
+$(PathToSigViewerWIN64):
 	svn co https://sigviewer.svn.sourceforge.net/svnroot/sigviewer/trunk ../sigviewer4win64
 
-$(PathToSigViewerWIN64)/src/src.pro: $(PathToSigViewerWIN64) 
+$(PathToSigViewerWIN64)/src/src.pro: $(PathToSigViewerWIN64)
 	svn up -r 557 ../sigviewer4win64
 
-win64/sigviewer.exe: win64/libbiosig.a win64/libbiosig.dll 
+win64/sigviewer.exe: win64/libbiosig.a win64/libbiosig.dll
 	#-$(COPY) ../biosig/doc/eventcodes.txt $(PathToSigViewerWIN64)/src/
 	-$(DELETE) $(PathToSigViewerWIN64)/extern/include/*.h
 	-$(COPY) biosig.h biosig2.h biosig-dev.h physicalunits.h $(PathToSigViewerWIN64)/extern/include
@@ -651,11 +655,11 @@ install_python: python
 
 
 java: libbiosig.$(LIBEXT) java/biosig.i
-	$(MAKE) -C java 
+	$(MAKE) -C java
 perl: libbiosig.$(LIBEXT) perl/biosig.i
-	$(MAKE) -C perl 
+	$(MAKE) -C perl
 php: libbiosig.$(LIBEXT) php/biosig.i
-	$(MAKE) -C php 
+	$(MAKE) -C php
 
 
 ruby/biosig_wrap.c: ruby/biosig.i
@@ -663,11 +667,11 @@ ruby/biosig_wrap.c: ruby/biosig.i
 ruby/Makefile: ruby/extconf.rb
 	ruby -C ruby extconf.rb
 biosig4ruby ruby: libbiosig.$(LIBEXT) ruby/Makefile ruby/biosig_wrap.c
-	$(MAKE) -C ruby 
+	$(MAKE) -C ruby
 
 
 tcl: libbiosig.$(LIBEXT) tcl/biosig.i
-	$(MAKE) -C tcl 
+	$(MAKE) -C tcl
 
 
 #############################################################
@@ -777,8 +781,13 @@ libbiosig.pc :
 physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
 
+ifeq (1,@HAVE_LIBB64@)
 biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
+else
+biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c libbiosig.$(DLEXT)
+	$(CC) $(DEFINES) $(CFLAGS) -Ilibb64-1.2.1/include/ "$<" libb64-1.2.1/src/cencode.c -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
+endif
 
 bscs: biosig_client${BINEXT} biosig_server${BINEXT} sandbox.o biosig.o
 biosig_client${BINEXT}: biosig_client.c libbiosig.$(LIBEXT) biosig-network.o
@@ -851,14 +860,14 @@ R/sload.$(DLEXT): R/sload.c libbiosig.$(DLEXT)
 #	SigViewer
 #############################################################
 
-sigviewer: $(PathToSigViewer)/bin/sigviewer 
+sigviewer: $(PathToSigViewer)/bin/sigviewer
 	$(COPY) $(PathToSigViewer)/bin/release/sigviewer bin/sigviewer-$(TODAY)
-	ln -sf sigviewer-$(TODAY) bin/sigviewer 
+	ln -sf sigviewer-$(TODAY) bin/sigviewer
 
-$(PathToSigViewer): 
+$(PathToSigViewer):
 	svn co https://sigviewer.svn.sourceforge.net/svnroot/sigviewer/trunk ../sigviewer
 
-$(PathToSigViewer)/src/src.pro: $(PathToSigViewer) 
+$(PathToSigViewer)/src/src.pro: $(PathToSigViewer)
 	svn up -r 557 ../sigviewer
 
 $(PathToSigViewer)/bin/sigviewer: libbiosig.$(LIBEXT) biosig-dev.h biosig.h
@@ -893,9 +902,9 @@ bin/ttl2trig : src/ttl2trig.c gdf.o gdftime.o physicalunits.o
 	$(CC) -D=WITH_BIOSIG $(DEFINE) $(CFLAGS) $^ -Wall -Wextra -lasound $(LDLIBS) -o "$@"
 
 ###	FLOWMON
-flowmon.o: src/flowmon2.c 
+flowmon.o: src/flowmon2.c
 	$(CC) -c $(DEFINES) $(CFLAGS) -o "$@" "$<"
-        
+
 flowmon: bin/flowmon
 bin/flowmon: flowmon.o gdf.o gdftime.o physicalunits.o
 	mkdir -p ./bin
@@ -983,17 +992,20 @@ install_libbiosig.a: libbiosig.a libphysicalunits.a libbiosig.pc
 	install -d 			$(DESTDIR)$(libdir)/pkgconfig/
 	install libbiosig.a		$(DESTDIR)$(libdir)
 	install libphysicalunits.a 	$(DESTDIR)$(libdir)
+	strip $(DESTDIR)$(libdir)/libbiosig.a $(DESTDIR)$(libdir)/libphysicalunits.a
 	install libbiosig.pc		$(DESTDIR)$(libdir)/pkgconfig/
 
 install_libbiosig.$(DLEXT): libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 	install -d 			$(DESTDIR)$(libdir)/pkgconfig/
 	install libbiosig$(FULLDLEXT)  $(DESTDIR)$(libdir)
+	strip $(DESTDIR)$(libdir)/libbiosig$(FULLDLEXT)
 	(cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig${SONAMEVERSION}.$(DLEXT))
 ifneq (Darwin,$(shell uname))
 	cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 endif
+	ldconfig
 
-install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_tools install_python
+install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_tools
 
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
@@ -1001,8 +1013,8 @@ install_tools: tools doc/save2gdf.1
 	install heka2itx  		$(DESTDIR)$(bindir)
 	install save2aecg 		$(DESTDIR)$(bindir)
 	install save2scp  		$(DESTDIR)$(bindir)
-	install physicalunits${BINEXT}		$(DESTDIR)$(bindir)
-	-install biosig_fhir${BINEXT}	$(DESTDIR)$(bindir)   # not available on MacOSX because libb64 required
+	install physicalunits${BINEXT}	$(DESTDIR)$(bindir)
+	install biosig_fhir${BINEXT}	$(DESTDIR)$(bindir)
 	mkdir -p  			$(DESTDIR)$(mandir)/man1
 	install doc/*.1  		$(DESTDIR)$(mandir)/man1
 	#install libbiosig.man 		$(mandir)
@@ -1300,8 +1312,8 @@ endif
 $(DATA_DIR)BDFtestfiles.zip :
 	wget -P$(DATA_DIR) http://www.biosemi.com/download/BDFtestfiles.zip
 
-.PHONY: stat 
-stat: 
+.PHONY: stat
+stat:
 	@echo 'TODO/FIXME:  ';
 	@grep -ri '\bTODO\b'  *.c *.h *.i t210/*.c t210/*.h |grep -v '\.svn' |wc -l;
 	@grep -ri '\bFIXME\b' *.c *.h *.i t210/*.c t210/*.h |grep -v '\.svn' |wc -l;
@@ -1312,7 +1324,7 @@ test_physicalunits : units.i physicalunits.c physicalunits.h
 	@echo '--- end of test_physicalunits ---'
 
 
-testcfs : $(DATA_DIR_CFS) save2gdf 
+testcfs : $(DATA_DIR_CFS) save2gdf
 	-./save2gdf $(VERBOSE) $(DATA_DIR_CFS)BaseDemo/Actions.CFS
 	-./save2gdf $(VERBOSE) $(DATA_DIR_CFS)BaseDemo/example.cfs
 	-./save2gdf $(VERBOSE) $(DATA_DIR_CFS)BaseDemo/Leak.cfs
