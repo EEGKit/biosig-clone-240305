@@ -10,11 +10,11 @@ except ImportError:
     from distutils.extension import Extension
 
 import os
-import numpy.distutils.misc_util as mu
+import numpy.distutils.misc_util
 
 module_biosig = Extension('biosig',
         define_macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '9')],
-        include_dirs = ['./..', mu.get_numpy_include_dirs()[0]],
+        include_dirs = ['./..', numpy.distutils.misc_util.get_numpy_include_dirs()[0]],
         libraries    = ['biosig'],
         library_dirs = ['./..'],
         sources      = ['biosigmodule.c'])
