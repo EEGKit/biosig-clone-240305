@@ -1,6 +1,6 @@
 ####### Makefile for "BioSig for C/C++" #####################
 ###
-###  Copyright (C) 2006-2015 Alois Schloegl <alois.schloegl@ist.ac.at>
+###  Copyright (C) 2006-2020 Alois Schloegl <alois.schloegl@ist.ac.at>
 ###  This file is part of the "BioSig for C/C++" repository
 ###  (biosig4c++) at http://biosig.sf.net/
 ###
@@ -122,60 +122,6 @@ endif
 
 DEFINES_ALL   = #-D=NDEBUG
 
-DEFINES      += $(DEFINES_ALL)
-#DEFINES      += -D=WITH_SON 
-#DEFINES      += -D=WITHOUT_SCP_DECODE
-#DEFINES      += -D=WITH_TIMESTAMPEVENT
-#DEFINES      += -D=WITH_TIMESTAMPCHANNEL
-#DEFINES      += -D=WITH_CURL
-DEFINES      += -D=__4HAERTEL__
-DEFINES      += -D=WITH_FAMOS
-DEFINES      += -D=WITH_FIFF
-DEFINES      += -D=WITHOUT_NETWORK
-#DEFINES      += -D=WITH_HDF
-#DEFINES      += -D=WITH_MATIO
-#DEFINES      += -D=WITH_LIBXML2 
-DEFINES      += -D=WITH_FEF
-#DEFINES      += -D=WITH_PDP
-#DEFINES      += -D=WITH_DCMTK
-#DEFINES      += -D=WITH_DICOM
-#DEFINES      += -D=WITH_GDCM
-#DEFINES      += -D=WITH_GSL
-#DEFINES      += -D=WITH_EEPROBE
-#DEFINES      += -D=WITH_TDMS
-#DEFINES      += -D=WITH_ATF
-#DEFINES      += -D=WITH_AVI
-#DEFINES      += -D=WITH_RIFF
-#DEFINES      += -D=WITH_WAV
-#DEFINES      += -D=WITH_NEV
-DEFINES      += -D=MAKE_EDFLIB
-
-
-ifneq (,$(findstring WITH_GDCM, $(DEFINES)))
-  INCPATH    += -I$(wildcard /usr/include/gdcm-2*/)
-  LDLIBS     += -lgdcmCommon -lgdcmDSED -lgdcmMEXD -lgdcmMSFF -lgdcmDICT -lgdcmIOD
-endif
-ifneq (,$(findstring WITH_LIBXML2, $(DEFINES)))
-  LDLIBS     += -lxml2
-endif
-ifneq (,$(findstring WITH_CURL, $(DEFINES)))
-  LDLIBS     += -lcurl
-endif
-ifneq (,$(findstring WITH_HDF, $(DEFINES)))
-  LDLIBS     += -lhdf5
-endif
-ifneq (,$(findstring WITH_DCMTK, $(DEFINES)))
-  LDLIBS     += -ldcmdata -loflog -lofstd
-endif
-ifneq (,$(findstring WITH_MATIO, $(DEFINES)))
-  LDLIBS     += -lmatio
-endif
-ifneq (,$(findstring stack-protector, $(CFLAGS)))
-ifneq (,$(findstring CYGWIN, $(shell uname)))
-  LDLIBS     += -lssp -liconv
-endif 
-endif
-
 LIBS         += $(LDLIBS)
 
 DELETE        = rm -f
@@ -251,11 +197,10 @@ mex4m: $(patsubst %.cpp, %.$(MEX_EXT), $(MEX_OBJECTS))
 
 ifneq (Darwin,$(shell uname))
 %.$(MEX_EXT): %.cpp
-	$(MEX) $(MEX_OPTION) $(DEFINES) -I.. "$<" -L.. -o "$@"
+	$(MEX) $(MEX_OPTION) $(DEFINES) -I.. "$<" -L.. -lbiosig -o "$@"
 else
 %.$(MEX_EXT): %.cpp
-	## $(MEX) $(MEX_OPTION) $(DEFINES) "$<" -L.. -o "$@"
-	$(MEX) $(DEFINES) -I.. -outdir mex "$<" -lbiosig
+	$(MEX) $(DEFINES) -I.. -outdir mex "$<" -L.. -lbiosig
 endif
 
 else
@@ -263,10 +208,10 @@ mex: mex4o mexw32 mexw64
 endif
 
 %.mex: %.cpp
-	$(OCT) $(DEFINES) -I.. -v -g --mex "$<" -L.. -o "$@"
+	$(OCT) $(DEFINES) -I.. -v -g --mex "$<" -L.. -lbiosig -o "$@"
 
 %.oct: %.cpp
-	$(OCT) $(DEFINES) -I.. "$<" -L.. -o "$@"
+	$(OCT) $(DEFINES) -I.. "$<" -L.. -lbiosig -o "$@"
 
 %.mexw32: %.cpp
 	## $(CROSS)-g++ is used instead of $(CXX), so it can be called from biosig as well as mxe. 
