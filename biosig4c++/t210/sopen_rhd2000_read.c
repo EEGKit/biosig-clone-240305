@@ -245,6 +245,10 @@ int sopen_intan_clp_read(HDRTYPE* hdr) {
 	return -1;
 }
 
+/*
+     RHS2000 Data File Formats - Intan Tech
+     http://www.intantech.com/files/Intan_RHS2000_data_file_formats.pdf
+*/
 int sopen_rhs2000_read(HDRTYPE* hdr) {
 		int gdftyp = 4;
 		char bufstr[1000];
@@ -280,15 +284,18 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 
 		// +4 = 60 bytes
 		// +12 = 72 bytes
+		float StimStepSize = lef32p(hdr->AS.Header+58); // Stim Step Size  [A]
+		float ChargeRecoveryCurrentLimit = lef32p(hdr->AS.Header+62);	// [A]
+		float ChargeRecoveryTargetVoltage = lef32p(hdr->AS.Header+66); // [V]
 
 		size_t pos = 72;
 		QSTRING_T *note1 = read_qstring(hdr, &pos);
 		QSTRING_T *note2 = read_qstring(hdr, &pos);
 		QSTRING_T *note3 = read_qstring(hdr, &pos);
 
-		uint16_t flag_DC_amplifier_data_saved = leu16p(hdr->AS.Header+pos);
+		uint16_t flag_DC_amplifier_data_saved = leu16p(hdr->AS.Header+pos) > 0;
 		pos += 2;
-		uint16_t flag_Board_Mode = leu16p(hdr->AS.Header+pos);
+		uint16_t BoardMode = leu16p(hdr->AS.Header+pos);
 		pos += 2;
 
 		QSTRING_T *ReferenceChannelName = read_qstring(hdr, &pos);
@@ -298,6 +305,7 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 		uint16_t numberOfSignalGroups = leu16p(hdr->AS.Header+pos);
 		pos += 2;
 		uint16_t NS = 0;
+		unsigned bi = 0+4;
 		// read all signal groups
 		for (int nsg=0; nsg<numberOfSignalGroups; nsg++) {
 			QSTRING_T *SignalGroupName = read_qstring(hdr, &pos);
@@ -314,7 +322,7 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 		//if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %s %s\n",__FILE__,__LINE__,__func__,nsg,SignalGroupName->string,SignalGroupPrefix->string);
 
 			if (flag_SignalGroupEnabled) {
-				hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL, (1+NS+NumberOfChannelsInSignalGroup) * sizeof(CHANNEL_TYPE));
+				hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL, (1+NS+NumberOfChannelsInSignalGroup*(1+flag_DC_amplifier_data_saved)) * sizeof(CHANNEL_TYPE));
 				for (unsigned k = 0; k < NumberOfChannelsInSignalGroup; k++) {
 					QSTRING_T *NativeChannelName = read_qstring(hdr, &pos);
 					QSTRING_T *customChannelName = read_qstring(hdr, &pos);
@@ -344,7 +352,7 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u %d %d\n",__FILE__,__LINE__,__func__,nsg,k,ChannelEnabled,pos);
 
-					if (ChannelEnabled) {
+					for (int k2=0; k2 < ChannelEnabled*(1+flag_DC_amplifier_data_saved*(SignalType==0)); k2++) {
 						NS++;	// first channel is Time channel
 						CHANNEL_TYPE *hc = hdr->CHANNEL + NS;
 
@@ -357,19 +365,60 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						strcpy(hc->PhysDim,"?");
 #endif
 						hc->OnOff  = 1;
-						hc->SPR    = hdr->SPR;
 						hc->GDFTYP = 4; // uint16
-						hc->bi     = 4-2+NS*2;
-						hc->bi8    = hc->bi << 3;
+						hc->bi     = bi;
+						hc->bi8    = bi << 3;
 						hc->LeadIdCode = 0;
 						hc->DigMin = 0.0;
 						hc->DigMax = ldexp(2,16)-1;
-						hc->Off    = 0.0;
-						hc->Cal    = 1.0 / hdr->SampleRate;
-						hc->PhysDimCode = 0; // [?]
 
-						hc->PhysMin = -1.0;
-						hc->PhysMax = +1.0;
+						hc->PhysDimCode = 0; // [?] default
+						hc->Cal    = 1;	//default
+						hc->Off    = 0; // default
+						hc->SPR    = hdr->SPR; //default
+						switch (SignalType) {
+						case 0: 	// RHS2000 amplifier channel
+							if (k2==0) {
+								hc->Cal    = 0.195;
+								hc->Off    = -32768 * hc->Cal;
+							}
+							else {
+								sprintf(hc->Label,"DC_AmpData %s",(hc-1)->Label);
+								hc->Cal    = 19.23;
+								hc->Off    = -512 * hc->Cal;
+							}
+							hc->PhysDimCode = 4256; // [V]
+							break;
+						case -1: 	// Stimulation Data
+							hc->PhysDimCode = 4160; // [A]
+							hc->SPR    = hdr->SPR;
+							hc->Cal    = StimStepSize;
+							hc->Off    = 0;
+							break;
+						/*
+						case 2: 	// supply voltage channel
+							hc->SPR    = 1;
+							hc->Cal    = 0.0000748;
+							hc->Off    = 0;
+							hc->PhysDimCode = 4256; // [V]
+							break
+						*/
+						case 3: 	// Analog input channel
+						case 4: 	// Analog output channel
+							hc->PhysDimCode = 4256; // [V]
+							hc->Cal    = 0.0003125;
+							hc->Off    = -32768 * hc->Cal;
+							break;
+						case 5: 	// Digital Input channel
+						case 6: 	// Digital Output channel
+							hc->PhysDimCode = 0; // [1]
+							break;
+						default:
+							biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format Intan RHS2000 - not conformant to specification");
+						}
+						bi += hc->SPR*2;
+						hc->PhysMin = hc->DigMin * hc->Cal + hc->Off;
+						hc->PhysMax = hc->DigMax * hc->Cal + hc->Off;
 
 						hc->bufptr = NULL;
 						hc->TOffset = 0;
@@ -439,6 +488,10 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 		return 0;
 }
 
+/*
+     RHD2000 Data File Formats - Intan Tech
+     http://www.intantech.com/files/Intan_RHD2000_data_file_formats.pdf
+*/
 int sopen_rhd2000_read(HDRTYPE* hdr) {
 
 		float minor = leu16p(hdr->AS.Header+6);
@@ -467,19 +520,22 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 		uint16_t numberTemperatureSensors = leu16p(hdr->AS.Header+pos);
 		pos += 2;
 
-		int boardMode = leu16p(hdr->AS.Header+pos);
+		int BoardMode = leu16p(hdr->AS.Header+pos);
 		pos += 2;
+
+/*
 		float PhysMin=0.;
 		float PhysMax=1.;
 		float Cal=1, DigOff=0;
-		switch (boardMode) {
+		switch (BoardMode) {
 		case 0: PhysMax=3.3; Cal=0.000050354; break;
 		case 1: PhysMin=-5.0; PhysMax=5.0; Cal = 0.00015259; break;
 		case 13: PhysMin=-10.24; PhysMax=10.24; Cal = 0.0003125; break;
 		default:
-			fprintf(stderr,"%s (line %d): Intan/RHD2000 - unknown Boardmode %d\n", __func__,__LINE__,boardMode);
+			fprintf(stderr,"%s (line %d): Intan/RHD2000 - unknown Boardmode %d\n", __func__,__LINE__,BoardMode);
 			// boardMode unknown
 		};
+*/
 
 		QSTRING_T *referenceChannelName = read_qstring(hdr, &pos);
 
@@ -497,7 +553,7 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 		hc->DigMin = -ldexp(1,31);
 		hc->DigMax = ldexp(1,31)-1;
 		hdr->SPR   = (hdr->Version < 2.0) ? 60 : 128;
-
+		unsigned bi = 0;
 		for (uint16_t k = 0; k<numberOfSignalGroups; k++) {
 			QSTRING_T *groupName = read_qstring(hdr, &pos);
 			QSTRING_T *groupNamePrefix = read_qstring(hdr, &pos);
@@ -552,44 +608,62 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 					pos += 4;
 
 					// translate into biosig HDR channel structure
-					hc->GDFTYP = 4; 	// uint16_t
-					hc->DigMin = 0;
-					hc->DigMax = 0xffff;
-					hc->SPR    = (signalType<3) ? 60 : 128;
-					switch (signalType) {
-					case 0: hc->SPR = hdr->SPR;
-						hc->Cal = 0.195;
-						hc->PhysMin = (hc->DigMin-32768) * hc->Cal;
-						hc->PhysMax = (hc->DigMin-32768) * hc->Cal;
-						break;
-					case 1: hc->SPR = hdr->SPR/4;
-						hc->Cal = 0.0000374;
-						hc->PhysMin = hc->DigMin * hc->Cal;
-						hc->PhysMax = hc->DigMin * hc->Cal;
-						break;
-					case 2: hc->SPR = 1;
-						hc->Cal = 0.0000748;
-						hc->PhysMin = hc->DigMin * hc->Cal;
-						hc->PhysMax = hc->DigMin * hc->Cal;
-						break;
-					case 3: // depends on board mode, range is computed above
-						hc->SPR = hdr->SPR;
-						hc->PhysMin = PhysMin;
-						hc->PhysMax = PhysMax;
-						hc->Cal = 0.0000748;
-						break;
-					case 4: hc->SPR = hdr->SPR;
-						hc->PhysMin = hc->DigMin;
-						hc->PhysMax = hc->DigMax;
-						break;
-					case 5: hc->SPR = hdr->SPR;
-						hc->PhysMin = hc->DigMin;
-						hc->PhysMax = hc->DigMax;
-						break;
-					default:
-						;
-					}
-					hc->Off = hc->PhysMin - hc->DigMin * hc->Cal;
+						hc->GDFTYP = 4; 	// uint16_t
+						hc->PhysDimCode = 0; // [?] default
+						hc->Cal    = 1;	//default
+						hc->Off    = 0; // default
+						hc->SPR    = hdr->SPR; //default
+						switch (signalType) {
+						case 0: 	// amplifier channel
+							hc->Cal    = 0.195;
+							hc->Off    = -32768*hc->Cal;
+							hc->PhysDimCode = 4256; // [V]
+							break;
+						case 1: 	// auxilary input channel
+							hc->SPR    = hdr->SPR/4;
+							hc->Cal    = 0.195;
+							hc->Off    = -32768*hc->Cal;
+							break;
+						case 2: 	// supply voltage channel
+							hc->SPR    = 1;
+							hc->Cal    = 0.0000748;
+							hc->Off    = 0;
+							hc->PhysDimCode = 4256; // [V]
+							break;
+						case -1: 	// Temperature Sensor channel
+							hc->GDFTYP = 3; // int16
+							hc->SPR    = 1;
+							hc->Cal    = 0.01;
+							hc->Off    = 0;
+							hc->PhysDimCode = 6048; // [°C]
+							break;
+						case 3: 	// USB board ADC input channel
+							hc->SPR    = hc->SPR;
+							hc->PhysDimCode = 4256; // [V]
+							switch(BoardMode) {
+							case 0:
+								hc->Cal    = 0.000050354;
+								hc->Off    = 0;
+								break;
+							case 1:
+								hc->Cal    = 0.00015259;
+								hc->Off    = 3-2768*hc->Cal;
+								break;
+							case 13:
+								hc->Cal    = 0.0003125;
+								hc->Off    = -32768*hc->Cal;
+								break;
+							}
+							break;
+						case 4: 	// USB board digital input channel
+							;
+						case 5: 	// USB board digital output channel
+							;
+						}
+						bi += hc->SPR*2;
+						hc->PhysMin = hc->DigMin * hc->Cal + hc->Off;
+						hc->PhysMax = hc->DigMax * hc->Cal + hc->Off;
+
 					hc->Transducer[0]=0;
 
 				if (VERBOSE_LEVEL >7)
