@@ -182,12 +182,12 @@ if (evtpos~=round(evtpos))
 end
 
 N = length(evtpos);
-results.label = {'tix','base','baseSD','-','peak','tPeak', ...
+results.label = {'tix','baseline','baseSD','-','peak','tPeak', ...
 		 't20Real', 't80Real', 't50AInt', 't50AReal', 't50BInt', 't50BReal', 't0Real', ...
 		 'tMaxSlopeRiseReal', 'maxSlopeRiseReal', 'tThreshold', 'yThreshold', ...
 		};
 if (option.fitFlag==1)
-	results.label(end+[1:3]) = {'a','offset','tau'};
+	results.label(end+[1:3]) = {'a','offset','tau [s]'};
 end
 
 results.data = repmat(NaN,N,length(results.label)); 
@@ -253,12 +253,13 @@ elseif option.dir==0,
 	end; end; 
 end
 
+results.data(:,1) = evtpos;
 results.data(:,5) = peak;
 % FIXME: works only correctly only for single channel, 
 %    add additional checks, or fix this. 
 results.data(:,6) = tPeak2(:) + option.peakBegin + evtpos(:) - 1;
 
-results.peakAmplitude=peak;
+results.PeakAmplitude=peak;
 results.peakTime = (tPeak2(:) + option.peakBegin - 1)/Fs;
 
 for k=1:N;
@@ -359,9 +360,9 @@ for k=1:N;
 		%opts = optimset('Jacobian',default.fitfunJ);
 		%opts = optimset('Algorithm','levenberg-marquardt','Jacobian',default.fitfunJ);
 		try
-			decay = data(results.peakTime(k)*Fs+evtpos(k)+t);
+			decay = data(results.peakTime(k)*Fs+evtpos(k) + t);
 			[fitResult, model_values, cvg, outp] = lsqcurvefit (option.fitfun, pInit', t, decay, LB, UB);
-			results.data(k, 18:20) = [fitResult(1), fitResult(2), 1/fitResult(3)];
+			results.data(k, 18:20) = [fitResult(1), fitResult(2), 1/(fitResult(3)*Fs)];
 		catch
 			warning('fitting failed; optimization toolbox or optim package missing')
 			fitResult=[];
@@ -409,4 +410,15 @@ for k=1:N;
 		pause
 	end
 end
+
+results.MaxSlope = results.data(:,15);
+results.BaseLine = Baseline;
+results.BaseLineDev = BaseSD;
+
+results.RiseTime = diff(results.data(:,[7,8]),[],2)/Fs;
+results.HalfWidth = diff(results.data(:,[10,12]),[],2)/Fs;
+results.PeakTime = diff(results.data(:,[1,6]),[],2)/Fs;
+results.maxSlopeTime = diff(results.data(:,[1,14]),[],2)/Fs;
+results.thresholdTime = diff(results.data(:,[1,16]),[],2)/Fs;
+
 
