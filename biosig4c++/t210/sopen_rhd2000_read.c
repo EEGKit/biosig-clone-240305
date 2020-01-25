@@ -41,19 +41,24 @@ References:
 typedef struct {
 	int32_t length;	// this is little endian as defined in spec, use le32toh() when using it
 	char *string;
-} QSTRING_T;
+} __attribute__((packed)) QSTRING_T;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* check whether sufficient data of the header information has been read,
-   reads more data if needed, advance position pointer pos to the end of the string;
+/*
+   get_qstring has the following functions and side effects:
+   *) check whether sufficient data of the header information has been read,
+      reads more data if needed,
+   *) advance position pointer pos to the end of the string;
+   *) convert QString into UTF-8 String in outbuf
 */
-QSTRING_T *read_qstring(HDRTYPE* hdr, size_t *pos) {
+
+void read_qstring(HDRTYPE* hdr, size_t *pos, char *outbuf, size_t outlen) {
 	uint32_t len = leu32p(hdr->AS.Header + (*pos));
 	*pos += 4;
-	if (len==(uint32_t)(-1)) return NULL;
+	if (len==(uint32_t)(-1)) return;
 
 	// after each qstring at most 28 bytes are loaded before the next check for a qstring
 	// This check is also needed when qstring is empty
@@ -62,8 +67,8 @@ QSTRING_T *read_qstring(HDRTYPE* hdr, size_t *pos) {
 		SIZE = max(SIZE, 2*hdr->HeadLen);	// always double size of header
 		void *ptr = realloc(hdr->AS.Header, SIZE);
 		if (ptr==NULL) {
-			biosigERROR(hdr, B4C_MEMORY_ALLOCATION_FAILED, "Format Intan RHD2000 - memory allocation failed");
-			return NULL;
+			biosigERROR(hdr, B4C_MEMORY_ALLOCATION_FAILED, "Format Intan RH[DS]2000 - memory allocation failed");
+			return;
 		}
 		hdr->AS.Header = (uint8_t*)ptr;
 		hdr->HeadLen += ifread(hdr->AS.Header+hdr->HeadLen, 1, SIZE-hdr->HeadLen, hdr);
@@ -74,17 +79,17 @@ QSTRING_T *read_qstring(HDRTYPE* hdr, size_t *pos) {
 
 	QSTRING_T *qString=(QSTRING_T *)(hdr->AS.Header+(*pos)-4);
 	*pos += len;
-	return qString;
-}
 
-size_t  convert_qstring_to_utf8(QSTRING_T *S, char **__restrict outbuf, size_t *__restrict outlen) {
-	if (S==NULL) return 0;
-	if (S->length==(-1)) return 0;
-	iconv_t CD = iconv_open ("UTF-8", "UTF-16LE");
-	size_t inlen = le32toh(S->length);
-	char *inbuf = &(S->string);
-	size_t iconv_res = iconv (CD, &inbuf, &inlen, outbuf, outlen);
-	iconv_close (CD);
+	// convert qString into UTF-8 string
+	if (outbuf != NULL) {
+		iconv_t CD   = iconv_open ("UTF-8", "UTF-16LE");
+		size_t inlen = le32toh(qString->length);
+		char *inbuf  = qString->string;
+		size_t iconv_res = iconv (CD, &inbuf, &inlen, &outbuf, &outlen);
+		*outbuf = '\0';
+		iconv_close (CD);
+	}
+	return;
 }
 
 
@@ -250,14 +255,6 @@ int sopen_intan_clp_read(HDRTYPE* hdr) {
      http://www.intantech.com/files/Intan_RHS2000_data_file_formats.pdf
 */
 int sopen_rhs2000_read(HDRTYPE* hdr) {
-		int gdftyp = 4;
-		char bufstr[1000];
-		size_t outlen=1000;
-		char *tmpstr=bufstr;
-
-		size_t c= convert_qstring_to_utf8((QSTRING_T *)(hdr->AS.Header+0x64), &tmpstr, &outlen);
-
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) [%u] <%s> %d\n",__FILE__,__LINE__,__func__,hdr->HeadLen,bufstr,outlen);
 
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) [%u]\n",__FILE__,__LINE__,__func__,hdr->HeadLen);
 
@@ -289,27 +286,35 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 		float ChargeRecoveryTargetVoltage = lef32p(hdr->AS.Header+66); // [V]
 
 		size_t pos = 72;
-		QSTRING_T *note1 = read_qstring(hdr, &pos);
-		QSTRING_T *note2 = read_qstring(hdr, &pos);
-		QSTRING_T *note3 = read_qstring(hdr, &pos);
+		read_qstring(hdr, &pos, NULL, 0);	// note1
+		read_qstring(hdr, &pos, NULL, 0);	// note2
+		read_qstring(hdr, &pos, NULL, 0);	// note3
 
 		uint16_t flag_DC_amplifier_data_saved = leu16p(hdr->AS.Header+pos) > 0;
 		pos += 2;
 		uint16_t BoardMode = leu16p(hdr->AS.Header+pos);
 		pos += 2;
 
-		QSTRING_T *ReferenceChannelName = read_qstring(hdr, &pos);
+		char *ReferenceChannelName = NULL;
+		read_qstring(hdr, &pos, ReferenceChannelName, 0);
 
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...)  %d %d\n", __FILE__, __LINE__, __func__, pos, hdr->HeadLen);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...)  %u %u\n", __FILE__, __LINE__, __func__, (unsigned)pos, hdr->HeadLen);
 
 		uint16_t numberOfSignalGroups = leu16p(hdr->AS.Header+pos);
 		pos += 2;
 		uint16_t NS = 0;
-		unsigned bi = 0+4;
+
+		hdr->SPR = 128;
+		size_t bi = (0+4)*hdr->SPR;
+
 		// read all signal groups
-		for (int nsg=0; nsg<numberOfSignalGroups; nsg++) {
-			QSTRING_T *SignalGroupName = read_qstring(hdr, &pos);
-			QSTRING_T *SignalGroupPrefix = read_qstring(hdr, &pos);
+		for (int nsg=0; nsg < numberOfSignalGroups; nsg++) {
+			char SignalGroupName[101], SignalGroupPrefix[101];
+			read_qstring(hdr, &pos, SignalGroupName, 100);
+			read_qstring(hdr, &pos, SignalGroupPrefix, 100);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u SGP<%s> SGP<%s>\n",__FILE__,__LINE__,__func__, nsg, (unsigned)pos, SignalGroupName,SignalGroupPrefix );
+
 			uint16_t flag_SignalGroupEnabled = leu16p(hdr->AS.Header+pos);
 			pos += 2;
 			uint16_t NumberOfChannelsInSignalGroup = leu16p(hdr->AS.Header+pos);
@@ -317,15 +322,15 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 			uint16_t NumberOfAmplifierChannelsInSignalGroup = leu16p(hdr->AS.Header+pos);
 			pos += 2;
 
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u+%u %d\n", __FILE__, __LINE__, __func__, nsg, NS, NumberOfChannelsInSignalGroup, pos);
-
-		//if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %s %s\n",__FILE__,__LINE__,__func__,nsg,SignalGroupName->string,SignalGroupPrefix->string);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u+%u %d\n", __FILE__, __LINE__, __func__, nsg, NS, NumberOfChannelsInSignalGroup, (int)pos);
 
 			if (flag_SignalGroupEnabled) {
-				hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL, (1+NS+NumberOfChannelsInSignalGroup*(1+flag_DC_amplifier_data_saved)) * sizeof(CHANNEL_TYPE));
+				hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL, (1+NS+NumberOfChannelsInSignalGroup*(2+flag_DC_amplifier_data_saved)) * sizeof(CHANNEL_TYPE));
 				for (unsigned k = 0; k < NumberOfChannelsInSignalGroup; k++) {
-					QSTRING_T *NativeChannelName = read_qstring(hdr, &pos);
-					QSTRING_T *customChannelName = read_qstring(hdr, &pos);
+					char NativeChannelName[MAX_LENGTH_LABEL+1];
+					char CustomChannelName[MAX_LENGTH_LABEL+1];
+					read_qstring(hdr, &pos, NativeChannelName, MAX_LENGTH_LABEL);
+					read_qstring(hdr, &pos, CustomChannelName, MAX_LENGTH_LABEL);
 					pos += 4;
 					int16_t SignalType = lei16p(hdr->AS.Header+pos);
 					pos += 2;
@@ -350,17 +355,16 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 					float ElectrodeImpedancePhase = lef32p(hdr->AS.Header+pos);
 					pos += 4;
 
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u %d %d\n",__FILE__,__LINE__,__func__,nsg,k,ChannelEnabled,pos);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u %d SignalType=%d ChannelEnabled=%d flagDC=%d pos=%d NS=%u bi=%u\n",
+			__FILE__,__LINE__,__func__,
+			nsg,k,ChannelEnabled,SignalType,ChannelEnabled,flag_DC_amplifier_data_saved,(int)pos,NS,(unsigned)bi);
 
-					for (int k2=0; k2 < ChannelEnabled*(1+flag_DC_amplifier_data_saved*(SignalType==0)); k2++) {
+					int nn = 1 + (SignalType==0) + flag_DC_amplifier_data_saved*(SignalType==0);
+					char *ChannelName = NULL;
+					for (int k2=0; k2 < ChannelEnabled * nn; k2++) {
 						NS++;	// first channel is Time channel
 						CHANNEL_TYPE *hc = hdr->CHANNEL + NS;
-
-//		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) %u %2u %3u [%c %c]\n",__FILE__,__LINE__,__func__,nsg,k,NS,((char*)customChannelName->string)[0],((char*)customChannelName->string)[1]);
-						size_t outlen = MAX_LENGTH_LABEL+1;
-						char *outbuf = hc->Label;
-						size_t c = convert_qstring_to_utf8(NativeChannelName, &outbuf, &outlen);
-
+						strcpy(hc->Label, NativeChannelName);
 #ifdef MAX_LENGTH_PHYSDIM
 						strcpy(hc->PhysDim,"?");
 #endif
@@ -370,7 +374,7 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						hc->bi8    = bi << 3;
 						hc->LeadIdCode = 0;
 						hc->DigMin = 0.0;
-						hc->DigMax = ldexp(2,16)-1;
+						hc->DigMax = ldexp(1,16)-1;
 
 						hc->PhysDimCode = 0; // [?] default
 						hc->Cal    = 1;	//default
@@ -379,21 +383,23 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						switch (SignalType) {
 						case 0: 	// RHS2000 amplifier channel
 							if (k2==0) {
+								ChannelName = hc->Label;
 								hc->Cal    = 0.195;
 								hc->Off    = -32768 * hc->Cal;
 							}
+							else if ((k2+1)==nn) {
+								// Stimulation Data
+								sprintf(hc->Label,"Stim %s",ChannelName);
+								hc->PhysDimCode = 4160; // [A]
+								hc->Cal    = StimStepSize;
+								hc->Off    = 0;
+							}
 							else {
-								sprintf(hc->Label,"DC_AmpData %s",(hc-1)->Label);
+								sprintf(hc->Label,"DC_AmpData %s",ChannelName);
 								hc->Cal    = 19.23;
 								hc->Off    = -512 * hc->Cal;
 							}
 							hc->PhysDimCode = 4256; // [V]
-							break;
-						case -1: 	// Stimulation Data
-							hc->PhysDimCode = 4160; // [A]
-							hc->SPR    = hdr->SPR;
-							hc->Cal    = StimStepSize;
-							hc->Off    = 0;
 							break;
 						/*
 						case 2: 	// supply voltage channel
@@ -430,7 +436,7 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						hc->XYZ[2] = NAN;
 						hc->Impedance = ElectrodeImpedanceMagnitude;
 
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) %u %2u %3u Label<%s>: %d\n",__FILE__,__LINE__,__func__,nsg,k,NS,hc->Label,c);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) %u %2u %3u Label<%s>\n",__FILE__,__LINE__,__func__,nsg,k,NS,hc->Label);
 
 					}
 				}
@@ -444,19 +450,17 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 #ifdef MAX_LENGTH_PHYSDIM
 						strcpy(hc->PhysDim,"s");
 #endif
-						hc->SPR = hdr->SPR;
-						hc->GDFTYP  = 6; // uint32
 						hc->bi      = 0;
 						hc->bufptr  = NULL;
 
-						hc->OnOff  = 1;
+						hc->OnOff  = 2;		// time channel
 						hc->SPR    = hdr->SPR;
-						hc->GDFTYP = 4; // uint16
-						hc->bi     = 4-2+NS*2;
+						hc->GDFTYP = 6; // uint32
+						hc->bi     = 0;
 						hc->bi8    = hc->bi << 3;
 						hc->LeadIdCode = 0;
 						hc->DigMin = 0.0;
-						hc->DigMax = ldexp(2,32)-1;
+						hc->DigMax = ldexp(1,32)-1;
 						hc->Off    = 0.0;
 						hc->Cal    = 1.0/hdr->SampleRate;
 						hc->PhysDimCode = 2176; // [s]
@@ -475,10 +479,9 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 		}
 
 		hdr->HeadLen = pos;
-		hdr->SPR = 128;
 		hdr->NRec = -1;
-		hdr->NS = NS;
-		hdr->AS.bpb = (4+2*NS)*hdr->SPR;
+		hdr->NS = NS+1;
+		hdr->AS.bpb = bi;
 		ifseek(hdr, hdr->HeadLen, SEEK_SET);
 
 		struct stat FileBuf;
@@ -513,9 +516,9 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 		float fZ_actual    = lef32p(hdr->AS.Header+44); // actual impedance test frequency
 
 		size_t pos = 48;
-		QSTRING_T *note1 = read_qstring(hdr, &pos);
-		QSTRING_T *note2 = read_qstring(hdr, &pos);
-		QSTRING_T *note3 = read_qstring(hdr, &pos);
+		read_qstring(hdr, &pos, NULL, 0);	// note1
+		read_qstring(hdr, &pos, NULL, 0);	// note2
+		read_qstring(hdr, &pos, NULL, 0);	// note3
 
 		uint16_t numberTemperatureSensors = leu16p(hdr->AS.Header+pos);
 		pos += 2;
@@ -537,7 +540,8 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 		};
 */
 
-		QSTRING_T *referenceChannelName = read_qstring(hdr, &pos);
+		char *referenceChannelName = NULL;
+		read_qstring(hdr, &pos, referenceChannelName, 0);
 
 		uint16_t numberOfSignalGroups = leu16p(hdr->AS.Header+pos);
 		pos += 2;
@@ -555,8 +559,10 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 		hdr->SPR   = (hdr->Version < 2.0) ? 60 : 128;
 		unsigned bi = 0;
 		for (uint16_t k = 0; k<numberOfSignalGroups; k++) {
-			QSTRING_T *groupName = read_qstring(hdr, &pos);
-			QSTRING_T *groupNamePrefix = read_qstring(hdr, &pos);
+			char *groupName = NULL;
+			read_qstring(hdr, &pos, groupName, 0);
+			char *groupNamePrefix = NULL;
+			read_qstring(hdr, &pos, groupNamePrefix, 0);
 
 			uint16_t enabled = leu16p(hdr->AS.Header+pos);
 			pos += 2;
@@ -572,15 +578,10 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 				for (; chan < hdr->NS; chan++); {
 					CHANNEL_TYPE *hc = hdr->CHANNEL + chan;
 
-					QSTRING_T *NativeChannelName = read_qstring(hdr, &pos);
-					size_t outlen = MAX_LENGTH_LABEL+1;
-					char *outbuf = hc->Label;
-					size_t c = convert_qstring_to_utf8(NativeChannelName, &outbuf, &outlen);
-
-					QSTRING_T *CustomChannelName = read_qstring(hdr, &pos);
-					outlen = MAX_LENGTH_LABEL+1;
-					outbuf = hc->Label;
-					c = convert_qstring_to_utf8(CustomChannelName, &outbuf, &outlen);
+					char *NativeChannelName = NULL;
+					read_qstring(hdr, &pos, NativeChannelName, MAX_LENGTH_LABEL);
+					char *CustomChannelName = NULL;
+					read_qstring(hdr, &pos, CustomChannelName, 0);
 
 					uint16_t customOrder = leu16p(hdr->AS.Header+pos);
 					pos += 2;
