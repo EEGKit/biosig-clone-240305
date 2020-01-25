@@ -10773,8 +10773,8 @@ if HDR.NS>0,
         elseif ischar(HDR.Label)
                 HDR.Label = cellstr(HDR.Label); 
         end;
-        if ischar(HDR.PhysDim)
-                HDR.PhysDim = cellstr(HDR.PhysDim); 
+        if isfield(HDR,'PhysDim') && ischar(HDR.PhysDim)
+                HDR.PhysDim = cellstr(HDR.PhysDim);
         end; 
         HDR.CHANTYP = repmat(' ',1,HDR.NS);
         tmp = HDR.NS-length(HDR.Label);
