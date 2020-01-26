@@ -38,11 +38,6 @@ References:
 #define min(a,b)        (((a) < (b)) ? (a) : (b))
 #define max(a,b)        (((a) > (b)) ? (a) : (b))
 
-typedef struct {
-	int32_t length;	// this is little endian as defined in spec, use le32toh() when using it
-	char *string;
-} __attribute__((packed)) QSTRING_T;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -77,18 +72,16 @@ void read_qstring(HDRTYPE* hdr, size_t *pos, char *outbuf, size_t outlen) {
 	if ((*pos + len ) > hdr->HeadLen)
 		biosigERROR(hdr, B4C_INCOMPLETE_FILE, "Format Intan RHD2000 - incomplete file");
 
-	QSTRING_T *qString=(QSTRING_T *)(hdr->AS.Header+(*pos)-4);
-	*pos += len;
-
 	// convert qString into UTF-8 string
 	if (outbuf != NULL) {
 		iconv_t CD   = iconv_open ("UTF-8", "UTF-16LE");
-		size_t inlen = le32toh(qString->length);
-		char *inbuf  = qString->string;
+		size_t inlen = len;
+		char *inbuf  = hdr->AS.Header+(*pos);
 		size_t iconv_res = iconv (CD, &inbuf, &inlen, &outbuf, &outlen);
 		*outbuf = '\0';
 		iconv_close (CD);
 	}
+	*pos += len;
 	return;
 }
 
