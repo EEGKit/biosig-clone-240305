@@ -3870,6 +3870,11 @@ else if (!strncmp(MODE,"r",1)) {
 		}
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"SOPEN 101:\n");
 		count = ifread(hdr->AS.Header, 1, PAGESIZE, hdr);
+		if (count<32) {
+			biosigERROR(hdr, B4C_CANNOT_OPEN_FILE, "Error SOPEN(READ); file is empty (or too short)");
+			ifclose(hdr);
+			return(hdr);
+		}
 		hdr->AS.Header[count]=0;
 
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) count=%i\n", __func__, __LINE__,(int)count);
