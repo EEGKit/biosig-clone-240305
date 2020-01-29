@@ -1003,7 +1003,7 @@ install_libbiosig.$(DLEXT): libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 ifneq (Darwin,$(shell uname))
 	cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 endif
-	ldconfig
+	-ldconfig
 
 install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_tools
 
