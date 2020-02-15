@@ -358,7 +358,7 @@
 9280,"arb.u h-1","","arbitrary units per hour"
 9312,"arb.u d-1","","arbitrary units per day"
 9344,"arb.u kg-1","","arbitrary units per kilogram"
-9376,"arb.u m-2","","arbitrary units per square meter
+9376,"arb.u m-2","","arbitrary units per square meter"
 9408,"arb.u kg-1 s-1","","arbitrary units per kilogram per second"
 9440,"arb.u kg-1 min-1","","arbitrary units per kilogram per minute"
 9472,"arb.u kg-1 h-1","","arbitrary units per kilogram per hour"
@@ -381,7 +381,7 @@
 9952,"USP.u h-1","","USP units per hour"
 9984,"USP.u d-1","","USP units per day"
 10016,"USP.u kg-1","","USP units per kilogram"
-10048,"USP.u m-2","","USP units per square meter
+10048,"USP.u m-2","","USP units per square meter"
 10080,"USP.u kg-1 s-1","","USP units per kilogram per second"
 10112,"USP.u kg-1 min-1","","USP units per kilogram per minute"
 10144,"USP.u kg-1 h-1","","USP units per kilogram per hour"
