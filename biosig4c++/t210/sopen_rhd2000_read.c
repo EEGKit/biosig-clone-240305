@@ -318,7 +318,23 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u+%u %d\n", __FILE__, __LINE__, __func__, nsg, NS, NumberOfChannelsInSignalGroup, (int)pos);
 
 			if (flag_SignalGroupEnabled) {
-				hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL, (1+NS+NumberOfChannelsInSignalGroup*(2+flag_DC_amplifier_data_saved)) * sizeof(CHANNEL_TYPE));
+				typeof(pos) tmppos = pos;
+				int NumChans0 = 0;
+				int NumChans1 = 0;
+				// get number of enabled channels
+				for (unsigned k = 0; k < NumberOfChannelsInSignalGroup; k++) {
+					read_qstring(hdr, &tmppos, NULL, 0);
+					read_qstring(hdr, &tmppos, NULL, 0);
+					tmppos += 4;
+					int16_t SignalType = lei16p(hdr->AS.Header+tmppos);
+					tmppos += 2;
+					int16_t ChannelEnabled = lei16p(hdr->AS.Header+tmppos);
+					tmppos += 24;
+					NumChans0 += (ChannelEnabled > 0);
+					NumChans1 += (ChannelEnabled > 0) * (1 + (SignalType==0) * (flag_DC_amplifier_data_saved+1));
+				}
+
+				hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL, (1+NS+NumChans1) * sizeof(CHANNEL_TYPE));
 				for (unsigned k = 0; k < NumberOfChannelsInSignalGroup; k++) {
 					char NativeChannelName[MAX_LENGTH_LABEL+1];
 					char CustomChannelName[MAX_LENGTH_LABEL+1];
@@ -327,7 +343,7 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 					pos += 4;
 					int16_t SignalType = lei16p(hdr->AS.Header+pos);
 					pos += 2;
-					int16_t ChannelEnabled = lei16p(hdr->AS.Header+pos);
+					int16_t ChannelEnabled = leu16p(hdr->AS.Header+pos)>0;
 					pos += 2;
 					int16_t ChipChannel = lei16p(hdr->AS.Header+pos);
 					pos += 2;
@@ -348,31 +364,30 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 					float ElectrodeImpedancePhase = lef32p(hdr->AS.Header+pos);
 					pos += 4;
 
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) group=%u %u %d SignalType=%d ChannelEnabled=%d flagDC=%d pos=%d NS=%u bi=%u\n",
-			__FILE__,__LINE__,__func__,
-			nsg,k,ChannelEnabled,SignalType,ChannelEnabled,flag_DC_amplifier_data_saved,(int)pos,NS,(unsigned)bi);
-
-					int nn = 1 + (SignalType==0) + flag_DC_amplifier_data_saved*(SignalType==0);
+				if (ChannelEnabled) {
+					int nn = 1 + (SignalType==0) * (1 + flag_DC_amplifier_data_saved);
 					char *ChannelName = NULL;
-					for (int k2=0; k2 < ChannelEnabled * nn; k2++) {
-						NS++;	// first channel is Time channel
-						CHANNEL_TYPE *hc = hdr->CHANNEL + NS;
+					NS++;	// first channel is Time channel
+					for (int k2=0; k2 < nn; k2++) {
+						// k2>0 takes care of StimDatea and DCamp channels
+						CHANNEL_TYPE *hc = hdr->CHANNEL + NS + NumChans0*k2;
 						strcpy(hc->Label, NativeChannelName);
 #ifdef MAX_LENGTH_PHYSDIM
 						strcpy(hc->PhysDim,"?");
 #endif
 						hc->OnOff  = 1;
 						hc->GDFTYP = 4; // uint16
-						hc->bi     = bi;
+						hc->bi     = bi + hdr->SPR * NumChans0 * k2 * 2;
 						hc->bi8    = bi << 3;
 						hc->LeadIdCode = 0;
 						hc->DigMin = 0.0;
 						hc->DigMax = ldexp(1,16)-1;
 
-						hc->PhysDimCode = 0; // [?] default
-						hc->Cal    = 1;	//default
-						hc->Off    = 0; // default
-						hc->SPR    = hdr->SPR; //default
+						hc->PhysDimCode = 0;	// [?] default
+						hc->Cal    = 1;		// default
+						hc->Off    = 0;		// default
+						hc->SPR    = hdr->SPR;	// default
+
 						switch (SignalType) {
 						case 0: 	// RHS2000 amplifier channel
 							if (k2==0) {
@@ -386,6 +401,10 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 								hc->PhysDimCode = 4160; // [A]
 								hc->Cal    = StimStepSize;
 								hc->Off    = 0;
+								/* NOTE: reading StimData disabled - this is not supported yet.
+								   Issues are decoding and scaling of data (bit9-16)
+								 */
+								hc->OnOff  = 0;
 							}
 							else {
 								sprintf(hc->Label,"DC_AmpData %s",ChannelName);
@@ -415,7 +434,6 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						default:
 							biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format Intan RHS2000 - not conformant to specification");
 						}
-						bi += hc->SPR*2;
 						hc->PhysMin = hc->DigMin * hc->Cal + hc->Off;
 						hc->PhysMax = hc->DigMax * hc->Cal + hc->Off;
 
@@ -429,10 +447,14 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						hc->XYZ[2] = NAN;
 						hc->Impedance = ElectrodeImpedanceMagnitude;
 
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %u); %s(...) %u %2u %3u Label<%s>\n",__FILE__,__LINE__,__func__,nsg,k,NS,hc->Label);
 
 					}
+					bi += hdr->SPR * 2;
+				}	// if (ChannelEnabled)
 				}
+				// take care of StimData Channels and AmpDC channels
+				bi += (NumChans1 - NumChans0) * hdr->SPR * 2;
+				NS +=  NumChans1 - NumChans0;
 			}
 		}
 		{	// channel 0 - time channel
