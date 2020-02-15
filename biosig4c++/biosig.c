@@ -3660,9 +3660,9 @@ HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, bi
 	biosig_options_type default_options;
 	default_options.free_text_event_limiter="\0";
 
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s(%s,%s) (line %d): --delimiter=<%s> %p\n",__func__, FileName, MODE, __LINE__, biosig_options->free_text_event_limiter, biosig_options);
-
 	if (biosig_options==NULL) biosig_options = &default_options;
+
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s(%s,%s) (line %d): --delimiter=<%s> %p\n",__func__, FileName, MODE, __LINE__, biosig_options->free_text_event_limiter, biosig_options);
 
 	if (FileName == NULL) {
 		biosigERROR(hdr, B4C_CANNOT_OPEN_FILE, "no filename specified");
