@@ -120,11 +120,12 @@ ifeq (,$(TARGET))
 	AR      := ar rcs
 	PKGCONF := pkg-config
 	SHAREDLIB = -shared
+	DLEXT    = so
 else ifeq (intel,$(TARGET))
-	CC      := /opt/intel/bin/icc
-	CXX     := /opt/intel/bin/icc
-	LD      := /opt/intel/bin/xild
-	AR      := /opt/intel/bin/xiar crs
+	CC      := icc
+	CXX     := icc
+	LD      := xild
+	AR      := xiar crs
 else
 	PREFIX  := $(subst /bin/,/,$(dir $(shell which $(TARGET)-gcc)))
 	CC      := $(TARGET)-gcc
@@ -140,11 +141,13 @@ else
 		LDLIBS  += -liconv -lstdc++ -lws2_32
 		PKG_CONFIG_LIBS += -liconv -lws2_32
 		BINEXT   = .exe
+		DLEXT    = dll
 	endif
 endif
 
 SONAMEVERSION ?= 3
 
+### TODO: DLEXT does not work correctly on MXE/MINGW
 ifneq (,$(findstring Darwin, $(shell uname)))
 	## Homebrew:
 	##	brew install gawk
@@ -164,6 +167,7 @@ ifneq (,$(findstring Darwin, $(shell uname)))
 	SONAME_PREFIX  = -install_name # the last space character is crucial
 
 else ifneq (,$(findstring CYGWIN, $(shell uname)))
+	### TODO: check if this path is useful at all ###
 	DLEXT = dll
 	TAR	       = tar
 	LD	       = $(CXX)
@@ -172,6 +176,7 @@ else ifneq (,$(findstring CYGWIN, $(shell uname)))
 	SONAME_PREFIX  = -Wl,-soname=
 
 else ifneq (,$(findstring MINGW, $(shell uname)))
+	### TODO: check if this path is useful at all ###
 	## add gnulib's getlogin
 	SOURCES += win32/getlogin.c win32/getline.c win32/getdelim.c
 	OBJECTS += getlogin.o getline.o getdelim.o
@@ -181,7 +186,6 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 	CFLAGS  += -pipe -fPIC -D_REENTRANT -D=BUILD_DLL
 	TAR	 = tar
 	LD	 = $(CXX)
-	DLEXT    = dll
 	FULLDLEXT      = ${SONAMEVERSION}.dll
 	SONAME_PREFIX  = -Wl,-soname=
 	LDLIBS  += -lstdc++
@@ -192,7 +196,6 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 else
 	TAR	       = tar
 	LD	       = $(CXX)
-	DLEXT          = so
 	FULLDLEXT      = .so.${SONAMEVERSION}
 	SONAME_PREFIX  = -Wl,-soname=
 endif
@@ -775,17 +778,17 @@ libbiosig.pc :
 	echo "Libs.private: $(LDLIBS)"      >> "$@"
 
 ## save2gdf, pdp2gdf
-%${BINEXT}: %.c libbiosig.$(DLEXT)
+%${BINEXT}: %.c #libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 
 physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
 
 ifeq (1,@HAVE_LIBB64@)
-biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.$(DLEXT)
+biosig_fhir${BINEXT}: biosig_fhir.c # libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
 else
-biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c libbiosig.$(DLEXT)
+biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c # libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) -Ilibb64-1.2.1/include/ "$<" libb64-1.2.1/src/cencode.c -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 endif
 
