@@ -1,6 +1,6 @@
 ######## Makefile for "BioSig for C/C++" #####################
 ###
-###  Copyright (C) 2006-2019 Alois Schloegl <alois.schloegl@ist.ac.at>
+###  Copyright (C) 2006-2020 Alois Schloegl <alois.schloegl@ist.ac.at>
 ###  This file is part of the "BioSig for C/C++" repository
 ###  (biosig4c++) at https://biosig.sourceforge.io/
 ###
@@ -737,7 +737,7 @@ libphysicalunits${FULLDLEXT}:physicalunits.o
 libphysicalunits.a: physicalunits.o
 	-$(DELETE) "$@"
 	$(AR) "$@" "$<"
-libphysicalunits.def: physicalunits.o
+libphysicalunits.dll: physicalunits.o
 	$(LD) -o libphysicalunits.dll -s -shared -fPIC "$<" $(LDLIBS) -Wl,-subsystem,windows,--output-def,libphysicalunits.def,--out-implib,libphysicalunits.dll.a
 
 #libgdftime.a: gdftime.o
@@ -749,13 +749,13 @@ libphysicalunits.def: physicalunits.o
 libgdf.a: gdf.o getlogin.o gdftime.o physicalunits.o
 	-$(DELETE) "$@"
 	$(AR) "$@" gdf.o getlogin.o gdftime.o physicalunits.o
-libgdf.def: gdf.o getlogin.o gdftime.o physicalunits.o
+libgdf.dll: gdf.o getlogin.o gdftime.o physicalunits.o
 	$(LD) -s -shared -fPIC -o libgdf.dll gdf.o getlogin.o gdftime.o physicalunits.o $(LDLIBS) -Wl,-subsystem,windows,--output-def,libgdf.def,--out-implib,libgdf.dll.a
 
 libbiosig.a: $(OBJECTS) libbiosig.pc
 	-$(DELETE) libbiosig.a
 	$(AR) libbiosig.a $(OBJECTS)
-libbiosig.def: $(OBJECTS) libbiosig.pc
+libbiosig.dll: $(OBJECTS) libbiosig.pc
 	$(LD) -o libbiosig.dll -s -shared -fPIC $(OBJECTS) $(LDLIBS) -Wl,-subsystem,windows,--output-def,libbiosig.def,--out-implib,libbiosig.dll.a
 
 libbiosig.pc :
@@ -778,17 +778,17 @@ libbiosig.pc :
 	echo "Libs.private: $(LDLIBS)"      >> "$@"
 
 ## save2gdf, pdp2gdf
-%${BINEXT}: %.c #libbiosig.$(DLEXT)
+%${BINEXT}: %.c libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 
 physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
 
 ifeq (1,@HAVE_LIBB64@)
-biosig_fhir${BINEXT}: biosig_fhir.c # libbiosig.$(DLEXT)
+biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
 else
-biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c # libbiosig.$(DLEXT)
+biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c libbiosig.$(DLEXT)
 	$(CC) $(DEFINES) $(CFLAGS) -Ilibb64-1.2.1/include/ "$<" libb64-1.2.1/src/cencode.c -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 endif
 
