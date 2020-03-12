@@ -36,6 +36,5 @@ jsonHeader <- function(filename, channels=0) {
 #
 #   # read data
 #   data = sload("../data/Newtest17-256.bdf")
-#   plot(data[,1])
-#   plot(data[,2])
+#   plot((1:nrow(data))/HDR$Samplingrate,data[,1],"l",xlab="time [s]",ylab=HDR$CHANNEL[[1]]$Label)
 

@@ -27,8 +27,17 @@ Currently, only the data samples are loaded.
 	  result <- .Call("sload", filename, channels=0)
 	  return(result)
 	}
-	info <- function(filename) {
+	jsonHeader <- function(filename) {
 	  result <- .Call("jsonHeader", filename)
 	  return(result)
 	}
-	info("filename.gdf")
+	jsonHeader("filename.gdf")
+
+	# read header information
+	library(rjson)
+	HDR = fromJSON(jsonHeader("../data/Newtest17-256.bdf"))
+
+	# read data
+	data = sload("../data/Newtest17-256.bdf")
+	plot((1:nrow(data))/HDR$Samplingrate,data[,1],"l",xlab="time [s]",ylab=HDR$CHANNEL[[1]]$Label)
+
