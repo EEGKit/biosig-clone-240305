@@ -135,7 +135,16 @@ case 8,
 		TYP = [TYP; repmat(k,sum(ix2>0),1)];
 		HDR.EVENT.CodeDesc{k} = sprintf('bit %i',k);
 	end;
-	
+
+case 9, % according to Tobias Feldmann-Wustefeld, this is how the BVA works
+	t = bitand(HDR.BDF.ANNONS,2^16-1);
+	ix2 = diff([0;t])~=0;
+	POS = find(ix2);
+	TYP = t(ix2);
+	if any(TYP > 255),
+		warning('event table use codes outside the range for user-specified events');
+	end
+
 case 99,
 	% not recommended, because it could break some functionality in BioSig 
 	POS = [find(ix2>0);find(ix2<0)];
