@@ -11,6 +11,8 @@
 *.so*
 *.dll
 *.def
+*.png
+*.mex*
 biosig4c++/libbiosig.pc
 # ignore executables
 biosig4c++/save2gdf
@@ -20,7 +22,6 @@ biosig4c++/mma/sload
 biosig4c++/mma/sload.exe
 # ignore mex files
 biosig4c++/mex/mexSOPEN.cpp
-biosig4c++/mex/*.mex*
 # ignore intermediate files for biosig4python
 biosig4c++/python/biosig.py
 biosig4c++/python/swig_wrap.cxx
@@ -32,14 +33,13 @@ biosig4c++/magic/file.list
 biosig4c++/magic/*.mgc
 #
 # autoconf generated files
-biosig4c++/autom4te.cache/
-biosig4c++/config.h
-biosig4c++/config.log
-biosig4c++/config.status
-biosig4c++/configure
+autom4te.cache/
+config.h
+config.log
+config.status
+configure
 # Make output
-biosig4c++/Makefile
-biosig4c++/*/Makefile
+Makefile
 biosig4c++/CMakeCache.txt
 biosig4c++/CMakeFiles
 # 

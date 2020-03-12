@@ -1,0 +1,67 @@
+first: lib tools
+
+
+java: lib
+	make -C biosig4c++ java
+
+python: lib
+	make -C biosig4c++ python
+
+lib:
+	make -C biosig4c++ lib
+
+tools: lib
+	make -C biosig4c++ tools
+
+mma mathematica: lib
+	make -C biosig4c++/mma
+
+mex4m matlab: lib
+	make -C biosig4c++/mex mex4m
+
+mex4o octave: lib
+	make -C biosig4c++/mex  mex4o
+
+R: lib
+	make -C biosig4c++ R
+
+install:
+	make -C biosig4c++ install
+
+clean:
+	make -C biosig4c++ clean
+
+distclean:
+	make -C biosig4c++ distclean
+
+
+
+ifneq (:,@JAVA@)
+all: java
+endif
+ifneq (:,@MATHEMATICA@)
+ifneq (:,@MATHEMATICA_MPREP@)
+all: mma
+endif
+endif
+ifneq (:,@MATLAB@)
+MATLAB_MEX := $(shell dirname @MATLAB@)/mex
+all: matlab
+endif
+ifneq (:,@OCTAVE@)
+ifneq (:,@MKOCTFILE@)
+all: octave
+endif
+endif
+ifneq (:,@PYTHON2@)
+all: python
+endif
+ifneq (:,@PYTHON3@)
+all: python
+endif
+ifneq (:,@R@)
+all: R
+endif
+all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
+
+

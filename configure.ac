@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([biosig], [3.0.0])
-AC_CONFIG_SRCDIR([biosig.c])
+AC_CONFIG_SRCDIR([biosig4c++/biosig.c])
 AC_CONFIG_HEADERS([config.h])
 
 AC_USE_SYSTEM_EXTENSIONS
@@ -21,7 +21,7 @@ AC_PROG_MAKE_SET
 AC_CHECK_LIB([asound],  [snd_pcm_open])
 AC_CHECK_LIB([b64],     [base64_encode_block], AC_SUBST(HAVE_LIBB64,     "1") )
 AC_CHECK_LIB([cholmod], [cholmod_start],       AC_SUBST(HAVE_LIBCHOLMOD, "1") )
-AC_CHECK_LIB([dcmdata], [dcmEnableOtherLongVRGeneration], AC_SUBST(HAVE_DCMTK, "1") )
+AC_CHECK_LIB([dcmdata], [dcmEnableOtherLongVRGeneration], AC_SUBST(HAVE_LIBDCMTK, "1") )
 # AC_CHECK_LIB([hdf5],    [H5open],              AC_SUBST(HAVE_LIBHDF5,    "1") )
 # AC_CHECK_LIB([matio],   [Mat_Open],            AC_SUBST(HAVE_LIBMATIO,   "1") )
 AC_CHECK_LIB([z],       [gzopen],              AC_SUBST(HAVE_LIBZ,       "1") )
@@ -44,12 +44,15 @@ AC_CHECK_HEADER([iconv.h], ,[AC_MSG_ERROR([can not find iconv.h])])
 #AC_CHECK_LIB([tinyxml] , [main],        AC_SUBST(HAVE_LIBTINYXML, "1")  [TEST_LIBS="$TEST_LIBS -ltinyxml"],   AC_MSG_WARN([libtinyxml is not installed.]))
 #AC_CHECK_LIB([tinyxml2], [main],        AC_SUBST(HAVE_LIBTINYXML2, "1") [TEST_LIBS="$TEST_LIBS -ltinyxml2"],  AC_MSG_WARN([libtinyxml2 is not installed.]))
 
-AC_CHECK_PROG(HAVE_OCTAVE,[mkoctfile],"1")
-#AC_CHECK_PROG(HAVE_MATHEMATICA,[mathematica],"1")
-AC_CHECK_PROG(HAVE_PYTHON,[python],"1")
-AC_CHECK_PROG(HAVE_PYTHON2,[python2],"1")
-AC_CHECK_PROG(HAVE_PYTHON3,[python3],"1")
-AC_CHECK_PROG(HAVE_R,[R],"1")
+AC_PATH_PROG([JAVA],        [java],        [:])
+AC_PATH_PROG([MATLAB],      [matlab],      [:])
+AC_PATH_PROG([MATHEMATICA], [mathematica], [:])
+AC_PATH_PROG([MATHEMATICA_MPREP], [mprep], [:])
+AC_PATH_PROG([MKOCTFILE],   [mkoctfile],   [:])
+AC_PATH_PROG([OCTAVE],      [octave],      [:])
+AC_PATH_PROG([PYTHON2],     [python2],     [:])
+AC_PATH_PROG([PYTHON3],     [python3],     [:])
+AC_PATH_PROG([R],           [R],           [:])
 
 # FIXME: Replace `main' with a function in `-llibmex':
 AC_CHECK_LIB([libmex], [main])
@@ -98,19 +101,20 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([alarm atexit bzero dup2 floor getcwd getdelim gethostbyname gethostname gettimeofday localtime_r memchr memmove memset mkdir modf pow putenv rmdir select setenv setlocale socket strcasecmp strchr strcspn strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol strtoul strtoumax tzset])
 
 AC_CONFIG_FILES([Makefile
-                 R/Makefile
-                 examples/Makefile
-                 igor/Makefile
-                 java/Makefile
-                 magic/Makefile
-                 mex/Makefile
-                 mma/Makefile
-                 perl/Makefile
-                 php/Makefile
-                 python/Makefile
-                 ruby/Makefile
-                 t240/Makefile
-                 t241/Makefile
-                 tcl/Makefile])
+                 biosig4c++/Makefile
+                 biosig4c++/R/Makefile
+                 biosig4c++/examples/Makefile
+                 biosig4c++/igor/Makefile
+                 biosig4c++/java/Makefile
+                 biosig4c++/magic/Makefile
+                 biosig4c++/mex/Makefile
+                 biosig4c++/mma/Makefile
+                 biosig4c++/perl/Makefile
+                 biosig4c++/php/Makefile
+                 biosig4c++/python/Makefile
+                 biosig4c++/ruby/Makefile
+                 biosig4c++/t240/Makefile
+                 biosig4c++/t241/Makefile
+                 biosig4c++/tcl/Makefile])
 
 AC_OUTPUT

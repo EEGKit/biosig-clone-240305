@@ -19,7 +19,7 @@ Quick start for Debian/Linux installing libbiosig:
 # Installation (for users):
   download source release and run
 
-	VER=1.9.2
+	VER=2.0.2
         wget https://sourceforge.net/projects/biosig/files/BioSig\ for\ C_C\+\+/src/biosig4c\+\+-$VER.src.tar.gz
         tar xvf biosig4c++-$VER.src.tar.gz
 	cd biosig4c++-$VER
@@ -30,7 +30,7 @@ Quick start for Debian/Linux installing libbiosig:
 
 ## latest development version
 	git clone https://git.code.sf.net/p/biosig/code biosig-code
-	cd biosig-code/biosig4c++
+	cd biosig-code
 	autoreconf -fi  # only needed if autoconf files have been changed
 	./configure     # only needed if configuration has changed
 	make && sudo make install

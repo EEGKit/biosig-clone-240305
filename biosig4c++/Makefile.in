@@ -247,7 +247,7 @@ ifeq (1,@HAVE_LIBCHOLMOD@)
 	  LDLIBS     += -lsuitesparseconfig
 	endif
 endif
-ifeq (1,@HAVE_DCMTK@)
+ifeq (1,@HAVE_LIBDCMTK@)
 	DEFINES      += -D=WITH_DCMTK
 	LDLIBS       += -ldcmdata -loflog -lofstd
 	SOURCES      += t210/sopen_dcmtk_read.cpp
@@ -493,6 +493,7 @@ endif
 
 MinGW64OBJECTS  = $(patsubst win32/%.obj, win64/%.obj, $(MinGWOBJECTS))
 
+TARGET = save2gdf libbiosig.a
 LIB_OBJECTS  = libbiosig.a libgdf.a libphysicalunits.a libbiosig.pc
 ifeq (,$(findstring mingw,$(TARGET)))
     LIB_OBJECTS += libbiosig.$(DLEXT) libgdf.$(DLEXT) libphysicalunits.$(DLEXT)
@@ -500,9 +501,7 @@ endif
 
 first: $(IO_H_FILE2) lib tools
 tools: save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT}
-all:   first mex4o python R #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
-
-.PHONY : libbiosig lib python mex4m mex4o
+all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
 
 libbiosig lib: $(LIB_OBJECTS)
 
@@ -650,30 +649,28 @@ win64/sigviewer.exe: win64/libbiosig.a win64/libbiosig.dll
 ## biosig4python based on module extensions
 biosig4python : python
 
-python: libbiosig.$(LIBEXT)
+python: libbiosig
 	make -C python build
 
 install_python: python
 	make -C python install
 
 
-java: libbiosig.$(LIBEXT) java/biosig.i
+java: libbiosig
 	$(MAKE) -C java
-perl: libbiosig.$(LIBEXT) perl/biosig.i
+perl: libbiosig
 	$(MAKE) -C perl
-php: libbiosig.$(LIBEXT) php/biosig.i
+php: libbiosig
 	$(MAKE) -C php
-
 
 ruby/biosig_wrap.c: ruby/biosig.i
 	(cd ruby && swig -ruby biosig.i)
 ruby/Makefile: ruby/extconf.rb
 	ruby -C ruby extconf.rb
-biosig4ruby ruby: libbiosig.$(LIBEXT) ruby/Makefile ruby/biosig_wrap.c
+biosig4ruby ruby: libbiosig ruby/Makefile ruby/biosig_wrap.c
 	$(MAKE) -C ruby
 
-
-tcl: libbiosig.$(LIBEXT) tcl/biosig.i
+tcl: libbiosig tcl/biosig.i
 	$(MAKE) -C tcl
 
 
