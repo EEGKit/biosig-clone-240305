@@ -4,3 +4,7 @@ sload.so: sload.c
 
 clean:
 	rm *.o *.so
+
+build:
+	R CMD build .
+	R CMD check --as-cran biosig_2.0.2-1.tar.gz
