@@ -3976,6 +3976,7 @@ else if (!strncmp(MODE,"r",1)) {
                 }
 
 		typeof(hdr->NS)	AnnotationChannel = 0;
+		typeof(hdr->NS)	NumberOfAnnotationChannels = 0;
 		typeof(hdr->NS)	StatusChannel = 0;
 
 		int last = min(MAX_LENGTH_PID, 80);
@@ -4222,10 +4223,12 @@ else if (!strncmp(MODE,"r",1)) {
 			if ((hdr->TYPE==EDF) && !strncmp(Header1+192,"EDF+",4) && !strcmp(hc->Label,"EDF Annotations")) {
 				hc->OnOff = 0;
 				AnnotationChannel = k+1;
+				NumberOfAnnotationChannels++;
 			}
 			else if ((hdr->TYPE==BDF) && !strncmp(Header1+192,"BDF+",4) && !strcmp(hc->Label,"BDF Annotations")) {
 				hc->OnOff = 0;
 				AnnotationChannel = k+1;
+				NumberOfAnnotationChannels++;
 			}
 			if ((hdr->TYPE==BDF) && !strcmp(hc->Label,"Status")) {
 				hc->OnOff = 0;
@@ -4251,6 +4254,9 @@ else if (!strncmp(MODE,"r",1)) {
         		stat(hdr->FileName,&FileBuf);
 			hdr->NRec = (FileBuf.st_size - hdr->HeadLen)/hdr->AS.bpb;
 		}
+
+		if (NumberOfAnnotationChannels > 1)
+			fprintf(stdout, "WARNING: this file has multiple EDF+/BDF+ annotations channels - this is not supported.");
 
 		if (AnnotationChannel) {
 			/* read Annotation and Status channel and extract event information */
