@@ -38,11 +38,19 @@
 #undef WITH_DICOM	// disable internal DICOM implementation
 #undef WITH_GDCM	// disable interface to GDCM
 
-extern "C" int sopen_dcmtk_read(HDRTYPE* hdr);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern "C" int sopen_dicom_read(HDRTYPE* hdr) {
+int sopen_dcmtk_read(HDRTYPE* hdr);
+
+int sopen_dicom_read(HDRTYPE* hdr) {
 	return sopen_dcmtk_read(hdr);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // DCMTK
 
@@ -102,7 +110,7 @@ extern "C" int sopen_dicom_read(HDRTYPE* hdr) {
 */
 
 
-EXTERN_C int sopen_dicom_read(HDRTYPE* hdr) {
+int sopen_dicom_read(HDRTYPE* hdr) {
 
 	fprintf(stdout,"%s ( line %d): GDCM is used to read dicom files.\n",__func__,__LINE__);
 

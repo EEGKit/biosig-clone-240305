@@ -46,6 +46,8 @@
 
 /* TODO: ensure that hdr->CHANNEL[.].TOffset gets initialized after every alloc() */
 
+#define _GNU_SOURCE
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -53,6 +55,7 @@
 #include <locale.h>
 #include <math.h>      // define macro isnan()
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 
 
@@ -152,7 +155,7 @@ int sopen_hdf5(HDRTYPE *hdr);
 #ifdef HAVE_MATIO
 int sopen_matlab(HDRTYPE *hdr);
 #endif 
-#ifdef WITH_DICOM
+#if defined(WITH_DICOM) || defined(WITH_DCMTK)
 int sopen_dicom_read(HDRTYPE* hdr);
 #endif
 
@@ -3649,7 +3652,7 @@ HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, bi
 	struct tm 	tm_time;
 //	time_t		tt;
 
-	const char*	GENDER = "XMFX";
+	const char	GENDER[] = "XMFX";
 	const uint16_t	CFWB_GDFTYP[] = {17,16,3};
 	const float	CNT_SETTINGS_NOTCH[] = {0.0, 50.0, 60.0};
 	const float	CNT_SETTINGS_LOWPASS[] = {30, 40, 50, 70, 100, 200, 500, 1000, 1500, 2000, 2500, 3000};
@@ -8286,9 +8289,10 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 			len = min(40, MAX_LENGTH_NAME);
 			char *s;
 			s = (char*)(hdr->AS.Header+68);	// lastname
-			int len1 = min(40, strlen(s));
+			size_t slen = strlen(s);
+			int len1 = min(40, slen);
 			strncpy(hdr->Patient.Name, s, len1);
-			hdr->Patient.Name[len] = 0x1f;	// unit separator ascii(31)
+			hdr->Patient.Name[len1] = 0x1f;	// unit separator ascii(31)
 
 			s = (char*)(hdr->AS.Header+28);	// firstname
 			int len2 = min(strlen(s), MAX_LENGTH_NAME-len-1);

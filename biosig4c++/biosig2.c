@@ -425,7 +425,7 @@ int biosig_set_patient_name_structured(HDRTYPE *hdr, const char* LastName, const
 	size_t len2 = (FirstName ? strlen(FirstName) : 0 );
 	size_t len3 = (SecondLastName ? strlen(SecondLastName) : 0 );
 	if (len1+len2+len3+2 > MAX_LENGTH_NAME) {
-		fprintf(stderr,"Error in function %f: total length of name too large (%i > %i)\n",__func__,len1+len2+len3+2,MAX_LENGTH_NAME);
+		fprintf(stderr,"Error in function %s(...): total length of name too large (%i > %i)\n",__func__, (int)(len1+len2+len3+2), MAX_LENGTH_NAME);
 		return -1;
 	}
 	strcpy(hdr->Patient.Name, LastName);					// Flawfinder: ignore

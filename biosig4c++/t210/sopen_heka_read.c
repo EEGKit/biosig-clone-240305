@@ -147,7 +147,7 @@ void sopen_heka(HDRTYPE* hdr, FILE *itx) {
 		/* get file size and read whole file */
 		count += ifread(hdr->AS.Header+count, 1, FileBuf.st_size - count, hdr);
 
-if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) %s(...): %i bytes read\n",__FILE__,__LINE__,__func__, count);
+if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) %s(...): %i bytes read\n",__FILE__,__LINE__,__func__, (int)count);
 
 		// double oTime;
 		uint32_t nItems;

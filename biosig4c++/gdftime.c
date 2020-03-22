@@ -32,6 +32,7 @@
 
 */
 
+#define _GNU_SOURCE
 
 #include "gdftime.h"
 

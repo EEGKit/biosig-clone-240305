@@ -65,7 +65,7 @@
 	#endif
 
 
-extern "C" int sopen_dcmtk_read(HDRTYPE* hdr) {
+EXTERN_C int sopen_dcmtk_read(HDRTYPE* hdr) {
 
 	if (PACKAGE_VERSION_NUMBER < 361)
 		fprintf(stderr,"WARNING: DCMTK is not 3.6.1 but %s - this is not tested .\n",PACKAGE_VERSION);
