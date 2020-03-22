@@ -3978,9 +3978,10 @@ else if (!strncmp(MODE,"r",1)) {
                         return(hdr);
                 }
 
-		typeof(hdr->NS)	AnnotationChannel = 0;
-		typeof(hdr->NS)	NumberOfAnnotationChannels = 0;
 		typeof(hdr->NS)	StatusChannel = 0;
+		int annotStartBi=-1;
+		int annotEndBi=-1;
+		int annotNumBytesPerBlock=0;
 
 		int last = min(MAX_LENGTH_PID, 80);
 		strncpy(hdr->Patient.Id, Header1+8, last);
@@ -4225,13 +4226,15 @@ else if (!strncmp(MODE,"r",1)) {
 				
 			if ((hdr->TYPE==EDF) && !strncmp(Header1+192,"EDF+",4) && !strcmp(hc->Label,"EDF Annotations")) {
 				hc->OnOff = 0;
-				AnnotationChannel = k+1;
-				NumberOfAnnotationChannels++;
+				if (annotStartBi < 0) annotStartBi = hc->bi;
+				annotEndBi = hdr->AS.bpb;
+				annotNumBytesPerBlock += nbytes;
 			}
 			else if ((hdr->TYPE==BDF) && !strncmp(Header1+192,"BDF+",4) && !strcmp(hc->Label,"BDF Annotations")) {
 				hc->OnOff = 0;
-				AnnotationChannel = k+1;
-				NumberOfAnnotationChannels++;
+				if (annotStartBi < 0) annotStartBi = hc->bi;
+				annotEndBi = hdr->AS.bpb;
+				annotNumBytesPerBlock += nbytes;
 			}
 			if ((hdr->TYPE==BDF) && !strcmp(hc->Label,"Status")) {
 				hc->OnOff = 0;
@@ -4258,19 +4261,15 @@ else if (!strncmp(MODE,"r",1)) {
 			hdr->NRec = (FileBuf.st_size - hdr->HeadLen)/hdr->AS.bpb;
 		}
 
-		if (NumberOfAnnotationChannels > 1)
-			fprintf(stdout, "WARNING: this file has multiple EDF+/BDF+ annotations channels - this is not supported.");
-
-		if (AnnotationChannel) {
+		if (annotStartBi + annotNumBytesPerBlock - annotEndBi)
+			fprintf(stdout, "WARNING: this file has multiple non-contigous blocks of EDF+/BDF+ annotations channels - annotation channels are not decoded");
+		else {
 			/* read Annotation and Status channel and extract event information */
-			CHANNEL_TYPE *hc = hdr->CHANNEL+AnnotationChannel-1;
-
-			size_t sz   	= GDFTYP_BITS[hc->GDFTYP]>>3;
-			size_t bpb	= hc->SPR * sz;
+			size_t bpb	= annotNumBytesPerBlock;
 			size_t len 	= bpb * hdr->NRec;
 			uint8_t *Marker = (uint8_t*)malloc(len + 1);
 			size_t skip 	= hdr->AS.bpb - bpb;
-			ifseek(hdr, hdr->HeadLen + hc->bi, SEEK_SET);
+			ifseek(hdr, hdr->HeadLen + annotStartBi, SEEK_SET);
 			nrec_t k3;
 			for (k3=0; k3<hdr->NRec; k3++) {
 			    	ifread(Marker+k3*bpb, 1, bpb, hdr);
