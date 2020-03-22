@@ -839,19 +839,6 @@ void biosig_rewind(int handle, int biosig_signal) {
 	srewind(hdrlist[handle].hdr);
 }
 
-int biosig_get_annotation(int handle, size_t n, struct biosig_annotation_struct *annot) {
-
-	if (handle<0 || handle >= hdrlistlen || hdrlist[handle].hdr==NULL) return(-1);
-	HDRTYPE *hdr = hdrlist[handle].hdr;
-	if (n>=hdr->EVENT.N) return (-1); 
-
-	annot->onset = hdr->EVENT.POS[n];
-	annot->duration = hdr->EVENT.DUR[n];
-	annot->annotation = GetEventDescription(hdr, n);
-
-	return(0);
-}
-
 biosig_handle_t biosig2_open_file_writeonly(const char *path, enum FileFormat filetype, int number_of_signals) {
 
         /* TODO: does not open file and write to file */
