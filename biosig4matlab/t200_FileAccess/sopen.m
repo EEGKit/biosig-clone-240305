@@ -949,7 +949,7 @@ end;
                                 HDR.ArtifactSelection = ArtifactSelection; 
                         end;
 
-                elseif strcmp(HDR.TYPE,'EDF') && (length(strmatch('EDF Annotations',HDR.Label))==1),
+                elseif strcmp(HDR.TYPE,'EDF') && (sum(strcmp('EDF Annotations',HDR.Label)) > 0),
                         % EDF+: 
                         tmp = strmatch('EDF Annotations',HDR.Label);
                         HDR.EDF.Annotations = tmp;
@@ -957,18 +957,22 @@ end;
                         	ReRefMx = sparse(1:HDR.NS,1:HDR.NS,1);
                         	ReRefMx(:,tmp) = [];
                         end;	
-                        
-			status = fseek(HDR.FILE.FID,HDR.HeadLen+HDR.AS.bi(HDR.EDF.Annotations),'bof');
-			sz = HDR.AS.SPR(HDR.EDF.Annotations)*GDFTYP_BYTE(HDR.GDFTYP(HDR.EDF.Annotations)+1)';
-			if (exist('OCTAVE_VERSION','builtin') && strcmp('OCTAVE_VERSION','3.8.0'))
-				error('Octave 3.8.0 is broken')
-			else
-				[t,c] = fread(HDR.FILE.FID, [sz,inf], [int2str(sz),'*uchar=>uchar'], HDR.AS.bpb-sz);
-			end;
-			t = reshape(char(t),sz,[]);
-			HDR.EDFplus.ANNONS = t;
+			sz = sum(HDR.AS.SPR(HDR.EDF.Annotations))*2;
 
-                elseif strcmp(HDR.TYPE,'BDF') && (length(strmatch('BDF Annotations',HDR.Label))==1),
+			if ( (HDR.AS.bi(HDR.EDF.Annotations(1))) + sz ~= HDR.AS.bi(HDR.EDF.Annotations(end)+1) )
+	                        fprintf(HDR.FILE.stderr,'Warning SOPEN(EDF): File %s has non-contiguous set of "EDF Annotations" channels - Annotations are ignored!\n',HDR.FileName);
+			else
+				status = fseek(HDR.FILE.FID,HDR.HeadLen+HDR.AS.bi(HDR.EDF.Annotations(1)), 'bof');
+				if (exist('OCTAVE_VERSION','builtin') && strcmp('OCTAVE_VERSION','3.8.0'))
+					error('Octave 3.8.0 is broken')
+				else
+					[t,c] = fread(HDR.FILE.FID, [sz,inf], [int2str(sz),'*uchar=>uchar'], HDR.AS.bpb-sz);
+				end;
+				t = reshape(char(t),sz,[]);
+				HDR.EDFplus.ANNONS = t;
+			end
+
+                elseif strcmp(HDR.TYPE,'BDF') && (sum(strcmp('BDF Annotations',HDR.Label))>0),
                         % BDF+: 
                         tmp = strmatch('BDF Annotations',HDR.Label);
                         HDR.EDF.Annotations = tmp;
@@ -976,13 +980,16 @@ end;
                         	ReRefMx = sparse(1:HDR.NS,1:HDR.NS,1);
                         	ReRefMx(:,tmp) = [];
                         end;	
+			sz = sum(HDR.AS.SPR(HDR.EDF.Annotations))*3;
                         
-                        status = fseek(HDR.FILE.FID,HDR.HeadLen+HDR.AS.bi(HDR.EDF.Annotations)*3,'bof');
-			sz = HDR.AS.SPR(HDR.EDF.Annotations)*3; 
-                        t = fread(HDR.FILE.FID,inf,[int2str(sz),'*uchar=>uchar'],HDR.AS.bpb-HDR.AS.SPR(HDR.EDF.Annotations)*3);
-			t = reshape(char(t),sz,[]);
-                        HDR.EDFplus.ANNONS = t;
-
+			if ( (HDR.AS.bi(HDR.EDF.Annotations(1))) + sz ~= HDR.AS.bi(HDR.EDF.Annotations(end)+1) )
+				fprintf(HDR.FILE.stderr,'Warning SOPEN(BDF): File %s has non-contiguous set of "BDF Annotations" channels - Annotations are ignored!\n',HDR.FileName);
+			else
+				status = fseek(HDR.FILE.FID,HDR.HeadLen + HDR.AS.bi(HDR.EDF.Annotations(1))*3, 'bof');
+				t = fread(HDR.FILE.FID,inf,[int2str(sz),'*uchar=>uchar'],HDR.AS.bpb-sz);
+				t = reshape(char(t),sz,[]);
+				HDR.EDFplus.ANNONS = t;
+			end
 
                 elseif strcmp(HDR.TYPE,'EDF') && (length(strmatch('ANNOTATION',HDR.Label))==1),
                         % EEG from Delta/NihonKohden converted into EDF: 
