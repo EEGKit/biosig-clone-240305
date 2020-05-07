@@ -1,5 +1,4 @@
-first: lib tools
-
+first :: lib tools
 
 java: lib
 	make -C biosig4c++ java
@@ -20,12 +19,12 @@ mex4m matlab: lib
 	make -C biosig4c++/mex mex4m
 
 mex4o octave: lib
-	make -C biosig4c++/mex  mex4o
+	make -C biosig4c++/mex mex4o
 
 R: lib
 	make -C biosig4c++ R
 
-install:
+install ::
 	make -C biosig4c++ install
 
 clean:
@@ -39,29 +38,51 @@ distclean:
 ifneq (:,@JAVA@)
 all: java
 endif
+
 ifneq (:,@MATHEMATICA@)
 ifneq (:,@MATHEMATICA_MPREP@)
-all: mma
+first ::
+	make -C biosig4c++/mma
+install ::
+	make -C biosig4c++ install_mma
+uninstall ::
+	make -C biosig4c++ uninstall_mma
 endif
 endif
+
 ifneq (:,@MATLAB@)
 MATLAB_MEX := $(shell dirname @MATLAB@)/mex
-all: matlab
+first ::
+	make -C biosig4c++/mex mex4m
+install ::
+	make -C biosig4c++ install_mex
+uninstall ::
+	make -C biosig4c++ uninstall_mex
 endif
+
 ifneq (:,@OCTAVE@)
 ifneq (:,@MKOCTFILE@)
-all: octave
+first ::
+	make -C biosig4c++ mexbiosig
+install ::
+	-@OCTAVE@ --eval "pkg install biosig4c++/mex/mexbiosig.src.tar.gz"
+uninstall ::
+	-@OCTAVE@ --eval "pkg uninstall mexbiosig"
 endif
 endif
+
 ifneq (:,@PYTHON2@)
 all: python
 endif
+
 ifneq (:,@PYTHON3@)
 all: python
 endif
+
 ifneq (:,@R@)
 all: R
 endif
+
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
 
 

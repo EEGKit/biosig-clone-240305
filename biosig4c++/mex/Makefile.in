@@ -197,7 +197,7 @@ mex4m: $(patsubst %.cpp, %.$(MEX_EXT), $(MEX_OBJECTS))
 
 ifneq (Darwin,$(shell uname))
 %.$(MEX_EXT): %.cpp
-	$(MEX) $(MEX_OPTION) $(DEFINES) -I.. "$<" -L.. -lbiosig -o "$@"
+	$(MEX) $(MEX_OPTION) $(DEFINES) -I.. "$<" -L.. -lbiosig -output "$@"
 else
 %.$(MEX_EXT): %.cpp
 	$(MEX) $(DEFINES) -I.. -outdir mex "$<" -L.. -lbiosig

@@ -15,7 +15,8 @@ CROSS64 ?= /home/schloegl/src/mxe.github.schloegl/usr/bin/x86_64-w64-mingw32.sta
 
 ###########################################
 ## set Mathematica variables
-MATHEMATICA_EXE=$(shell which mathematica)
+MATHEMATICA_EXE = @MATHEMATICA@
+MATHEMATICA_EXE ?= $(shell which mathematica)
 ifeq (,$(MATHEMATICA_EXE))
         $(error "mathematica not found in $$PATH - cannot compile biosig for Mathematica")
 endif
