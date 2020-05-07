@@ -19,12 +19,19 @@
 
 dyn.load("sload.so")
 
-sload <- function(filename, channels=0) {
-	result <- .Call("sload", filename, channels=0)
+#' Loads biomedical signal data
+#'
+#' @param filename name of biosig data file
+#' @param channel indicates which channel should be loaded, (default 0: indicaes all channels)
+#' @return matrix containing sample values
+sload <- function(filename, channel=0) {
+	result <- .Call("sload", filename, channel=0)
 	return(result)
 }
 
-jsonHeader <- function(filename, channels=0) {
+#' @param filename name of biosig data file
+#' @return Header (or Meta-) information of data file in JSON format
+jsonHeader <- function(filename) {
 	result <- .Call("jsonHeader", filename)
 	return(result)
 }
