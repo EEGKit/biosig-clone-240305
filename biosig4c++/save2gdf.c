@@ -1,6 +1,6 @@
 /*
 
-    Copyright (C) 2000,2005,2007-2019 Alois Schloegl <alois.schloegl@gmail.com>
+    Copyright (C) 2000,2005,2007-2020 Alois Schloegl <alois.schloegl@gmail.com>
     Copyright (C) 2007 Elias Apostolopoulos
     This file is part of the "BioSig for C/C++" repository 
     (biosig4c++) at http://biosig.sf.net/ 
@@ -629,6 +629,9 @@ int main(int argc, char **argv){
 			hdr->CHANNEL[k].PhysMin = MinValueF;
 	    		hdr->CHANNEL[k].Cal = (hdr->CHANNEL[k].PhysMax - hdr->CHANNEL[k].PhysMin) / (hdr->CHANNEL[k].DigMax - hdr->CHANNEL[k].DigMin);
 	    		hdr->CHANNEL[k].Off = hdr->CHANNEL[k].PhysMin - hdr->CHANNEL[k].DigMin * hdr->CHANNEL[k].Cal;
+		}
+		else if ((SOURCE_TYPE==EDF) && (TARGET.TYPE==GDF)) {
+			// do nothing
 		}
 		else if ((hdr->CHANNEL[k].GDFTYP<10 ) && (TARGET.TYPE==GDF || TARGET.TYPE==CFWB)) {
 			/* heuristic to determine optimal data type */
