@@ -24,7 +24,7 @@ mex4o octave: lib
 R: lib
 	make -C biosig4c++ R
 
-install ::
+install :: tools
 	make -C biosig4c++ install
 
 clean:
@@ -40,14 +40,12 @@ all: java
 endif
 
 ifneq (:,@MATHEMATICA@)
-ifneq (:,@MATHEMATICA_MPREP@)
 first ::
 	make -C biosig4c++/mma
 install ::
 	make -C biosig4c++ install_mma
 uninstall ::
 	make -C biosig4c++ uninstall_mma
-endif
 endif
 
 ifneq (:,@MATLAB@)
@@ -71,16 +69,30 @@ uninstall ::
 endif
 endif
 
-ifneq (:,@PYTHON2@)
-all: python
+ifneq (:,@PYTHON@)
+first ::
+	PYTHON=@PYTHON@ make -C biosig4c++/python build
+install ::
+	PYTHON=@PYTHON@ make -C biosig4c++/python install
 endif
-
+ifneq (:,@PYTHON2@)
+first ::
+	PYTHON=@PYTHON2@ make -C biosig4c++/python build
+install ::
+	PYTHON=@PYTHON2@ make -C biosig4c++/python install
+endif
 ifneq (:,@PYTHON3@)
-all: python
+first ::
+	PYTHON=@PYTHON3@ make -C biosig4c++/python build
+install ::
+	PYTHON=@PYTHON3@ make -C biosig4c++/python install
 endif
 
 ifneq (:,@R@)
-all: R
+first ::
+	make -C biosig4c++ R
+install ::
+	make -C biosig4c++ R
 endif
 
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
