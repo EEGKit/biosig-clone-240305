@@ -45,6 +45,7 @@ AC_CHECK_HEADER([iconv.h], ,[AC_MSG_ERROR([can not find iconv.h])])
 #AC_CHECK_LIB([tinyxml2], [main],        AC_SUBST(HAVE_LIBTINYXML2, "1") [TEST_LIBS="$TEST_LIBS -ltinyxml2"],  AC_MSG_WARN([libtinyxml2 is not installed.]))
 
 AC_PATH_PROG([JAVA],        [java],        [:])
+AC_PATH_PROG([JAVAC],       [javac],       [:])
 AC_PATH_PROG([MATHEMATICA], [mathematica], [:])
 AC_PATH_PROG([MATHEMATICA_MPREP], [mprep], [:])
 AC_PATH_PROG([MATLAB],      [matlab],      [:])

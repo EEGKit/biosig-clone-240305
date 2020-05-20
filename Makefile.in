@@ -1,7 +1,15 @@
+####### Main Makefile for building the various biosig tools ####################
+###
+###  Copyright (C) 2010-2020 Alois Schloegl <alois.schloegl@gmail.com>
+###  This file is part of the "BioSig for C/C++" repository
+###  (biosig4c++) at http://biosig.sf.net/
+###
+################################################################################
+
 first :: lib tools
 
 java: lib
-	make -C biosig4c++ java
+	make -C biosig4c++/java
 
 python: lib
 	make -C biosig4c++ python
@@ -27,20 +35,30 @@ R: lib
 install :: tools
 	make -C biosig4c++ install
 
-clean:
+uninstall ::
+	make -C biosig4c++ uninstall
+
+clean ::
 	make -C biosig4c++ clean
 
-distclean:
+distclean ::
 	make -C biosig4c++ distclean
 
 
 
 ifneq (:,@JAVA@)
-all: java
+ifneq (:,@JAVAC@)
+first :: lib
+	make -C biosig4c++/java
+clean ::
+	make -C biosig4c++/java clean
+endif
+test ::
+	make -C biosig4c++/java test
 endif
 
 ifneq (:,@MATHEMATICA@)
-first ::
+first :: lib
 	make -C biosig4c++/mma
 install ::
 	make -C biosig4c++ install_mma

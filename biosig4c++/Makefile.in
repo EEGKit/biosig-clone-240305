@@ -1066,7 +1066,7 @@ install_mma : mma/biosig.exe
 
 uninstall_mma:
 	${RM} $(DESTDIR)$(datadir)/biosig/mathematica/{sload,biosig}.exe
-	cd $(DESTDIR)$(datadir) && rmdir -p biosig/mathematica
+	cd $(DESTDIR)$(datadir) && rm -r biosig/mathematica
 
 uninstall remove: uninstall_mexbiosig uninstall_tools
 	-$(DELETE) $(DESTDIR)$(bindir)/ttl2trig
