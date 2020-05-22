@@ -11,14 +11,13 @@
 
 JAVA_HOME ?= $(realpath $(dir $(realpath $(shell which @JAVAC@ )))/..)
 
-JAVA  ?= $(JAVA_HOME)/bin/java
 CLASS_PATH ?= $(JAVA_HOME)/bin
 
 libBiosig.so: Biosig.h Biosig.c
 	$(CXX) -shared -fPIC \
 		-I.. \
 		-I$(JAVA_HOME)/include \
-		-I$(JAVA_HOME)/include/linux \
+		-I$(JAVA_HOME)/include/$(shell uname -s | tr '[:upper:]' '[:lower:]') \
 		Biosig.c -L.. -lbiosig -o libBiosig.so
 
 Biosig.h: Biosig.class
@@ -28,8 +27,7 @@ Biosig.class: Biosig.java
 	@JAVAC@ Biosig.java
 
 test: libBiosig.so
-	#LD_LIBRARY_PATH=. java biosig
-	@JAVA@ -Djava.library.path=. Biosig "../data/Newtest17-256.bdf"
+	LD_LIBRARY_PATH=.. @JAVA@ -Djava.library.path=. Biosig "../data/Newtest17-256.bdf"
 
 clean: 
 	-rm *.h
