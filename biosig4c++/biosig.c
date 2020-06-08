@@ -368,10 +368,6 @@ uint32_t lcm(uint32_t A, uint32_t B)
 	A64 *= B/gcd(A,B);
 	if (A64 > 0x00000000ffffffffllu) {
 		fprintf(stderr,"Error: HDR.SPR=LCM(%u,%u) overflows and does not fit into uint32.\n",(unsigned)A,(unsigned)B);
-#ifndef ONLYGDF
-		B4C_ERRNUM = B4C_UNSPECIFIC_ERROR;
-		B4C_ERRMSG = "Computing LCM failed.";
-#endif
 	}
 	return((uint32_t)A64);
 };
@@ -4285,6 +4281,7 @@ else if (!strncmp(MODE,"r",1)) {
 				char *line = (char*)(Marker + k3 * bpb);
 				
 				char flag = !strncmp(Header1+193,"DF+D",4); // no time keeping for EDF+C
+				char flag_subsec_isset = 0;
 				while (line < (char*)(Marker + (k3+1) * bpb)) {
 					// loop through all annotations within a segment	
 										
@@ -4306,6 +4303,19 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"%s(line %i): EDF+ line<%s>\n",__FILE__,__LI
 					}
 
 					double t = atof(tstr);
+
+					/* set sub-second start time: see also
+						https://github.com/mne-tools/mne-python/pull/7875
+						https://www.edfplus.info/specs/edfplus.html#tal
+					*/
+					if ( !flag_subsec_isset && (s2==NULL) && (tstr[0]=='+' || tstr[0]=='-' ) ) {
+						// first t contains subsecond information of starttime
+						if (VERBOSE_LEVEL>7) fprintf(stdout,"T0=%20f + %f s\n",ldexp(hdr->T0,-32)*24*3600,t);
+						hdr->T0 += ldexp(t / (24 * 3600.0), +32);
+						if (VERBOSE_LEVEL>7) fprintf(stdout,"T0=%20f\n", ldexp(hdr->T0,-32) * 24 * 3600);
+					}
+					flag_subsec_isset = 1;
+
 					if (flag>0 || s2!=NULL) {
 						if (N_EVENT <= hdr->EVENT.N+1) {
 							N_EVENT = reallocEventTable(hdr, max(6,hdr->EVENT.N*2));
