@@ -1,16 +1,15 @@
 Package: biosig
-Version: 2.0.2-1
-Date: 2020-03-17
+Version: 2.0.3
+Date: 2020-05-25
 Encoding: UTF-8
 Title: Biomedical Signal Tools
-Authors@R: c(person("Alois", "Schlögl", role = c("aut", "cre"),
-                     email = "alois.schloegl@gmail.com"),  comment="https://orcid.org/0000-0002-5621-8100")
+Authors@R: person("Alois", "Schlögl", role = c("aut", "cre"),
+                     email = "alois.schloegl@gmail.com", comment="https://orcid.org/0000-0002-5621-8100")
 Author: Alois Schlögl [aut, cre]
 Maintainer: Alois Schlögl <alois.schloegl@gmail.com>
 Depends: R (>= 3.1.0)
 Suggests: 
-Description: Biosig supports reading of over about 50 different 
-   data formats in the field of biomedical signals like ECG and EEG. 
+Description: Import filter for about 50 different biomedical signals data formats.
 License: GPL (>= 3)
 URL: https://biosig.sourceforge.io, http://pub.ist.ac.at/~schloegl
 BugReports: https://sourceforge.net/projects/biosig/support

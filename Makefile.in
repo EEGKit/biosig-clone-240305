@@ -108,9 +108,9 @@ endif
 
 ifneq (:,@R@)
 first ::
-	make -C biosig4c++ R
+	make -C biosig4c++/R build
 install ::
-	make -C biosig4c++ R
+	make -C biosig4c++/R install
 endif
 
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer

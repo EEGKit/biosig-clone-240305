@@ -1,10 +1,19 @@
 
+BIOSIG4R_PKG = biosig_@PACKAGE_VERSION@.tar.gz
+
+build: $(BIOSIG4R_PKG)
+
 sload.so: sload.c
 	R CMD SHLIB sload.c -L.. -lbiosig
 
 clean:
-	rm *.o *.so
+	rm *.o *.so *.gz $(BIOSIG4R_PKG)
 
-build:
+$(BIOSIG4R_PKG):
+	sed -i 's#^Version.*$$#Version: @PACKAGE_VERSION@#g' DESCRIPTION
 	R CMD build .
-	R CMD check --as-cran biosig_2.0.2-1.tar.gz
+	R CMD check --as-cran $@
+
+install: $(BIOSIG4R_PKG)
+	R CMD INSTALL $<
+
