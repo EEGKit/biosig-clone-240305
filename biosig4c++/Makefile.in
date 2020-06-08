@@ -1036,10 +1036,10 @@ uninstall_tools:
 
 ### Install mexbiosig for Octave
 install_mexbiosig install_octave: mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz
-	@OCTAVE@ --eval "pkg install $<"
+	@OCTAVE@ --no-gui --eval "pkg install $<"
 
 uninstall_mexbiosig:
-	@OCTAVE@ --eval "pkg uninstall mexbiosig"
+	@OCTAVE@ --no-gui --eval "pkg uninstall mexbiosig"
 
 
 ### Install mexbiosig for Matlab and Octave
