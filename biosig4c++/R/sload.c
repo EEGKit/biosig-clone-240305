@@ -25,7 +25,7 @@ References:
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
 
-#include "../biosig.h"
+#include <biosig.h>
 
 SEXP sload(SEXP filename, SEXP channels) {
 

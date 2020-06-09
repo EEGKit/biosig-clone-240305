@@ -4,7 +4,7 @@ BIOSIG4R_PKG = biosig_@PACKAGE_VERSION@.tar.gz
 build: $(BIOSIG4R_PKG)
 
 sload.so: sload.c
-	R CMD SHLIB sload.c -L.. -lbiosig
+	R CMD SHLIB sload.c -I.. -L.. -lbiosig
 
 clean:
 	rm *.o *.so *.gz $(BIOSIG4R_PKG)

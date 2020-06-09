@@ -30,7 +30,7 @@ mex4o octave: lib
 	make -C biosig4c++/mex mex4o
 
 R: lib
-	make -C biosig4c++ R
+	make -C biosig4c++/R
 
 install :: tools
 	make -C biosig4c++ install

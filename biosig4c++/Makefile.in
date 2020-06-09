@@ -854,7 +854,7 @@ mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 R: R/sload.$(DLEXT)
 
 R/sload.$(DLEXT): R/sload.c libbiosig.$(DLEXT)
-	(cd R; R CMD SHLIB sload.c -L.. -lbiosig)
+	make -C R
 
 
 #############################################################
@@ -1083,6 +1083,7 @@ uninstall remove: uninstall_mexbiosig uninstall_tools
 	-$(DELETE) $(DESTDIR)$(libdir)/libbiosig${SONAMEVERSION}.*
 	-$(DELETE) $(DESTDIR)$(libdir)/libphysicalunits.*
 	-$(DELETE) $(DESTDIR)$(libdir)/pkgconfig/libbiosig.pc
+	-ldconfig
 
 
 #############################################################
