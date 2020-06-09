@@ -1,6 +1,6 @@
 /*
 
-% Copyright (C) 2005-2013 Alois Schloegl <alois.schloegl@gmail.com>
+% Copyright (C) 2005-2013,2020 Alois Schloegl <alois.schloegl@gmail.com>
 % This file is part of the "BioSig for C/C++" repository
 % (biosig4c++/libbiosig) at http://biosig.sf.net/
 
@@ -89,12 +89,19 @@ struct tm *gdf_time2tm_time(gdftime_t t);
  */
 int gdf_time2tm_time_r(gdftime_t t, struct tm *tm);
 
+/*
+   converts date and time to strings using this format %Y-%m-%d %H:%M:%S
+   with microsecond resolution, if needed.
+	%04d-%02d-%02d %02d:%02d:%02d
+	%04d-%02d-%02d %02d:%02d:%09.6f
+*/
+
+size_t snprintf_gdftime(char *out, size_t outbytesleft, gdftime_t T);
+size_t snprintf_gdfdate(char *out, size_t outbytesleft, gdftime_t T);
+size_t snprintf_gdfdatetime(char *out, size_t outbytesleft, gdftime_t T);
+
 
 /*
-char *gdftime2string(gdftime_t)
-char *gdfdate2string(gdftime_t)
-char *gdfdatetime2string(gdftime_t)
-
 gdftime_t string2gdftime(const char*)
 gdftime_t string2gdfdate(const char*)
 gdftime_t string2gdfdatetime(const char*)

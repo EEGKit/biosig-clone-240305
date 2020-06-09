@@ -11934,10 +11934,6 @@ else if (!strncmp(MODE,"w",1))	 /* --- WRITE --- */
 			Header1[0] = '0';
 	     	}
 
-/* obsolete
-		tt = gdf_time2t_time(hdr->Patient.Birthday);
-		if (hdr->Patient.Birthday>1) strftime(tmp,81,"%d-%b-%Y",localtime(&tt));
-*/
 		char tmp[81];
 		struct tm *t = gdf_time2tm_time(hdr->Patient.Birthday);
 		if (hdr->Patient.Birthday>1)
@@ -14053,7 +14049,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout, "asprintf_hdr2json: sz=%i\n", (int)sz);
 	c += sprintf(STR, "\t\"SamplesPerRecords\"\t: %i,\n",(int)hdr->SPR);
 	c += sprintf(STR, "\t\"NumberOfSamples\"\t: %i,\n",(int)(hdr->NRec*hdr->SPR));
 	if (!isnan(hdr->SampleRate)) c += sprintf(STR, "\t\"Samplingrate\"\t: %f,\n",hdr->SampleRate);
-	strftime(tmp,40,"%Y-%m-%d %H:%M:%S",gdf_time2tm_time(hdr->T0));
+	snprintf_gdfdatetime(tmp, 40, hdr->T0);
 	c += sprintf(STR, "\t\"StartOfRecording\"\t: \"%s\",\n",tmp);
 	c += sprintf(STR, "\t\"TimezoneMinutesEastOfUTC\"\t: %i,\n", hdr->tzmin);
 	c += sprintf(STR, "\t\"NumberOfSweeps\"\t: %d,\n",(unsigned)NumberOfSweeps);
@@ -14175,15 +14171,13 @@ if (VERBOSE_LEVEL>7) fprintf(stdout, "asprintf_hdr2json: count=%i\n", (int)c);
 			if (hdr->EVENT.TYP[k] != 0x7fff)
 	                        c += sprintf(STR, ",\n\t\t\"DUR\"\t: %f", hdr->EVENT.DUR[k]/hdr->EVENT.SampleRate);
                 }
-#if (BIOSIG_VERSION >= 10500)
+
 		if (hdr->EVENT.TimeStamp != NULL && hdr->EVENT.TimeStamp[k] != 0) {
-			struct tm tm;
 			char buf[255];
-			gdf_time2tm_time_r(hdr->EVENT.TimeStamp[k],&tm);
-			strftime(buf,sizeof(buf), "%Y-%b-%d %H:%M:%S", &tm);
+			snprintf_gdfdatetime(buf, sizeof(buf), hdr->EVENT.TimeStamp[k]);
                         c += sprintf(STR,",\n\t\t\"TimeStamp\"\t: \"%s\"", buf);
 		}
-#endif
+
 		if (hdr->EVENT.TYP[k] == 0x7fff) {
 			// c += sprintf(STR, ",\n\t\t\"Description\"\t: \"[sparse sample]\"");
 			typeof(hdr->NS) chan = hdr->EVENT.CHN[k] - 1;
@@ -14252,7 +14246,8 @@ int fprintf_hdr2json(FILE *fid, HDRTYPE* hdr)
 	fprintf(fid,"\t\"SamplesPerRecords\"\t: %i,\n",(int)hdr->SPR);
 	fprintf(fid,"\t\"NumberOfSamples\"\t: %i,\n",(int)(hdr->NRec*hdr->SPR));
 	if (!isnan(hdr->SampleRate)) fprintf(fid,"\t\"Samplingrate\"\t: %f,\n",hdr->SampleRate);
-	strftime(tmp,40,"%Y-%m-%d %H:%M:%S",gdf_time2tm_time(hdr->T0));
+
+	snprintf_gdfdatetime(tmp, 40, hdr->T0);
 	fprintf(fid,"\t\"StartOfRecording\"\t: \"%s\",\n",tmp);
 	fprintf(fid,"\t\"TimezoneMinutesEastOfUTC\"\t: %i,\n", hdr->tzmin);
 	fprintf(fid,"\t\"NumberOfSweeps\"\t: %d,\n",(unsigned)NumberOfSweeps);
@@ -14354,15 +14349,13 @@ int fprintf_hdr2json(FILE *fid, HDRTYPE* hdr)
 			if (hdr->EVENT.TYP[k] != 0x7fff)
 	                        fprintf(fid,",\n\t\t\"DUR\"\t: %f", hdr->EVENT.DUR[k]/hdr->EVENT.SampleRate);
                 }
-#if (BIOSIG_VERSION >= 10500)
+
 		if (hdr->EVENT.TimeStamp != NULL && hdr->EVENT.TimeStamp[k] != 0) {
-			struct tm tm;
 			char buf[255];
-			gdf_time2tm_time_r(hdr->EVENT.TimeStamp[k],&tm);
-			strftime(buf,sizeof(buf), "%Y-%b-%d %H:%M:%S", &tm);
+			snprintf_gdfdatetime(buf,sizeof(buf), hdr->EVENT.TimeStamp[k]);
                         fprintf(fid,",\n\t\t\"TimeStamp\"\t: \"%s\"", buf);
 		}
-#endif
+
 		if ((hdr->EVENT.TYP[k] == 0x7fff) && (hdr->TYPE==GDF)) {
 			//fprintf(fid,"\t\t\"Description\"\t: [neds]\n");        // no comma at the end because its the last element
 
@@ -14549,15 +14542,12 @@ int hdr2ascii(HDRTYPE* hdr, FILE *fid, int VERBOSE)
 		for (k=0; k<hdr->EVENT.N; k++) {
 			fprintf(fid,"\n%5i\t0x%04x\t%d",(int)(k+1),hdr->EVENT.TYP[k],hdr->EVENT.POS[k]);
 
-#if (BIOSIG_VERSION >= 10500)
 			if (hdr->EVENT.TimeStamp != NULL && hdr->EVENT.TimeStamp[k] != 0) {
-				struct tm tm;
 				char buf[255];
-				gdf_time2tm_time_r(hdr->EVENT.TimeStamp[k],&tm);
-				strftime(buf,sizeof(buf), "%Y-%b-%d %H:%M:%S", &tm);
+				snprintf_gdfdatetime(buf,sizeof(buf), hdr->EVENT.TimeStamp[k]);
 				fprintf(fid,"\t%s",buf);
 			}
-#endif
+
 			if (hdr->EVENT.TYP[k] == 0x7fff)
 				fprintf(fid,"\t%d",hdr->EVENT.CHN[k]);
 			else if (hdr->EVENT.DUR != NULL)
