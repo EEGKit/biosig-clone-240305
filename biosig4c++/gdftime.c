@@ -270,6 +270,49 @@ size_t snprintf_gdfdatetime(char *out, size_t outbytesleft, gdftime_t T) {
 }
 
 
+size_t strfgdftime(char *out, size_t outbytesleft, const char *FMT, gdftime_t T) {
+	struct gdf_time_tm_t gte;
+	struct tm tm;
+	size_t len;
+	int cin=0;
+	int cout=0;
+	char FMT2[4]="%%\0\0";
+
+	split_gdf_time(T, &gte);
+	gdf_time2tm_time_r(T, &tm);
+
+	while ( cout < outbytesleft && cin<strlen(FMT)) {
+		switch (FMT[cin]) {
+		case '%':
+			FMT2[1] = FMT[cin+1];
+			switch (FMT2[1]) {
+			case 's':
+				cout += snprintf(out+cout, outbytesleft-cout, "%f", gdf_time2t_time(T));
+				cin += 2;
+				break;
+			case 'S':
+				cout += snprintf(out+cout, outbytesleft-cout, "%09.6f", gte.SECOND);
+				cin += 2;
+				break;
+			case 'E':
+			case 'O':
+				FMT2[2] = FMT[cin+2];
+				cout += strftime(out+cout, outbytesleft-cout, FMT2, &tm);
+				cin += 3;
+				FMT2[2]=0;	// reset terminating \0
+				break;
+			default:
+				cout += strftime(out+cout, outbytesleft-cout, FMT2, &tm);
+				cin += 2;
+			}
+			break;
+		default:
+			out[cout++] = FMT[cin++];
+		}
+	}
+	if (out < outbytesleft) out[cout]=0;
+	return cout;
+}
 
 
 /*

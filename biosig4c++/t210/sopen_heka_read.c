@@ -304,9 +304,11 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"HEKA L1 @%i=\t%i/%i \n",(int)(pos+StartOfDa
 
 				gdf_time t = heka2gdftime(tt);
 		
-				struct tm tm;
-				gdf_time2tm_time_r(t,&tm); 
-if (VERBOSE_LEVEL>7) fprintf(stdout,"HEKA L2 @%i=%s %f\t%i/%i %i/%i     t=%.17g %s\n",(int)(pos+StartOfData),SeLabel,Delay.f64,k1,K1,k2,K2,ldexp(t,-32),asctime(&tm));
+				if (VERBOSE_LEVEL>7) {
+					char tmp[60];
+					snprintf_gdfdate(tmp, sizeof(tmp), t);
+					fprintf(stdout,"HEKA L2 @%i=%s %f\t%i/%i %i/%i     t=%.17g %s\n",(int)(pos+StartOfData),SeLabel,Delay.f64,k1,K1,k2,K2,ldexp(t,-32),tmp);
+				}
 
 				pos += Sizes.Rec.Series + 4;
 				// read number of children
@@ -335,9 +337,11 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"HEKA L2 @%i=%s %f\t%i/%i %i/%i     t=%.17g 
 					size_t SPR = 0, spr = 0;
 					gdf_time t   = heka2gdftime(*(double*)(hdr->AS.Header+pos+48));		// time of sweep. TODO: this should be taken into account 
 
-					gdf_time2tm_time_r(t,&tm); 
-
-if (VERBOSE_LEVEL>7) fprintf(stdout,"HEKA L3 @%i= %fHz\t%i/%i %i/%i %i/%i %s\n",(int)(pos+StartOfData),hdr->SampleRate,k1,K1,k2,K2,k3,K3,asctime(&tm));
+					if (VERBOSE_LEVEL>7) {
+						char tmp[60];
+						snprintf_gdfdate(tmp, sizeof(tmp), t);
+						fprintf(stdout,"HEKA L3 @%i= %fHz\t%i/%i %i/%i %i/%i %s\n",(int)(pos+StartOfData),hdr->SampleRate,k1,K1,k2,K2,k3,K3,tmp);
+					}
 
 					char flagSweepSelected = (hdr->AS.SegSel[0]==0 || k1+1==hdr->AS.SegSel[0])
 						              && (hdr->AS.SegSel[1]==0 || k2+1==hdr->AS.SegSel[1])

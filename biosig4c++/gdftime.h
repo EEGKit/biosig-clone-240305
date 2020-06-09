@@ -82,10 +82,12 @@ EXTERN_C {
 gdftime_t   tm_time2gdf_time(struct tm *t);
 /*
  * gdf_time2tm_time converts gdf-time into struct tm format,
+   this is deprecated because time resolution (sub-seconds) are lost
  */
 struct tm *gdf_time2tm_time(gdftime_t t);
 /*
  * re-entrant version of gdf_time2tm_time, memory for t must be allocated
+   this is deprecated because time resolution (sub-seconds) are lost
  */
 int gdf_time2tm_time_r(gdftime_t t, struct tm *tm);
 
@@ -94,11 +96,14 @@ int gdf_time2tm_time_r(gdftime_t t, struct tm *tm);
    with microsecond resolution, if needed.
 	%04d-%02d-%02d %02d:%02d:%02d
 	%04d-%02d-%02d %02d:%02d:%09.6f
+   strfgdftime resembles strftime(...), except for format
+	%s and %S which will also present 6 digits the fraction of the second
 */
 
 size_t snprintf_gdftime(char *out, size_t outbytesleft, gdftime_t T);
 size_t snprintf_gdfdate(char *out, size_t outbytesleft, gdftime_t T);
 size_t snprintf_gdfdatetime(char *out, size_t outbytesleft, gdftime_t T);
+size_t strfgdftime(char *out, size_t outbytesleft, const char *FMT, gdftime_t T);
 
 
 /*

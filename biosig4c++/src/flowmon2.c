@@ -586,7 +586,7 @@ char debugfile[] = "flowmonDD.log.txt";
 			 * Write HTML file 
 			 *******************************************************************/
                         char buf[100];
-                        strftime(buf,100,"%Y-%m-%d %H:%M:%S UTC",tm);
+                        strfgdftime(buf,100,"%Y-%m-%d %H:%M:%S UTC",gdfTime);
                         FILE *fid3 = fopen("/var/www/flowsensor.html","w");
                         if (fid3 != NULL) {
                                 fprintf(fid3,"<html><body><h1>Carbogen FlowSensor</h1><br><pre>Time:\t\t%s\n",buf);

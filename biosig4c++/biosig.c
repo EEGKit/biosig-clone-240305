@@ -4108,7 +4108,7 @@ else if (!strncmp(MODE,"r",1)) {
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"[EDF 211z] #=%li\n",iftell(hdr));
 
 		}
-		hdr->T0 = tm_time2gdf_time(&tm_time);
+		hdr->T0 = tm_time2gdf_time(&tm_time);  // note: sub-second information will be extracted from first annotation
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"[EDF 212] #=%li\n",iftell(hdr));
 
 		if (hdr->NS==0) return(hdr);
@@ -7185,7 +7185,7 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 						gdf_time t0 = tm_time2gdf_time(&tm_time);
 
 						char tmpstr[80];
-						strftime(tmpstr,80,"%Y-%m-%d %H:%M:%S", &tm_time);				
+						strftime(tmpstr,80,"%Y-%m-%d %H:%M:%S", &tm_time);
 						if (VERBOSE_LEVEL>7) fprintf(stdout,"EEG1100 [261]: %s\n",tmpstr);
 */
 						if (1) //(t0 >= hdr->T0)
@@ -8051,7 +8051,6 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 				tm_time.tm_sec = 0;
 				tm_time.tm_year -= 1900;
 				tm_time.tm_mon -= 1;
-				//fprintf(stdout,"%s\n",asctime(&tm_time));
 				hdr->T0 = tm_time2gdf_time(&tm_time);
 			}
 			else if (!strncmp(t,"HPF[Hz]",7))
@@ -11524,13 +11523,14 @@ else if (!strncmp(MODE,"w",1))	 /* --- WRITE --- */
     		// fprintf(fid,"\n[Header 1]\nNumberOfChannels\t= %i\n",hdr->NS);
     		//fprintf(fid,"NRec\t= %i\n",hdr->NRec);
     		fprintf(fid,"Duration         \t= %f\t# in seconds\n",hdr->SPR*hdr->NRec/hdr->SampleRate);
-    		struct tm *t = gdf_time2tm_time(hdr->T0);
-    		fprintf(fid,"Recording.Time    \t= %04i-%02i-%02i %02i:%02i:%02i\t# YYYY-MM-DD hh:mm:ss\n",t->tm_year+1900,t->tm_mon+1,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
+		char tmp[40];
+		snprintf_gdfdatetime(tmp, sizeof(tmp), hdr->T0);
+		fprintf(fid,"Recording.Time    \t= %s\t# YYYY-MM-DD hh:mm:ss.uuuuuu\n",tmp);
 		fprintf(fid,"Timezone          \t= +%i min\n",hdr->tzmin);
 
     		fprintf(fid,"Patient.Id        \t= %s\n",hdr->Patient.Id);
-    		t = gdf_time2tm_time(hdr->Patient.Birthday);
-    		fprintf(fid,"Patient.Birthday  \t= %04i-%02i-%02i %02i:%02i:%02i\t# YYYY-MM-DD hh:mm:ss\n",t->tm_year+1900,t->tm_mon+1,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
+		snprintf_gdfdate(tmp, sizeof(tmp), hdr->Patient.Birthday);
+		fprintf(fid,"Patient.Birthday  \t= %s\t# YYYY-MM-DD\n",tmp);
     		fprintf(fid,"Patient.Weight    \t= %i\t# in [kg]\n",hdr->Patient.Weight);
     		fprintf(fid,"Patient.Height    \t= %i\t# in [cm]\n",hdr->Patient.Height);
     		fprintf(fid,"Patient.Gender    \t= %i\t# 0:Unknown, 1: Male, 2: Female, 9: Unspecified\n",hdr->Patient.Sex);
@@ -11835,13 +11835,6 @@ else if (!strncmp(MODE,"w",1))	 /* --- WRITE --- */
 	    	memcpy(hdr->AS.Header,"CFWB\1\0\0\0",8);
 		lef64a(1/hdr->SampleRate, hdr->AS.Header+8);
 
-		struct tm *t = gdf_time2tm_time(hdr->T0);
-    		leu32a(t->tm_year + 1900, hdr->AS.Header+16);
-	    	leu32a(t->tm_mon + 1, hdr->AS.Header+20);
-	    	leu32a(t->tm_mday, hdr->AS.Header+24);
-	    	leu32a(t->tm_hour, hdr->AS.Header+28);
-	    	leu32a(t->tm_min, hdr->AS.Header+32);
-		lef64a(t->tm_sec, hdr->AS.Header+36);
 		lef64a(0.0,  hdr->AS.Header+44);	// pretrigger time
 	    	leu32a(NS, hdr->AS.Header+52);
 	    	hdr->NRec *= hdr->SPR; hdr->SPR = 1;
@@ -11935,9 +11928,8 @@ else if (!strncmp(MODE,"w",1))	 /* --- WRITE --- */
 	     	}
 
 		char tmp[81];
-		struct tm *t = gdf_time2tm_time(hdr->Patient.Birthday);
 		if (hdr->Patient.Birthday>1)
-			strftime(tmp,81,"%02d-%b-%04Y",t);
+			strfgdftime(tmp,81,"%02d-%b-%04Y",hdr->Patient.Birthday);
 		else strcpy(tmp,"X");
 
 		if (strlen(hdr->Patient.Id) > 0) {
@@ -11955,9 +11947,8 @@ else if (!strncmp(MODE,"w",1))	 /* --- WRITE --- */
 
 	     	memcpy(Header1+8, cmd, strlen(cmd));
 
-		t = gdf_time2tm_time(hdr->T0);
-		if (hdr->T0>1)
-			strftime(tmp,81,"%02d-%b-%04Y",t);
+		if (hdr->T0 > 1)
+			strfgdftime(tmp,81,"%d-%b-%Y", hdr->T0);
 		else strcpy(tmp,"X");
 
 		char *tmpstr = hdr->ID.Technician;	
@@ -11966,8 +11957,7 @@ else if (!strncmp(MODE,"w",1))	 /* --- WRITE --- */
 	     	memcpy(Header1+88, cmd, len);
 	     	memcpy(Header1+88+len, &hdr->ID.Equipment, 8);
 
-		t = gdf_time2tm_time(hdr->T0);
-		strftime(tmp,81,"%d.%m.%y%H.%M.%S",t);
+		strfgdftime(tmp,81,"%d.%m.%y%H.%M.%S",hdr->T0);
 	     	memcpy(Header1+168, tmp, 16);
 
 		len = sprintf(tmp,"%i",hdr->HeadLen);
@@ -14398,9 +14388,8 @@ int hdr2ascii(HDRTYPE* hdr, FILE *fid, int VERBOSE)
 	float		age;
 
 	if (VERBOSE==7) {
-		T0 = gdf_time2tm_time(hdr->T0);
 		char tmp[60];
-		strftime(tmp, 59, "%x %X %Z", T0);
+		snprintf_gdfdatetime(tmp, sizeof(tmp), hdr->T0);
 		fprintf(fid,"\tStartOfRecording: %s\nbci2000: %p\n",tmp,hdr->AS.bci2000);
 		return(0);
 	}
@@ -14461,15 +14450,14 @@ int hdr2ascii(HDRTYPE* hdr, FILE *fid, int VERBOSE)
 		fprintf(fid,"\tEye Impairment  : %s\n",EyeImpairment[hdr->Patient.Impairment.Visual]);
 		fprintf(fid,"\tHeart Impairment: %s\n",HeartImpairment[hdr->Patient.Impairment.Heart]);
 		if (hdr->Patient.Birthday) {
-			T0 = gdf_time2tm_time(hdr->Patient.Birthday);
-			fprintf(fid,"\tAge             : %4.1f years\n\tBirthday        : (%.6f) %s ",age,ldexp(hdr->Patient.Birthday,-32),asctime(T0));
+			snprintf_gdfdatetime(tmp, sizeof(tmp), hdr->T0);
+			fprintf(fid,"\tAge             : %4.1f years\n\tBirthday        : (%.6f) %s ",age,ldexp(hdr->Patient.Birthday,-32),tmp);
 		}
 		else
 			fprintf(fid,"\tAge             : ----\n\tBirthday        : unknown\n");
 
-		T0 = gdf_time2tm_time(hdr->T0);
-		strftime(tmp, 59, "%x %X %Z", T0);
-		fprintf(fid,"\tStartOfRecording: (%.6f) %s",ldexp(hdr->T0,-32),asctime(T0));
+		snprintf_gdfdatetime(tmp, sizeof(tmp), hdr->T0);
+		fprintf(fid,"\tStartOfRecording: (%.6f) %s",ldexp(hdr->T0,-32),tmp);
 		fprintf(fid,"\tTimezone        : %+i min\n\n", hdr->tzmin);
 		if (hdr->AS.bci2000 != NULL) {
 		   if (VERBOSE < 4) {
