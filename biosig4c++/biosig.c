@@ -4276,12 +4276,12 @@ else if (!strncmp(MODE,"r",1)) {
 			hdr->EVENT.SampleRate = hdr->SampleRate;
 
 			/* convert EDF+/BDF+ annotation channel into event table */
+			char flag_subsec_isset = 0;
 			for (k3 = 0; k3 < hdr->NRec; k3++) {
 				double timeKeeping = 0;	
 				char *line = (char*)(Marker + k3 * bpb);
 				
 				char flag = !strncmp(Header1+193,"DF+D",4); // no time keeping for EDF+C
-				char flag_subsec_isset = 0;
 				while (line < (char*)(Marker + (k3+1) * bpb)) {
 					// loop through all annotations within a segment	
 										
