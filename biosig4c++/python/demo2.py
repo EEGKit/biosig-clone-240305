@@ -38,6 +38,7 @@ H["TYPE"]
 H["Samplingrate"]
 Fs=H["Samplingrate"]
 NS=len(H["CHANNEL"])	# number of channels
+T0=H["StartOfRecording"]
 
 ### read and display data ###
 A=biosig.data(FILENAME)

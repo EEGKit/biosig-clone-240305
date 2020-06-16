@@ -12,7 +12,7 @@ java: lib
 	make -C biosig4c++/java
 
 python: lib
-	make -C biosig4c++ python
+	make -C biosig4c++/python
 
 lib:
 	make -C biosig4c++ lib
@@ -49,12 +49,12 @@ distclean ::
 ifneq (:,@JAVA@)
 ifneq (:,@JAVAC@)
 first :: lib
-	make -C biosig4c++/java
+	-make -C biosig4c++/java
 clean ::
-	make -C biosig4c++/java clean
+	-make -C biosig4c++/java clean
 endif
 test ::
-	make -C biosig4c++/java test
+	-make -C biosig4c++/java test
 endif
 
 ifneq (:,@MATHEMATICA@)
@@ -89,21 +89,21 @@ endif
 
 ifneq (:,@PYTHON@)
 first ::
-	PYTHON=@PYTHON@ make -C biosig4c++/python build
+	-PYTHON=@PYTHON@ make -C biosig4c++/python build
 install ::
-	PYTHON=@PYTHON@ make -C biosig4c++/python install
+	-PYTHON=@PYTHON@ make -C biosig4c++/python install
 endif
 ifneq (:,@PYTHON2@)
 first ::
-	PYTHON=@PYTHON2@ make -C biosig4c++/python build
+	-PYTHON=@PYTHON2@ make -C biosig4c++/python build
 install ::
-	PYTHON=@PYTHON2@ make -C biosig4c++/python install
+	-PYTHON=@PYTHON2@ make -C biosig4c++/python install
 endif
 ifneq (:,@PYTHON3@)
 first ::
-	PYTHON=@PYTHON3@ make -C biosig4c++/python build
+	-PYTHON=@PYTHON3@ make -C biosig4c++/python build
 install ::
-	PYTHON=@PYTHON3@ make -C biosig4c++/python install
+	-PYTHON=@PYTHON3@ make -C biosig4c++/python install
 endif
 
 ifneq (:,@R@)

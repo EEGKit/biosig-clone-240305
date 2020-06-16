@@ -97,7 +97,7 @@ int biosig_hdr2gdf_base64(HDRTYPE *hdr, FILE *fid) {
 */
 
 char* biosig_fhir_binary_xml_template(const char *filename, FILE *fid) {
-	/* generate XML template
+	// generate XML template
 	/*
 	<Binary xmlns="http://hl7.org/fhir">
 	 <!-- from Resource: id, meta, implicitRules, and language -->

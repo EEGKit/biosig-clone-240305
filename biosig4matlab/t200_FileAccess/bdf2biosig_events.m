@@ -136,7 +136,7 @@ case 8,
 		HDR.EVENT.CodeDesc{k} = sprintf('bit %i',k);
 	end;
 
-case 9, % according to Tobias Feldmann-Wustefeld, this is how the BVA works
+case 9, % according to Tobias Feldmann-Wustefeld, this is how the BVA import works
 	t = bitand(HDR.BDF.ANNONS,2^16-1);
 	ix2 = diff([0;t])~=0;
 	POS = find(ix2);
