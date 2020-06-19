@@ -12,7 +12,7 @@ java: lib
 	make -C biosig4c++/java
 
 python: lib
-	make -C biosig4c++/python
+	make -C biosig4c++/python release
 
 lib:
 	make -C biosig4c++ lib
@@ -34,9 +34,12 @@ R: lib
 
 install :: tools
 	make -C biosig4c++ install
+	install -d @prefix@/share/biosig/matlab
+	cp -r biosig4matlab/* @prefix@/share/biosig/matlab/
 
 uninstall ::
 	make -C biosig4c++ uninstall
+	rm -rf @prefix@/share/biosig
 
 clean ::
 	make -C biosig4c++ clean
@@ -61,9 +64,9 @@ ifneq (:,@MATHEMATICA@)
 first :: lib
 	make -C biosig4c++/mma
 install ::
-	make -C biosig4c++ install_mma
+	-make -C biosig4c++ install_mma*
 uninstall ::
-	make -C biosig4c++ uninstall_mma
+	-make -C biosig4c++ uninstall_mma
 endif
 
 ifneq (:,@MATLAB@)
@@ -81,38 +84,47 @@ ifneq (:,@MKOCTFILE@)
 first ::
 	make -C biosig4c++ mexbiosig
 install ::
-	-@OCTAVE@ --eval "pkg install biosig4c++/mex/mexbiosig.src.tar.gz"
+	-@OCTAVE@ --eval "pkg install -global biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz"
 uninstall ::
-	-@OCTAVE@ --eval "pkg uninstall mexbiosig"
+	-@OCTAVE@ --eval "pkg uninstall -global mexbiosig"
 endif
 endif
 
 ifneq (:,@PYTHON@)
 first ::
-	-PYTHON=@PYTHON@ make -C biosig4c++/python build
+	-PYTHON=@PYTHON@ make -C biosig4c++/python release
 install ::
-	-PYTHON=@PYTHON@ make -C biosig4c++/python install
+	-@PYTHON@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+uninstall ::
+	-@PYTHON@ -m pip uninstall Biosig
+clean ::
+	make -C biosig4c++/python clean
 endif
+
 ifneq (:,@PYTHON2@)
 first ::
 	-PYTHON=@PYTHON2@ make -C biosig4c++/python build
 install ::
-	-PYTHON=@PYTHON2@ make -C biosig4c++/python install
+	-@PYTHON2@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+uninstall ::
+	-@PYTHON2@ -m pip uninstall Biosig
 endif
+
 ifneq (:,@PYTHON3@)
 first ::
 	-PYTHON=@PYTHON3@ make -C biosig4c++/python build
 install ::
-	-PYTHON=@PYTHON3@ make -C biosig4c++/python install
+	-@PYTHON3@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+uninstall ::
+	-@PYTHON3@ -m pip uninstall Biosig
 endif
 
 ifneq (:,@R@)
 first ::
-	make -C biosig4c++/R build
+	-make -C biosig4c++/R build
 install ::
-	make -C biosig4c++/R install
+	-make -C biosig4c++/R install
 endif
 
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
-
 

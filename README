@@ -2,34 +2,51 @@ Introduction:
 =============
 
 The aim of this repository is providing a software library for biomedical signal processing.
-Biosig consists of two main parts: 
-(1) "Biosig for Octave and Matlab" and 
+Biosig consists of two main parts:
+(1) "Biosig for Octave and Matlab" and
 (2) "Biosig for C/C++" which contains also a number of bindings to other programming languages
 
-== Installation == 
+== Installation ==
 
---- Prerequistites at compile time --- 
-   apt install libb64-dev tinyxml-dev liboctave-dev libpython-dev libpython3-dev R openjdk
---- Prerequistites at runtime --- 
-   apt install libb64 tinyxml python-numpy python3-numpy R octave matlab
+The build and installation is quite flexible, and will adapt to your configuration. If numpy/libpython-dev
+is available, the biosig language binding for python will be installed. The same is try
+for Octave, Matlab, Mathematica, R, and Java.
 
-Installing biosig is as simple as 
+--- Recommended packages at compile time ---
+
+   apt-get install \
+	gawk \
+	libb64-dev tinyxml-dev \
+	liboctave-dev \
+	python-numpy python3-numpy \
+	libpython-dev libpython3-dev \
+	R openjdk-11-jdk
+
+--- Recommended packages at runtime ---
+   apt-get install \
+	libb64 tinyxml \
+	python-numpy python3-numpy \
+	R openjdk-11-jre \
+	octave octave-tsa octave-nan
+
+
+Installing biosig is as simple as
    ./configure
-   make 
-   sudo make install 
+   make
+   sudo make install
 
-This should install libbiosig and als biosig command line tools like 
+This should install libbiosig and als biosig command line tools like
 
     save2gdf
     biosig_fhir
     physicalunits
 
-Depending on your software configuration, also language bindings to 
-   Matlab, Octave, Python, Java, R, Mathematica 
+Depending on your software configuration, also language bindings to
+   Matlab, Octave, Python, Java, R, Mathematica
 might be installed. If you have python/numpy/libpython-dev installed, also biosig for python will be installed.
-If you have Octave/liboctave-dev installed, also mexbiosig will be installed in octave. 
+If you have Octave/liboctave-dev installed, also mexbiosig will be installed in octave.
 
-However there are some known (and probably also unknown) limitations. Known limitations are 
+However there are some known (and probably also unknown) limitations. Known limitations are
 - Java language binding does not compile on MacOSX
 - Cross compilation for Windows does not work (except for Matlab and Mathematica language bindings)
 
@@ -52,7 +69,7 @@ text strings are cached for performance reasons, and can be used in a multi-thre
 
 * Installation of official source release (for users):
 	download source release and run
-        see above 
+        see above
 
 
 * Installation from git repository (for developers, usually untested):
@@ -124,14 +141,14 @@ is linked dynamically to libbiosig and can be build with:
 see also biosig4c++/mma/README, and biosig4c++/mma/biosig, biosig4c++/mma/hdrinfo.nb, biosig4c++/mma/mySLOAD.nb for more details.
 
 (3z) other language interfaces
-Basic interfaces for R and Java are also available. For other languages 
+Basic interfaces for R and Java are also available. For other languages
 (including Java, PHP, Perl and TCL) are considered, but these still need to be implemented and tested.
 
 
 (5) Biosig tools for Matlab and Octave
-The easiest approach is to change into the directory 
-    cd biosig4matlab 
-and run "install" from within Matlab or Octave. This will set the path to the subdirectories. 
+The easiest approach is to change into the directory
+    cd biosig4matlab
+and run "install" from within Matlab or Octave. This will set the path to the subdirectories.
 
 
 (6) Precompiled binaries for Win32 and Win64

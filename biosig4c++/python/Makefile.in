@@ -25,14 +25,19 @@ test:
 	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ python$(PYVER) < python/demo2.py)
 
 clean:
-	rm -rf build/*
-	rm *.so
+	-rm -rf build/*
+	-rm -rf dist/*
+	-rm *.so
+distclean:
+	-rm -rf build
+	-rm -rf dist
+	-rm *.so
 
 # https://packaging.python.org/tutorials/packaging-projects/
 release: setup.py biosigmodule.c
-	$(PYTHON) setup.py sdist bdist_wheel bdist_egg
-	-python2 setup.py sdist bdist_wheel bdist_egg
-	-python3 setup.py sdist bdist_wheel bdist_egg
+	$(PYTHON) setup.py sdist
+	-python2 setup.py bdist_wheel bdist_egg
+	-python3 setup.py bdist_wheel bdist_egg
 
 check: release
 	twine check dist/*

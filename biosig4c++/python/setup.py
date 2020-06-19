@@ -23,7 +23,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup (name = 'Biosig',
-        version = '1.9.2',
+        version = '2.0.4',
         description = 'This is a Biosig package',
         author = 'Alois Schloegl',
         author_email = 'alois.schloegl@gmail.com',

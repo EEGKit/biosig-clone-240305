@@ -40,57 +40,65 @@ if exist([BIOSIG_HOME,'/biosig'],'dir')
 elseif exist([BIOSIG_HOME,'/biosig4matlab'],'dir')
 	BIOSIG_DIR = [BIOSIG_HOME,'/biosig4matlab'];
 end
-path(BIOSIG_DIR,path);			% 
-path([BIOSIG_DIR,'/demo'],path);		% demos
-path([BIOSIG_DIR,'/doc'],path);		% docus, Eventtable etc. 
-path([BIOSIG_DIR,'/t200_FileAccess'],path);		% dataformat
-path([BIOSIG_DIR,'/t210_Events'],path);			% event table
-path([BIOSIG_DIR,'/t250_ArtifactPreProcessingQualityControl'],path);		% trigger and quality control
-path([BIOSIG_DIR,'/t300_FeatureExtraction'],path);		% signal processing and feature extraction
-path([BIOSIG_DIR,'/t330_StimFit'],path);		% signal processing and feature extraction
-path([BIOSIG_DIR,'/t400_Classification'],path);		% classification
-path([BIOSIG_DIR,'/t450_MultipleTestStatistic'],path);		% statistics, false discovery rates
-path([BIOSIG_DIR,'/t490_EvaluationCriteria'],path);		% evaluation criteria
-path([BIOSIG_DIR,'/t500_Visualization'],path);		% display and presentation
-path([BIOSIG_DIR,'/t501_VisualizeCoupling'],path);		% visualization ofcoupling analysis
+addpath(BIOSIG_DIR, path);			%
+addpath([BIOSIG_DIR,'/demo']);			% demos
+addpath([BIOSIG_DIR,'/doc']);			% docus, Eventtable etc.
+addpath([BIOSIG_DIR,'/t200_FileAccess']);	% dataformat
+addpath([BIOSIG_DIR,'/t210_Events']);		% event table
+addpath([BIOSIG_DIR,'/t250_ArtifactPreProcessingQualityControl']);	% trigger and quality control
+addpath([BIOSIG_DIR,'/t300_FeatureExtraction']);	% signal processing and feature extraction
+addpath([BIOSIG_DIR,'/t330_StimFit']);			% signal processing and feature extraction
+addpath([BIOSIG_DIR,'/t400_Classification']);		% classification
+addpath([BIOSIG_DIR,'/t450_MultipleTestStatistic']);	% statistics, false discovery rates
+addpath([BIOSIG_DIR,'/t490_EvaluationCriteria']);	% evaluation criteria
+addpath([BIOSIG_DIR,'/t500_Visualization']);		% display and presentation
+addpath([BIOSIG_DIR,'/t501_VisualizeCoupling']);	% visualization ofcoupling analysis
 
-if ~exist('OCTAVE_VERSION','builtin'),	
+if exist('OCTAVE_VERSION','builtin'),
+	pkg load general
+	pkg load signal
+	pkg load statistics
+	pkg load tsa
+	pkg load nan
+
+else
 	%% Matlab
 	path([BIOSIG_DIR,'/viewer'],path);		% viewer
 	path([BIOSIG_DIR,'/viewer/utils'],path);	% viewer
 	path([BIOSIG_DIR,'/viewer/help'],path);	% viewer
-end;
 
-if exist([BIOSIG_HOME,'/freetb4matlab'],'dir')
-	path(path,[BIOSIG_HOME,'/freetb4matlab/signal']);	% Octave-Forge signal processing toolbox converted with freetb4matlab
-	path(path,[BIOSIG_HOME,'/freetb4matlab/oct2mat']);	% some basic functions used in Octave but not available in Matlab
-	path(path,[BIOSIG_HOME,'/freetb4matlab/general']);	% some basic functions used in Octave but not available in Matlab
-	path(path,[BIOSIG_HOME,'/freetb4matlab/statistics/distributions']);	% Octave-Forge statistics toolbox converted with freetb4matlab 
-	path(path,[BIOSIG_HOME,'/freetb4matlab/statistics/tests']);	% Octave-Forge statistics toolbox converted with freetb4matlab 
+	path([BIOSIG_HOME,'/tsa'],path);		%  Time Series Analysis
+	path([BIOSIG_HOME,'/tsa/inst'],path);		%  Time Series Analysis
+	path([BIOSIG_HOME,'/tsa/src'],path);		%  Time Series Analysis
+
+	if exist([BIOSIG_HOME,'/freetb4matlab'],'dir')
+		path(path,[BIOSIG_HOME,'/freetb4matlab/signal']);	% Octave-Forge signal processing toolbox converted with freetb4matlab
+		path(path,[BIOSIG_HOME,'/freetb4matlab/oct2mat']);	% some basic functions used in Octave but not available in Matlab
+		path(path,[BIOSIG_HOME,'/freetb4matlab/general']);	% some basic functions used in Octave but not available in Matlab
+		path(path,[BIOSIG_HOME,'/freetb4matlab/statistics/distributions']);	% Octave-Forge statistics toolbox converted with freetb4matlab
+		path(path,[BIOSIG_HOME,'/freetb4matlab/statistics/tests']);	% Octave-Forge statistics toolbox converted with freetb4matlab
+	end
+
+	fprintf(1,'\nThe NaN-toolbox is going to be installed\n');
+	fprintf(1,'The NaN-toolbox is a powerful statistical and machine learning toolbox, \nwhich is also able to handle data with missing values.\n');
+	fprintf(1,'Typically, samples with NaNs are simply skipped.\n');
+	fprintf(1,'If your data contains NaNs, installing the NaN-toolbox will \nmodify the following functions in order to ignore NaNs:\n');
+	fprintf(1,'\tcor, corrcoef, cov, geomean, harmmean, iqr, kurtosis, mad, mahal, mean, \n\tmedian, moment, quantile, prctile, skewness, std, var.\n');
+	fprintf(1,'If you do not have NaN, the behaviour is the same; if you have NaNs in your data, you will get more often a reasonable result instead of a NaN-result.\n');
+	fprintf(1,'If you do not want this behaviour, remove the directory NaN/inst from your path.\n');
+	fprintf(1,'Moreover, NaN-provides also a number of other useful functions. Installing NaN-toolbox is recommended.\n\n');
+
+	%% add NaN-toolbox: a toolbox for statistics and machine learning for data with Missing Values
+	path([BIOSIG_HOME,'/NaN'],path);
+	%% support both types of directory structure
+	if exist([BIOSIG_HOME,'/NaN/inst'],'dir')
+		path([BIOSIG_HOME,'/NaN/inst'],path);
+	end;
+	if exist([BIOSIG_HOME,'/NaN/src'],'dir')
+		path([BIOSIG_HOME,'/NaN/src'],path);
+	end
 end
 
-path([BIOSIG_HOME,'/tsa'],path);		%  Time Series Analysis
-path([BIOSIG_HOME,'/tsa/inst'],path);		%  Time Series Analysis
-path([BIOSIG_HOME,'/tsa/src'],path);		%  Time Series Analysis
-
-fprintf(1,'\nThe NaN-toolbox is going to be installed\n'); 
-fprintf(1,'The NaN-toolbox is a powerful statistical and machine learning toolbox, \nwhich is also able to handle data with missing values.\n');
-fprintf(1,'Typically, samples with NaNs are simply skipped.\n');
-fprintf(1,'If your data contains NaNs, installing the NaN-toolbox will \nmodify the following functions in order to ignore NaNs:\n');
-fprintf(1,'\tcor, corrcoef, cov, geomean, harmmean, iqr, kurtosis, mad, mahal, mean, \n\tmedian, moment, quantile, prctile, skewness, std, var.\n');
-fprintf(1,'If you do not have NaN, the behaviour is the same; if you have NaNs in your data, you will get more often a reasonable result instead of a NaN-result.\n');
-fprintf(1,'If you do not want this behaviour, remove the directory NaN/inst from your path.\n'); 
-fprintf(1,'Moreover, NaN-provides also a number of other useful functions. Installing NaN-toolbox is recommended.\n\n');
-
-%% add NaN-toolbox: a toolbox for statistics and machine learning for data with Missing Values
-path([BIOSIG_HOME,'/NaN'],path);
-%% support both types of directory structure
-if exist([BIOSIG_HOME,'/NaN/inst'],'dir')
-	path([BIOSIG_HOME,'/NaN/inst'],path);
-end; 	
-if exist([BIOSIG_HOME,'/NaN/src'],'dir')
-	path([BIOSIG_HOME,'/NaN/src'],path);
-end
 
 p = pwd; 
 try
