@@ -1618,6 +1618,15 @@ end;
 	                TagLenValue{tag} = HDR.REC.Technician;
 	                TagLen(tag) = length(TagLenValue{tag});
 		end;
+		if isfield(HDR,'REC') && isfield(HDR.REC,'Hospital')
+			tag = 7;
+	                TagLenValue{tag} = HDR.REC.Hospital;
+	                TagLen(tag) = length(TagLenValue{tag});
+		elseif isfield(HDR,'REC') && isfield(HDR.REC,'Institution')
+			tag = 7;
+	                TagLenValue{tag} = HDR.REC.Institution;
+	                TagLen(tag) = length(TagLenValue{tag});
+		end;
 
                 if 0, isfield(HDR,'ELEC') && isfield(HDR.ELEC,'Orientation') && all(size(HDR.ELEC.Orientation)==[HDR.NS,3]) 
                 	%% OBSOLETE 
@@ -1922,7 +1931,7 @@ end;
         	        for tag=find(TagLen>0)
        	        		fwrite(HDR.FILE.FID, tag+TagLen(tag)*256, 'uint32');
         	        	switch tag 
-				case {1,3,6}
+				case {1,3,6,7}
         	       			fwrite(HDR.FILE.FID, TagLenValue{tag}, 'uint8');
        	        		case 4 	%% OBSOLETE 
                				%  c=fwrite(HDR.FILE.FID, HDR.ELEC.Orientation, 'float32');
