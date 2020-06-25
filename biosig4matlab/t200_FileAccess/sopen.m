@@ -443,7 +443,7 @@ end;
                                 	HDR.Patient.Birthday = zeros(1,6); 
                                 	bd(bd=='-') = ' '; 
                                 	[n,v,s] = str2double(bd,' ');
-                                        month_of_birth = strmatch(lower(s{2}),{'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'},'exact');
+                                        month_of_birth = find(strcmp(lower(s{2}),{'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'}));
                                         if ~isempty(month_of_birth)
                                                 v(2) = 0;
                                         end
@@ -637,11 +637,11 @@ end;
 	                	chan = 1:HDR.NS;
 	                	if strcmp(HDR.TYPE,'EDF')
                                 if strcmp(HDR.reserved1(1:4),'EDF+')
-	                        	tmp = strmatch('EDF Annotations',HDR.Label);
+					tmp = find(strncmp('EDF Annotations',HDR.Label,15));
 		                        chan(tmp)=[];
-		                end; 
+		                end;
 		                elseif strcmp(HDR.TYPE,'BDF')
-	                        	tmp = strmatch('BDF Annotations',HDR.Label);
+					tmp = find(strncmp('BDF Annotations',HDR.Label,15));
 		                        chan(tmp)=[];
 		                end;
 	                end;	
@@ -951,7 +951,7 @@ end;
 
                 elseif strcmp(HDR.TYPE,'EDF') && (sum(strcmp('EDF Annotations',HDR.Label)) > 0),
                         % EDF+: 
-                        tmp = strmatch('EDF Annotations',HDR.Label);
+                        tmp = find(strcmp('EDF Annotations',HDR.Label));
                         HDR.EDF.Annotations = tmp;
                         if isempty(ReRefMx)
                         	ReRefMx = sparse(1:HDR.NS,1:HDR.NS,1);
@@ -974,7 +974,7 @@ end;
 
                 elseif strcmp(HDR.TYPE,'BDF') && (sum(strcmp('BDF Annotations',HDR.Label))>0),
                         % BDF+: 
-                        tmp = strmatch('BDF Annotations',HDR.Label);
+                        tmp = find(strcmp('BDF Annotations',HDR.Label));
                         HDR.EDF.Annotations = tmp;
                         if isempty(ReRefMx)
                         	ReRefMx = sparse(1:HDR.NS,1:HDR.NS,1);
@@ -1973,7 +1973,7 @@ elseif strcmp(HDR.TYPE,'BKR'),
         %%% Get trigger information from BKR data 
 
         
-elseif strmatch(HDR.TYPE,{'CNT';'AVG';'EEG'},'exact')
+elseif any(strcmp(HDR.TYPE,{'CNT';'AVG';'EEG'}))
         if any(HDR.FILE.PERMISSION=='r');
                 if isempty(strfind(MODE,'32'))
                         [HDR,H1,h2] = cntopen(HDR);
