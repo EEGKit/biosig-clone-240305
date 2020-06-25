@@ -1589,6 +1589,15 @@ end;
                 %%%%%% generate Header 3,  Tag-Length-Value
                 TagLenValue = {};
                 TagLen = 0;
+                if isfield(HDR,'EVENT') && isfield(HDR.EVENT,'CodeDesc') && iscell(HDR.EVENT.CodeDesc)
+			tag = 1;
+			TLV = 0;
+			for k=1:length(HDR.EVENT.CodeDesc)
+				TLV=[TLV,HDR.EVENT.CodeDesc{k},0];
+			end
+			TagLenValue{tag} = char(TLV);
+	                TagLen(tag) = length(TagLenValue{tag});
+		end;
                 if isfield(HDR,'Manufacturer')
                 	tag = 3;
 	                if ~isfield(HDR.Manufacturer,'Name') 	HDR.Manufacturer.Name=''; end; 
@@ -1913,7 +1922,7 @@ end;
         	        for tag=find(TagLen>0)
        	        		fwrite(HDR.FILE.FID, tag+TagLen(tag)*256, 'uint32');
         	        	switch tag 
-				case {3,6}
+				case {1,3,6}
         	       			fwrite(HDR.FILE.FID, TagLenValue{tag}, 'uint8');
        	        		case 4 	%% OBSOLETE 
                				%  c=fwrite(HDR.FILE.FID, HDR.ELEC.Orientation, 'float32');
