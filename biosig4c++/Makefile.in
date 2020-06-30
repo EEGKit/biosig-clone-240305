@@ -1055,18 +1055,6 @@ uninstall_mex:
 	-${RM} $(DESTDIR)$(datadir)/biosig/mex/*
 	-cd $(DESTDIR)$(datadir) && rmdir -p biosig/mex
 
-### Install Biosig for Mathematica
-install_mma : mma/biosig.exe
-	mkdir -p $(DESTDIR)$(datadir)/biosig/mathematica
-	install mma/biosig.exe	$(DESTDIR)$(datadir)/biosig/mathematica/
-	@echo "  Biosig for Mathematica is installed in $(datadir)/biosig/mathematica/biosig.exe";
-	@echo "  Usage: Start Mathematica and run";
-	@echo "\tlink=Install[\"$(datadir)/biosig/mathematica/biosig.exe\"];";
-	@echo "\t?sload";
-
-uninstall_mma:
-	${RM} $(DESTDIR)$(datadir)/biosig/mathematica/{sload,biosig}.exe
-	-cd $(DESTDIR)$(datadir) && rm -r biosig/mathematica
 
 uninstall remove: uninstall_mexbiosig uninstall_tools
 	-$(DELETE) $(DESTDIR)$(bindir)/ttl2trig
