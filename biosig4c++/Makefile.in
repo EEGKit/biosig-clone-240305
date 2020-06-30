@@ -716,7 +716,7 @@ endif
 libbiosig${FULLDLEXT}:$(OBJECTS)
 	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
 
-libgdf${FULLDLEXT}: gdf.o gdftime.o physicalunits.o getlogin.o
+libgdf${FULLDLEXT}: gdf.o gdftime.o physicalunits.o
 	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
 
 libgdftime${FULLDLEXT}:gdftime.o
@@ -743,9 +743,9 @@ libphysicalunits.dll: physicalunits.o
 #libgdftime.def: gdftime.o
 #	$(CC) -o libgdftime.dll -s -shared -fPIC "$@" -Wl,--subsystem,windows,--output-def,libgdftime.def,--out-implib,libgdftime.dll.a
 
-libgdf.a: gdf.o getlogin.o gdftime.o physicalunits.o
+libgdf.a: gdf.o gdftime.o physicalunits.o
 	-$(DELETE) "$@"
-	$(AR) "$@" gdf.o getlogin.o gdftime.o physicalunits.o
+	$(AR) "$@" gdf.o gdftime.o physicalunits.o
 libgdf.dll: gdf.o getlogin.o gdftime.o physicalunits.o
 	$(LD) -s -shared -fPIC -o libgdf.dll gdf.o getlogin.o gdftime.o physicalunits.o $(LDLIBS) -Wl,-subsystem,windows,--output-def,libgdf.def,--out-implib,libgdf.dll.a
 

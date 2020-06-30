@@ -22,10 +22,6 @@ biosig4c++/mma/sload
 biosig4c++/mma/sload.exe
 # ignore mex files
 biosig4c++/mex/mexSOPEN.cpp
-# ignore intermediate files for biosig4python
-biosig4c++/python/biosig.py
-biosig4c++/python/swig_wrap.cxx
-#
 biosig4c++/java/*.class
 biosig4c++/java/*.h
 #
