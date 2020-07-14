@@ -372,6 +372,8 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						// k2>0 takes care of StimDatea and DCamp channels
 						CHANNEL_TYPE *hc = hdr->CHANNEL + NS + NumChans0*k2;
 						strcpy(hc->Label, NativeChannelName);
+						strncat(hc->Label, ":", MAX_LENGTH_LABEL-strlen(hc->Label));
+						strncat(hc->Label, CustomChannelName, MAX_LENGTH_LABEL-strlen(hc->Label));
 #ifdef MAX_LENGTH_PHYSDIM
 						strcpy(hc->PhysDim,"?");
 #endif
@@ -445,9 +447,8 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 						hc->XYZ[0] = NAN;
 						hc->XYZ[1] = NAN;
 						hc->XYZ[2] = NAN;
-						hc->Impedance = ElectrodeImpedanceMagnitude;
-
-
+						if ( (hc->PhysDimCode & 0xffe0) == 4256) // [V]
+							hc->Impedance = ElectrodeImpedanceMagnitude;
 					}
 					bi += hdr->SPR * 2;
 				}	// if (ChannelEnabled)
@@ -641,6 +642,8 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 						hc->Off    = 0;		// default
 						hc->SPR    = hdr->SPR;	// default
 						strcpy(hc->Label, NativeChannelName);
+						strncat(hc->Label, ":", MAX_LENGTH_LABEL - strlen(hc->Label));
+						strncat(hc->Label, CustomChannelName, MAX_LENGTH_LABEL - strlen(hc->Label));
 						hc->Transducer[0] = 0;
 #ifdef MAX_LENGTH_PHYSDIM
 						strcpy(hc->PhysDim, "?");
@@ -701,6 +704,9 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 						bi += hc->SPR*2;
 						hc->PhysMin = hc->DigMin * hc->Cal + hc->Off;
 						hc->PhysMax = hc->DigMax * hc->Cal + hc->Off;
+
+						if ( (hc->PhysDimCode & 0xffe0) == 4256) // [V]
+							hc->Impedance = ImpedanceMagnitude;
 					}  // if (channelEnabled)
 				}
 				hdr->NS += ns;
