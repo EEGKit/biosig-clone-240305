@@ -22,61 +22,51 @@
 %  you can excluded the path to NaN/*. The BIOSIG tools will still 
 %  work, but does not support the handling of NaN's.
 
-% Copyright (C) 2003-2010,2013,2015 by Alois Schloegl <alois.schloegl@ist.ac.at>
+% Copyright (C) 2003-2010,2013,2015,2020 by Alois Schloegl <alois.schloegl@gmail.com>
 % This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
-BIOSIG_HOME = pwd;	%
-if exist('./t200_FileAccess','dir')
-	% install.m may reside in .../biosig/ or above (...)
-        [BIOSIG_HOME,f,e] = fileparts(BIOSIG_HOME);
-elseif exist('biosig','dir') || exist('biosig4matlab','dir')
-else 
-        fprintf(2,'Error: biosig subdirectories not found\n');
-        return;
+BIOSIG_MATLAB_PATH = getenv('BIOSIG_MATLAB_PATH');
+if isempty(BIOSIG_MATLAB_PATH)
+	if exist('./t200_FileAccess','dir')
+		BIOSIG_MATLAB_PATH = pwd;
+	else
+		fprintf(2,'Error: biosig subdirectories not found\n');
+	        return;
+	end;
 end; 
 
-if exist([BIOSIG_HOME,'/biosig'],'dir')
-	BIOSIG_DIR = [BIOSIG_HOME,'/biosig'];
-elseif exist([BIOSIG_HOME,'/biosig4matlab'],'dir')
-	BIOSIG_DIR = [BIOSIG_HOME,'/biosig4matlab'];
-end
-addpath(BIOSIG_DIR, path);			%
-addpath([BIOSIG_DIR,'/demo']);			% demos
-addpath([BIOSIG_DIR,'/doc']);			% docus, Eventtable etc.
-addpath([BIOSIG_DIR,'/t200_FileAccess']);	% dataformat
-addpath([BIOSIG_DIR,'/t210_Events']);		% event table
-addpath([BIOSIG_DIR,'/t250_ArtifactPreProcessingQualityControl']);	% trigger and quality control
-addpath([BIOSIG_DIR,'/t300_FeatureExtraction']);	% signal processing and feature extraction
-addpath([BIOSIG_DIR,'/t330_StimFit']);			% signal processing and feature extraction
-addpath([BIOSIG_DIR,'/t400_Classification']);		% classification
-addpath([BIOSIG_DIR,'/t450_MultipleTestStatistic']);	% statistics, false discovery rates
-addpath([BIOSIG_DIR,'/t490_EvaluationCriteria']);	% evaluation criteria
-addpath([BIOSIG_DIR,'/t500_Visualization']);		% display and presentation
-addpath([BIOSIG_DIR,'/t501_VisualizeCoupling']);	% visualization ofcoupling analysis
+subdirs={'doc','t200_FileAccess','t210_Events','t250_ArtifactPreProcessingQualityControl','t300_FeatureExtraction','t400_Classification','t330_StimFit','t450_MultipleTestStatistic','t490_EvaluationCriteria','t500_Visualization','t501_VisualizeCoupling'};
+addpath(sprintf(fullfile(BIOSIG_MATLAB_PATH,'%s:'),subdirs{:}))
 
 if exist('OCTAVE_VERSION','builtin'),
-	pkg load general
-	pkg load signal
-	pkg load statistics
-	pkg load tsa
-	pkg load nan
-
+	try
+		pkg load general
+	end
+	try
+		pkg load signal
+	end
+	try
+		pkg load statistics
+	end
+	try
+		pkg load tsa
+	end
+	try
+		pkg load nan
+	end
 else
 	%% Matlab
 	path([BIOSIG_DIR,'/viewer'],path);		% viewer
 	path([BIOSIG_DIR,'/viewer/utils'],path);	% viewer
 	path([BIOSIG_DIR,'/viewer/help'],path);	% viewer
 
-	path([BIOSIG_HOME,'/tsa'],path);		%  Time Series Analysis
-	path([BIOSIG_HOME,'/tsa/inst'],path);		%  Time Series Analysis
-	path([BIOSIG_HOME,'/tsa/src'],path);		%  Time Series Analysis
+	path([BIOSIG_MATLAB_PATH,'/tsa'],path);		%  Time Series Analysis
+	path([BIOSIG_MATLAB_PATH,'/tsa/inst'],path);		%  Time Series Analysis
+	path([BIOSIG_MATLAB_PATH,'/tsa/src'],path);		%  Time Series Analysis
 
-	if exist([BIOSIG_HOME,'/freetb4matlab'],'dir')
-		path(path,[BIOSIG_HOME,'/freetb4matlab/signal']);	% Octave-Forge signal processing toolbox converted with freetb4matlab
-		path(path,[BIOSIG_HOME,'/freetb4matlab/oct2mat']);	% some basic functions used in Octave but not available in Matlab
-		path(path,[BIOSIG_HOME,'/freetb4matlab/general']);	% some basic functions used in Octave but not available in Matlab
-		path(path,[BIOSIG_HOME,'/freetb4matlab/statistics/distributions']);	% Octave-Forge statistics toolbox converted with freetb4matlab
-		path(path,[BIOSIG_HOME,'/freetb4matlab/statistics/tests']);	% Octave-Forge statistics toolbox converted with freetb4matlab
+	if exist([BIOSIG_MATLAB_PATH,'/freetb4matlab'],'dir')
+		path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/oct2mat']);	% some basic functions used in Octave but not available in Matlab
+		path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/general']);	% some basic functions used in Octave but not available in Matlab
 	end
 
 	fprintf(1,'\nThe NaN-toolbox is going to be installed\n');
@@ -89,63 +79,57 @@ else
 	fprintf(1,'Moreover, NaN-provides also a number of other useful functions. Installing NaN-toolbox is recommended.\n\n');
 
 	%% add NaN-toolbox: a toolbox for statistics and machine learning for data with Missing Values
-	path([BIOSIG_HOME,'/NaN'],path);
+	path([BIOSIG_MATLAB_PATH,'/NaN'],path);
 	%% support both types of directory structure
-	if exist([BIOSIG_HOME,'/NaN/inst'],'dir')
-		path([BIOSIG_HOME,'/NaN/inst'],path);
+	if exist([BIOSIG_MATLAB_PATH,'/NaN/inst'],'dir')
+		path([BIOSIG_MATLAB_PATH,'/NaN/inst'],path);
 	end;
-	if exist([BIOSIG_HOME,'/NaN/src'],'dir')
-		path([BIOSIG_HOME,'/NaN/src'],path);
+	if exist([BIOSIG_MATLAB_PATH,'/NaN/src'],'dir')
+		path([BIOSIG_MATLAB_PATH,'/NaN/src'],path);
 	end
 end
 
 
-p = pwd; 
+tmp_biosig_helper_directory = pwd;
 try
 	if ~exist('OCTAVE_VERSION','builtin') && ~ispc,
 		mex -setup
 	end; 
-        if ~ispc && exist([BIOSIG_HOME,'/NaN/src'],'dir');
-        	cd([BIOSIG_HOME,'/NaN/src']);
+        if ~ispc && exist([BIOSIG_MATLAB_PATH,'/NaN/src'],'dir');
+		cd([BIOSIG_MATLAB_PATH,'/NaN/src']);
 	        make
 	end;         
 catch 
 	fprintf(1,'Compilation of Mex-files failed - precompiled binary mex-files are used instead\n'); 
 end;
-cd(p);
+cd(tmp_biosig_helper_directory);
+clear tmp_biosig_helper_directory;
 
-%%% NONFREE %%%
-if exist([BIOSIG_HOME,'/biosig/NONFREE/EEProbe'],'dir'),
-	path(path,[BIOSIG_HOME,'/biosig/NONFREE/EEProbe']);	% Robert Oostenveld's MEX-files to access EEProbe data
-end;
-if exist([BIOSIG_HOME,'/biosig/NONFREE/meg-pd-1.2-4'],'dir'),
-        path(path,[BIOSIG_HOME,'/biosig/NONFREE/meg-pd-1.2-4']);	% Kimmo Uutela's library to access FIF data
-end;
-
-% test of installation 
-fun = {};
-for k = 1:length(fun),
-        x = which(fun{k});
-        if isempty(x) || strcmp(x,'undefined'),
-                fprintf(2,'Function %s is missing\n',upper(fun{k}));     
-        end;
-end;
 try 
     x = betainv(.5, 1, 2);
 catch     
-    disp('statistics/distribution toolbox (betainv) is missing');	
+    path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/statistics/distributions']);	% Octave-Forge statistics toolbox converted with freetb4matlab
+    path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/statistics/tests']);	% Octave-Forge statistics toolbox converted with freetb4matlab
+    disp('statistics/distribution toolbox (betainv) from freetb4matlab added');
 end; 
-try 
-    [b,a] = butter(5,[.08,.096]);
-catch
-    disp('signal processing toolbox (butter) is missing');	
-end; 
+
 try 
     x = mod(1:10,3)'-1;
     [Pxx,f]=periodogram(x,[],10,100);
+    [b,a] = butter(5,[.08,.096]);
 catch
-    disp('function periodogram() is missing or not up to date.');	
+    path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/signal'],'-end');	% Octave-Forge signal processing toolbox converted with freetb4matlab
+    disp('signal processing toolbox (butter,periodogram) from freetb4matlab added');
 end; 
+
+% test of installation
+fun = {'butter','periodogram','betainv'};
+for k = 1:length(fun),
+        x = which(fun{k});
+        if isempty(x) || strcmp(x,'undefined'),
+                fprintf(2,'Function %s is missing\n',upper(fun{k}));
+        end;
+end;
 
 disp('BIOSIG-toolbox activated');
 disp('	If you want BIOSIG permanently installed, use the command SAVEPATH.')
