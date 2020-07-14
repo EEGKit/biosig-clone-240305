@@ -85,7 +85,10 @@ function [HDR, s] = detect_sharp_wave_ripple(fn, chan, varargin)
 %     Recruitment of oriens-lacunosum-moleculare interneurons during hippocampal ripples.
 %     4398–4403 | PNAS | March 12, 2013 | vol. 110 | no. 11
 %     www.pnas.org/cgi/doi/10.1073/pnas.1215496110
-% [5] Jian Gan, 2015, unpublished
+% [5] Jian Gan, Shih-ming Weng, Alejandro J. Pernía-Andrade, Jozsef Csicsvari, Peter Jonas
+%     Phase-Locked Inhibition, but Not Excitation, Underlies Hippocampal Ripple Oscillations in Awake Mice In Vivo
+%     Neuron, Volume 93, Issue 2, 18 January 2017, Pages 308-314
+%     https://doi.org/10.1016/j.neuron.2016.12.018
 
 
 %    Copyright (C) 2014,2015,2016 by Alois Schloegl <alois.schloegl@ist.ac.at>
