@@ -21,8 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 mySLOAD[filename_, sweeps_] := Module [{link, data}, 
    (* mySLOAD: makes it platform independent *)
    
-   link = Install[$SystemID<>"/sload.exe"];
-   data = sload[filename, sweeps];
+   link = Install[$SystemID<>"/biosig.exe"];
+   data = Sload[filename, sweeps];
    Uninstall[link];
    data (* return data *)
    ];
