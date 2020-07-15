@@ -1,0 +1,37 @@
+Introduction:
+---------------
+
+This directory  contains the pre-compiled biosig tools for Windows platforms,
+
+Directory structure, and Files:
+-------------------------------
+    README 		this file
+    bin/		binary exectutables and batch files (converters and utilities)
+    include/		include files
+    lib/		libbiosig and related libraries
+    matlab/		mex files for matlab
+    mathematica/ 	biosig mathlink interface
+    [ python/		biosig module for python - not yet usable on windows ]
+    share/		common, platform-independent files
+    share/man		manual, man pages, documentation
+    share/matlab  	Biosig for Octave and Matlab
+    share/mathematica	mathematica notebook, demos how to use biosig mathlink interface
+    share/python	demos how to use biosig in python
+
+
+Installation:
+-------------
+Copy the files from the current directory into some directory
+and setup the path manually.
+
+
+More information is available at http://biosig.sf.net/
+
+If you have any questions you can also contact the mailinglist
+https://lists.sourceforge.net/lists/listinfo/biosig-general
+
+
+    Copyright (C) 2008,2009,2010,2012,2020 Alois Schloegl <alois.schloegl@gmail.com>
+    This function is part of the "BioSig for C/C++" repository
+    (BioSig4C++) at http://biosig.sf.net/
+

@@ -22,6 +22,7 @@ biosig4c++/mma/sload
 biosig4c++/mma/sload.exe
 # ignore mex files
 biosig4c++/mex/mexSOPEN.cpp
+#
 biosig4c++/java/*.class
 biosig4c++/java/*.h
 #
