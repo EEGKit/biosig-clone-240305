@@ -1012,7 +1012,7 @@ install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
 	install save2gdf${BINEXT}	$(DESTDIR)$(bindir)
-	install heka2itx  		$(DESTDIR)$(bindir)
+	install heka2itx rec2bin bin2rec	$(DESTDIR)$(bindir)
 	install save2aecg 		$(DESTDIR)$(bindir)
 	install save2scp  		$(DESTDIR)$(bindir)
 	install physicalunits${BINEXT}	$(DESTDIR)$(bindir)
@@ -1026,13 +1026,11 @@ install_tools: tools doc/save2gdf.1
 uninstall_tools:
 	${RM} $(DESTDIR)$(bindir)/save2gdf${BINEXT}
 	${RM} $(DESTDIR)$(bindir)/physicalunits${BINEXT}
-	${RM} $(DESTDIR)$(bindir)/heka2itx
-	${RM} $(DESTDIR)$(bindir)/save2aecg
-	${RM} $(DESTDIR)$(bindir)/save2scp
+	${RM} $(DESTDIR)$(bindir)/{heka2itx,bin2rec,rec2bin,save2aecg,save2scp}
 	${RM} $(DESTDIR)$(bindir)/biosig_fhir${BINEXT}
 	${RM} $(DESTDIR)$(mandir)/man1/physicalunits.1
-	${RM} $(DESTDIR)$(mandir)/man1/save2gdf.1
-	${RM} $(DESTDIR)$(mandir)/man1/heka2itx.1
+	${RM} $(DESTDIR)$(mandir)/man1/{save2gdf,biosig_fhir}.1
+	${RM} $(DESTDIR)$(mandir)/man1/{heka2itx,bin2rec,rec2bin,save2aecg,save2scp}.1
 
 ### Install mexbiosig for Octave
 install_mexbiosig install_octave: mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz
