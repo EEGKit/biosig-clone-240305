@@ -1,13 +1,10 @@
 : Conversion of HEKA/Patchmaster data into ITX (Igor Text) format
 :
-:    $Id$
-:    Copyright (C) 2008, 2011 Alois Schloegl <a.schloegl@ieee.org>
-:    This file is part of the "BioSig for C/C++" repository
-:    (biosig4c++) at http://biosig.sf.net/
+:    Copyright (C) 2008, 2011,2020 Alois Schloegl <alois.schloegl@gmail.com>
+:    This file is part of the BioSig http://biosig.sourceforge.io/
 echo off
 echo HEKA2ITX is part of BioSig http://biosig.sf.net and licensed with GNU GPL v3.
-echo HEKA2ITX Copyright 2008,2011 Alois Schloegl <a.schoegl@ieee.org>
-echo HEKA2ITX converts BIN data into other biosignal data formats (default GDF)
+echo HEKA2ITX converts HEKA files into ITX (IgorProText) files
 echo usage: heka2itx source dest
 echo usage: heka2itx -SWEEP=ne,ng,ns source dest
 echo          selects sweep ns from group ng from experiment ne.

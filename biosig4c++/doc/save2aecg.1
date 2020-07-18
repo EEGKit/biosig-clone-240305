@@ -1,9 +1,9 @@
-.TH HEKA2ITX 1
+.TH SAVE2AECG 1
 .SH NAME
-heka2itx - converts a Heka file into an ITX (igorpro text) file.
+save2aecg - converts short-term ECG data into XML-based HL7v3 annotated ECG. 
 
 .SH SYNOPSIS
-.B heka2itx\  [OPTIONS]\  SOURCE\  [DEST]
+.B SAVE2AECG\  [OPTIONS]\  SOURCE\  [DEST]
 
 
 .SH DESCRIPTION
@@ -14,9 +14,6 @@ heka2itx - converts a Heka file into an ITX (igorpro text) file.
  	prints version information
  \-h, \-\-help
  	prints this information
- \-SWEEP=ne,ng,ns [OPTIONAL]
-	select sweep ns from group ng from exeripment ne
-        0 indicates a wildcard.
  \-VERBOSE=#, verbosity level #
  	0=silent, 9=debugging
 
