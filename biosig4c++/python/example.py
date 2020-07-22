@@ -14,24 +14,24 @@ def testsin(sig, sr, freq):
 import sys
 
 if len(sys.argv) < 3:
-    print "usage:\n%s filename.bdf freq" % sys.argv[0]
+    print("usage:\n%s filename.bdf freq" % sys.argv[0])
     sys.exit(1)
 
 fname = sys.argv[1]
 sr = int(sys.argv[2])
-print "\nexample.py\nchecking file %s" % fname
+print("\nexample.py\nchecking file %s" % fname)
 sig=biosig.data(fname)
-HDR=biosig.header("filename.gdf")
+HDR=biosig.header(fname)
 
 
 freq = 3
-print "Looking for sinusoidal signals at %f Hz" % freq
+print("Looking for sinusoidal signals at %f Hz" % freq)
 sig = sig - S.mean(sig, axis=1)[:, S.newaxis]
 a1 = testsin(sig[0], sr, freq)
-print "channel A1, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a1)
+print("channel A1, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a1))
 a2 = testsin(sig[1], sr, freq)
-print "channel A2, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a2)
+print("channel A2, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a2))
 a3 = testsin(sig[0] + 2*sig[1], sr, freq)
-print "channel A1 + 2*A2, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a3)
+print("channel A1 + 2*A2, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a3))
 a4 = testsin(sig[2], sr, freq)
-print "status channel, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a4)
+print("status channel, peak to peak amplitude of sin at %f Hz: %f" % (freq, 2*a4))

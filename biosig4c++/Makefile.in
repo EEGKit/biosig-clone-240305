@@ -327,7 +327,7 @@ OCT           := mkoctfile$(OCTAVE_VERSION)
 
 ##########################################################
 ## set variables for Python
-PYTHON         ?= python
+PYTHON         ?= python3
 PYTHONVER      := $(shell $(PYTHON) -c "import sys; print(sys.version[:3])")
 
 ##########################################################
@@ -1292,12 +1292,10 @@ testbdf : $(DATA_DIR)Newtest17-2048.bdf
 	./save2gdf -V4 "$<" | awk '/(NoChannels|NRec|Fs|Events\/Annotations):/ { print $$2 } '
 
 testpybdf : $(DATA_DIR)Newtest17-2048.bdf
-	$(PYTHON) < python/demo2.py
-ifdef SWIG_BIOSIG4PYTHON
-	$(PYTHON) python/demo.py $(TEMP_DIR)*-256.bdf
-	$(PYTHON) python/example.py $(TEMP_DIR)*-256.bdf 256 && \
-	$(PYTHON) python/example.py $(TEMP_DIR)*-2048.bdf 2048
-endif
+	$(PYTHON) python/demo2.py
+	$(PYTHON) python/demo2.py $(DATA_DIR)*-256.bdf
+	$(PYTHON) python/example.py $(DATA_DIR)*-256.bdf 256
+	$(PYTHON) python/example.py $(DATA_DIR)*-2048.bdf 2048
 
 $(DATA_DIR)BDFtestfiles.zip :
 	wget -P$(DATA_DIR) http://www.biosemi.com/download/BDFtestfiles.zip

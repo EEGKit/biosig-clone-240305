@@ -25,20 +25,21 @@ def printf(format, *args):
 
 ## read header 
 FILENAME="/home/schloegl/data/test/cfs/BaseDemo/Leak.cfs"
-FILENAME="data/Newtest17-256.bdf"
 FILENAME="/home/schloegl/data/test/cfs/20190417_A0AA.dat"
 FILENAME="/home/schloegl/data/test/cfs/minis.dat"
+FILENAME="data/Newtest17-256.bdf"
 
 HDR=biosig.header(FILENAME)
 #print HDR
 ## extracting header fields
 H=json.loads(HDR)
 print(H["Filename"])
-H["TYPE"]
-H["Samplingrate"]
+print(H["TYPE"])
+print(H["Samplingrate"])
 Fs=H["Samplingrate"]
 NS=len(H["CHANNEL"])	# number of channels
 T0=H["StartOfRecording"]
+print(Fs,NS,T0)
 
 ### read and display data ###
 A=biosig.data(FILENAME)

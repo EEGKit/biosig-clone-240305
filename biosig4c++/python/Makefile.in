@@ -6,7 +6,7 @@
 ###
 ##############################################################
 
-PYTHON ?= python
+PYTHON ?= python3
 PYVER  := $(shell $(PYTHON) -c "import sys; print(sys.version[:3])")
 
 
@@ -14,7 +14,7 @@ build: setup.py biosigmodule.c
 	$(PYTHON) setup.py build
 
 install: build
-	$(PYTHON) setup.py install --prefix=@prefix@
+	$(PYTHON) setup.py install
 
 test:
 	## get ../data/Newtest17-256.bdf
