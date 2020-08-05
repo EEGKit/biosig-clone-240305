@@ -49,7 +49,10 @@ AC_PATH_PROG([JAVA],        [java],        [:])
 AC_PATH_PROG([JAVAC],       [javac],       [:])
 AC_PATH_PROG([MATHEMATICA], [mathematica], [:])
 AC_PATH_PROG([MATHEMATICA_MPREP], [mprep], [:])
-AC_PATH_PROG([MATLAB],      [matlab],      [:])
+# MATLAB needs to contain full path, because it also used to find mex and mexext
+#   readlink -f does not work on MacOSX, use "matlab -n" to extract the path
+# AC_CHECK_PROG([MATLAB],     [matlab],      [$(readlink -f $(which matlab))],      [:])
+AC_CHECK_PROG([MATLAB],     [matlab],      [$(matlab -n|awk '/^->  r   MATLAB              = / {printf("%s/bin/matlab",$5)}')],      [:])
 AC_PATH_PROG([MKOCTFILE],   [mkoctfile],   [:])
 AC_PATH_PROG([OCTAVE],      [octave],      [:])
 AC_PATH_PROG([PYTHON],      [python],      [:])
