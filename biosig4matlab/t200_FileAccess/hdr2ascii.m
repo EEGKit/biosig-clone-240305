@@ -12,9 +12,8 @@ function [argout,H1,h2] = hdr2ascii(source,dest)
 %  
 % see also: SLOAD, SOPEN
 
-%	$Id$
-%	Copyright (C) 2007,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+%  Copyright (C) 2007,2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%  This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License
@@ -203,7 +202,6 @@ if length(HDR.Filter.Notch)==1,
 end;
 end; 
 
-
 if ~isfield(HDR,'Cal') && isfield(HDR,'Calib')
 	Cal = ones(HDR.NS,1);
 	Cal(InChanSelect) = diag(HDR.Calib(2:end,:));
@@ -211,7 +209,7 @@ elseif isfield(HDR,'Cal')
 	if length(HDR.Cal)==1,
 		Cal = repmat(HDR.Cal,HDR.NS,1);
 	else
-		Cal = HDR.Off;
+		Cal = HDR.Cal;
 	end;
 elseif isfield(HDR,'DigMin') && isfield(HDR,'DigMax') && isfield(HDR,'PhysMin') && isfield(HDR,'PhysMax')
 	Cal = (HDR.PhysMax-HDR.PhysMin)./(HDR.DigMax-HDR.DigMin);
