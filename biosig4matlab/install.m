@@ -56,9 +56,9 @@ if exist('OCTAVE_VERSION','builtin'),
 	end
 else
 	%% Matlab
-	path([BIOSIG_DIR,'/viewer'],path);		% viewer
-	path([BIOSIG_DIR,'/viewer/utils'],path);	% viewer
-	path([BIOSIG_DIR,'/viewer/help'],path);	% viewer
+	path([BIOSIG_MATLAB_PATH,'/viewer'],path);		% viewer
+	path([BIOSIG_MATLAB_PATH,'/viewer/utils'],path);	% viewer
+	path([BIOSIG_MATLAB_PATH,'/viewer/help'],path);	% viewer
 
 	path([BIOSIG_MATLAB_PATH,'/tsa'],path);		%  Time Series Analysis
 	path([BIOSIG_MATLAB_PATH,'/tsa/inst'],path);		%  Time Series Analysis
