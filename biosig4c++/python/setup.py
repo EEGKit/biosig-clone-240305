@@ -16,7 +16,7 @@ module_biosig = Extension('biosig',
         define_macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '9')],
         include_dirs = ['./..', numpy.distutils.misc_util.get_numpy_include_dirs()[0]],
         libraries    = ['biosig'],
-        library_dirs = ['./..'],
+        library_dirs = ['./..','../lib'],
         sources      = ['biosigmodule.c'])
 
 def read(fname):
