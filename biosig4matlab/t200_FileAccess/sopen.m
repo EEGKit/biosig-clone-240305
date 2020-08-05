@@ -44,7 +44,7 @@ function [HDR,H1,h2] = sopen(arg1,PERMISSION,CHAN,MODE,arg5,arg6)
 % see also: SLOAD, SREAD, SSEEK, STELL, SCLOSE, SWRITE, SEOF, BDF2BIOSIG_EVENTS
 
 
-%    Copyright (C) 1997-2016 by Alois Schloegl <alois.schloegl@ist.ac.at>
+%    Copyright (C) 1997-2020 by Alois Schloegl <alois.schloegl@ist.ac.at>
 %    This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 %    BioSig is free software: you can redistribute it and/or modify
@@ -1591,9 +1591,9 @@ end;
                 TagLen = 0;
                 if isfield(HDR,'EVENT') && isfield(HDR.EVENT,'CodeDesc') && iscell(HDR.EVENT.CodeDesc)
 			tag = 1;
-			TLV = 0;
+			TLV = char(0);
 			for k=1:length(HDR.EVENT.CodeDesc)
-				TLV=[TLV,HDR.EVENT.CodeDesc{k},0];
+				TLV=[TLV,HDR.EVENT.CodeDesc{k},char(0)];
 			end
 			TagLenValue{tag} = char(TLV);
 	                TagLen(tag) = length(TagLenValue{tag});
@@ -1604,7 +1604,7 @@ end;
 	                if ~isfield(HDR.Manufacturer,'Model') 	HDR.Manufacturer.Model=''; end; 
 	                if ~isfield(HDR.Manufacturer,'Version') HDR.Manufacturer.Version=''; end;
 	                if ~isfield(HDR.Manufacturer,'SerialNumber') HDR.Manufacturer.SerialNumber=''; end;  
-	                TagLenValue{tag} = char([HDR.Manufacturer.Name,0,HDR.Manufacturer.Model,0,HDR.Manufacturer.Version,0,HDR.Manufacturer.SerialNumber]);
+	                TagLenValue{tag} = [HDR.Manufacturer.Name,char(0),HDR.Manufacturer.Model,char(0),HDR.Manufacturer.Version,char(0),HDR.Manufacturer.SerialNumber];
 	                TagLen(tag) = length(TagLenValue{tag}); 
 		end;
 		if ~isfield(HDR,'REC') || ~isfield(HDR.REC,'Technician') || isempty(HDR.REC.Technician)
@@ -1658,7 +1658,7 @@ end;
 			HDR.RID = ['Startdate ',datestr(datenum(HDR.T0),'dd-mmm-yyyy')];
                 elseif HDR.VERSION > 0,
                         tmp = sprintf('%5.2f',HDR.VERSION);
-                        H1 = ['GDF',tmp(1:5),repmat(32,1,248)];
+                        H1 = ['GDF',tmp(1:5),repmat(char(32),1,248)];
 			HDR.PID = [HDR.Patient.Id,' ',HDR.Patient.Name];
 			% HDR.RID = 'Hospital_administration_Code Technician_ID [Equipment_ID]'
                 else
