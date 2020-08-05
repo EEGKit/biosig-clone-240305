@@ -134,13 +134,7 @@ VERBOSE	     := -V0
 
 ##########################################################
 ## set Matlab and Octave variables
-ifeq (undefined,$(origin MATLABDIR))
-  ifeq (Darwin,$(shell uname))
-    MATLABDIR := $(shell find /Applications/MATLAB* -name bin -type d -depth 1 2>/dev/null | head -1)
-  else
-    MATLABDIR ?= $(shell find /usr/local/MATLAB* -maxdepth 2 -name bin -type d 2>/dev/null | head -1)
-  endif
-endif
+MATLABDIR ?= $(shell dirname @MATLAB@)
 
 ifeq (,$(MATLABDIR))
   #$(warning MATLABDIR is not defined)
