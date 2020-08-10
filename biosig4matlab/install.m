@@ -25,7 +25,9 @@
 % Copyright (C) 2003-2010,2013,2015,2020 by Alois Schloegl <alois.schloegl@gmail.com>
 % This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
-BIOSIG_MATLAB_PATH = getenv('BIOSIG_MATLAB_PATH');
+if isempty(BIOSIG_MATLAB_PATH)
+	BIOSIG_MATLAB_PATH = getenv('BIOSIG_MATLAB_PATH');
+end
 if isempty(BIOSIG_MATLAB_PATH)
 	if exist('./t200_FileAccess','dir')
 		BIOSIG_MATLAB_PATH = pwd;
@@ -115,8 +117,8 @@ end;
 
 try 
     x = mod(1:10,3)'-1;
-    [Pxx,f]=periodogram(x,[],10,100);
-    [b,a] = butter(5,[.08,.096]);
+    [Pxx,f] = periodogram(x, [], 10, 100);
+    [b,a]   = butter(5, [.08,.096]);
 catch
     path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/signal'],'-end');	% Octave-Forge signal processing toolbox converted with freetb4matlab
     disp('signal processing toolbox (butter,periodogram) from freetb4matlab added');
