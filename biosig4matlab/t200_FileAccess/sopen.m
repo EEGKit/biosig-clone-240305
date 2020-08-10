@@ -1350,15 +1350,20 @@ end;
                 [tmp,HDR.THRESHOLD]=gdfdatatype(HDR.GDFTYP);
                 
                 if (HDR.NS>0),	% header 2
-                        % Check all fields of Header2
-                        Label = repmat(' ',HDR.NS,16); 
+			% Check all fields of Header2
+			if HDR.VERSION > 0,  % GDF
+				BLANK_CHAR=char(0);
+			else	% EDF, BDF
+				BLANK_CHAR=' ';
+			end
+			Label = repmat(BLANK_CHAR,HDR.NS,16);
                         if isfield(HDR,'Label')
                                 if ischar(HDR.Label)
                                         sz = min([HDR.NS,16],size(HDR.Label)); 
                                         Label(1:sz(1),1:sz(2)) = HDR.Label(1:sz(1),1:sz(2));
                                 elseif iscell(HDR.Label)
                                         for k=1:min(HDR.NS,length(HDR.Label))
-                                                tmp = [HDR.Label{k},' ']; 
+                                                tmp = [HDR.Label{k},BLANK_CHAR];
                                                 sz = min(16,length(tmp)); 
                                                 Label(k,1:sz)=tmp(1:sz);
                                         end; 
@@ -1368,13 +1373,13 @@ end;
                         end; 
 
                         if ~isfield(HDR,'Transducer')
-                                HDR.Transducer=repmat({' '},HDR.NS,1); %char(32+zeros(HDR.NS,80));
+                                HDR.Transducer=repmat({BLANK_CHAR},HDR.NS,1); %char(32+zeros(HDR.NS,80));
 			elseif ischar(HDR.Transducer) 
                                 HDR.Transducer = cellstr(HDR.Transducer);
                         end; 
 			Transducer = char(HDR.Transducer); 
-                        tmp = min(80,size(Transducer,2));
-                       	Transducer = [Transducer, repmat(' ',size(Transducer,1),80-tmp)];
+			tmp = min(80,size(Transducer,2));
+			Transducer = [Transducer, repmat(BLANK_CHAR,size(Transducer,1),80-tmp)];
 			Transducer = Transducer(:,1:80);                        
                         
                         if ~isfield(HDR,'Filter')
