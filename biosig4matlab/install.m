@@ -25,7 +25,7 @@
 % Copyright (C) 2003-2010,2013,2015,2020 by Alois Schloegl <alois.schloegl@gmail.com>
 % This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
-if isempty(BIOSIG_MATLAB_PATH)
+if ~exist('BIOSIG_MATLAB_PATH','var')
 	BIOSIG_MATLAB_PATH = getenv('BIOSIG_MATLAB_PATH');
 end
 if isempty(BIOSIG_MATLAB_PATH)
