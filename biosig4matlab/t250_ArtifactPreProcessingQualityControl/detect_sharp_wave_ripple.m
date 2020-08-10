@@ -29,7 +29,8 @@ function [HDR, s] = detect_sharp_wave_ripple(fn, chan, varargin)
 %               within a time window centered on the LFP-envelope peak. If this criteria is not
 %               met or the coincidence window is undefined (empty), TYP=3 is used.
 %               Only the first two channels are are used, if data set contains more than two
-%               channels, a warning is displayed.
+%               channels, a warning is displayed. method=14 does not support coincidence detection
+%               and ignores this parameter.
 %
 %	outputFilename
 %		name of file for storing the resulting data with the
@@ -44,10 +45,29 @@ function [HDR, s] = detect_sharp_wave_ripple(fn, chan, varargin)
 %		filename for segmented data, each segment is twice as large as winlen plus one sample
 %		going from -winlen*samplerate : +winlen*samplerate
 %		This file can be loaded into stimfit.
-%	method: default 0
-%		detection method can be numeric or by name "maier2011', 'tukker2013', 'lasz2011', 'jiangan2015'
-%		or 0,1,2, or 3. See references below for details.
-%
+%	method: 0 : default
+%			filter 100-250,
+% 			threshold = 6
+%               1 or 'maier2011' : see Maier et al 2011 [1]
+%			filter 120-300,
+% 			threshold = 6
+%               2 or 'tukker2013' : see Tukker et al 2013 [2]
+%			filter 90-140,
+% 			threshold = 5
+%               3 or 'lasz2011' : see Lasztoczi et al 2011 [3]
+%			filter 90-200,
+% 			threshold = 5
+%               4, or 'jiangan2015' : see Jian Gan et al 2017 [1]
+%			filter 90-200,
+% 			threshold = 4	-> HDR.EVENT.TYP=4
+% 			threshold = 6	-> HDR.EVENT.TYP=6
+%               5  : see Jian Gan et al 2017 [1]
+%			filter 100-250,
+% 			threshold = 6
+%               14 : see Jian Gan et al 2017 [1]
+%			filter 100-250,
+% 			threshold = 4	-> HDR.EVENT.TYP=4
+% 			threshold = 6	-> HDR.EVENT.TYP=6
 %
 %	Arguments can appear in any order and multiple times (except for filename, chan, HDR and data),
 %	In case of conflicting definitions, the latest definition has highest precedence and is used.
@@ -56,9 +76,6 @@ function [HDR, s] = detect_sharp_wave_ripple(fn, chan, varargin)
 % Output:
 %     HDR	header structure as defined in biosig
 %     HDR.EVENT includes the detected spikes and bursts.
-%     HDR.BurstTable contains for each burst (each in a row) the following 5 numbers:
-%	channel number, sweep number, OnsetTime within sweep [s],
-%	number of spikes within burst, and average inter-spike interval (ISI) [ms]
 %     data	signal data, one channel per column
 %		between segments, NaN values for 0.1s are introduced
 %
@@ -91,7 +108,7 @@ function [HDR, s] = detect_sharp_wave_ripple(fn, chan, varargin)
 %     https://doi.org/10.1016/j.neuron.2016.12.018
 
 
-%    Copyright (C) 2014,2015,2016 by Alois Schloegl <alois.schloegl@ist.ac.at>
+%    Copyright (C) 2014,2015,2016,2020 by Alois Schloegl <alois.schloegl@ist.ac.at>
 %    This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 %    BioSig is free software: you can redistribute it and/or modify
@@ -125,7 +142,7 @@ evtFile = [];
 bandpassFile = [];
 segFile = [];
 trigChan= 0;
-method=[];
+method=0;
 coincidenceWindow = [];
 
 %%%%% analyze input arguments %%%%%
