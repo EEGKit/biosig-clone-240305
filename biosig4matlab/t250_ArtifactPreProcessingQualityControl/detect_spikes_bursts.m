@@ -61,18 +61,22 @@ function [HDR, s] = detect_spikes_bursts(fn, chan, varargin)
 % Output:
 %     HDR	header structure as defined in biosig
 %     HDR.EVENT includes the detected spikes and bursts.
-%     HDR.BurstTable contains for each burst (each in a row) the following 5 numbers:
+%     HDR.BurstTable contains for each burst (each in a row) the following 6 numbers:
 %	channel number, sweep number, OnsetTime within sweep [s],
-%	number of spikes within burst, and average inter-spike interval (ISI) [ms]
+%	number of spikes within burst, and average inter-spike interval (ISI) [ms],
+%	and minimum ISI [ms].
 %     data	signal data, one channel per column
 %		between segments, NaN values for 0.1s are introduced
 %
 % see also:  DETECT_SPIKES_BURSTS, SPIKE2BURSTS, OPTIMUM_ISI_SPIKE_BURST_SEPARATION
 %
 % References:
-%
+% [1] Janina Kowalski, Jian Gan, Peter Jonas, and Alejandro J. Pernía‐Andrade
+%     Intrinsic membrane properties determine hippocampal differential firing pattern in vivo in anesthetized rats
+%     Hippocampus. 2016 May; 26(5): 668–682.
+%     doi:10.1002/hipo.22550
 
-%    Copyright (C) 2011,2014,2016,2018,2019 by Alois Schloegl <alois.schloegl@ist.ac.at>
+%    Copyright (C) 2011,2014,2016,2018,2019,2020 by Alois Schloegl <alois.schloegl@ist.ac.at>
 %    This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 %    BioSig is free software: you can redistribute it and/or modify
