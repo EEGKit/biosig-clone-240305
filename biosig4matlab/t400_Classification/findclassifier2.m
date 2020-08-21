@@ -19,10 +19,10 @@ function [CC,Q,tsd,md]=findclassifier2(D,TRIG,cl,T,t0,SWITCH)
 %
 %
 % Reference(s): 
-% [1] Schlögl A., Neuper C. Pfurtscheller G.
+% [1] SchlÃ¶gl A., Neuper C. Pfurtscheller G.
 % 	Estimating the mutual information of an EEG-based Brain-Computer-Interface
 %  	Biomedizinische Technik 47(1-2): 3-8, 2002.
-% [2] A. Schlögl, C. Keinrath, R. Scherer, G. Pfurtscheller,
+% [2] A. SchlÃ¶gl, C. Keinrath, R. Scherer, G. Pfurtscheller,
 %	Information transfer of an EEG-based Bran-computer interface.
 %	Proceedings of the 1st International IEEE EMBS Conference on Neural Engineering, Capri, Italy, Mar 20-22, 2003 
 

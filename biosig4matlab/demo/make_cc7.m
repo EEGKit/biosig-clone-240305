@@ -17,19 +17,19 @@ function [cc3,cc0,cbp,cc4,cbp3]=make_cc7(fn,eegchan,trigchan,Fs)
 % 	Fs=128;
 %
 % References:
-% [1] Schlögl A., Neuper C. Pfurtscheller G. (2002)
+% [1] SchlÃ¶gl A., Neuper C. Pfurtscheller G. (2002)
 %   Estimating the mutual information of an EEG-based Brain-Computer-Interface.
 %   Biomedizinische Technik 47(1-2): 3-8, 2002
-% [2] A. Schlögl, C. Keinrath, R. Scherer, G. Pfurtscheller, (2003)
+% [2] A. SchlÃ¶gl, C. Keinrath, R. Scherer, G. Pfurtscheller, (2003)
 %   Information transfer of an EEG-based Bran-computer interface.
 %   Proceedings of the 1st International IEEE EMBS Conference on Neural Engineering, Capri, Italy, Mar 20-22, 2003. 
-% [3] A. Schlögl, D. Flotzinger and G. Pfurtscheller (1997)
+% [3] A. SchlÃ¶gl, D. Flotzinger and G. Pfurtscheller (1997)
 %   Adaptive Autoregressive Modeling used for Single-trial EEG Classification
 %   Biomedizinische Technik 42: (1997), 162-167. 
-% [4] A. Schlögl, C. Neuper and G. Pfurtscheller (1997)
+% [4] A. SchlÃ¶gl, C. Neuper and G. Pfurtscheller (1997)
 %   Subject-specific EEG pattern during motor imagery
 %   Proceedings of the 19th Annual International Conference if the IEEE Engineering in Medicine and Biology Society , vol 19, pp.1530-1532, 1997.
-% [5] A. Schlögl, K. Lugger and G. Pfurtscheller (1997)
+% [5] A. SchlÃ¶gl, K. Lugger and G. Pfurtscheller (1997)
 %   Using Adaptive Autoregressive Parameters for a Brain-Computer-InterfaceExperiment,
 %   Proceedings of the 19th Annual International Conference if the IEEE Engineering in Medicine and Biology Society ,vol 19 , pp.1533-1535, 1997.
 %

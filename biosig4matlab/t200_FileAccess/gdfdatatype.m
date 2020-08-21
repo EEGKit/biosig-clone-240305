@@ -7,7 +7,7 @@ function [datatyp,limits,datatypes,numbits,GDFTYP] = gdfdatatype(GDFTYP)
 % See also: SOPEN, SREAD, SWRITE, SCLOSE
 %
 % References:
-% [1] A. Schlögl, O. Filz, H. Ramoser, G. Pfurtscheller, GDF - A general dataformat for biosignals, Technical Report, 2004.
+% [1] A. SchlÃ¶gl, O. Filz, H. Ramoser, G. Pfurtscheller, GDF - A general dataformat for biosignals, Technical Report, 2004.
 % available online at: http://www.dpmi.tu-graz.ac.at/~schloegl/matlab/eeg/gdf4/TR_GDF.pdf. 
 
 % This program is free software; you can redistribute it and/or

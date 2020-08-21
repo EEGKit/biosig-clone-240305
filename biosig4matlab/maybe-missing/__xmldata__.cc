@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) Peter Rydesäter 2002, Mitthögskolan, SWEDEN
+Copyright (C) Peter RydesÃ¤ter 2002, MitthÃ¶gskolan, SWEDEN
 Copyright (C) 2005 David Bateman
 
 This file is part of Octave.
@@ -29,9 +29,9 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 //
 //   Peter.Rydesater@mh.se
 //
-//   Peter Rydesäter
-//   Mitthögskolan (Mid Sweden University)
-//   SE-831 25 ÖSTERSUND
+//   Peter RydesÃ¤ter
+//   MitthÃ¶gskolan (Mid Sweden University)
+//   SE-831 25 Ã–STERSUND
 //   SWEDEN
 //
 

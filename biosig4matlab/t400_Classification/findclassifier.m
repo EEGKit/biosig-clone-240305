@@ -32,18 +32,18 @@ function [CC,KAPPA,tsd]=findclassifier(D,TRIG,cl,MODE1,t0,MODE)
 % see also: TRAIN_SC, TEST_SC, BCI4EVAL
 %
 % Reference(s): 
-% [1] Schlögl A, Neuper C, Pfurtscheller G
+% [1] SchlÃ¶gl A, Neuper C, Pfurtscheller G
 % 	Estimating the mutual information of an EEG-based Brain-Computer-Interface
 %  	Biomedizinische Technik 47(1-2): 3-8, 2002.
-% [2] Schlögl A, Keinrath C, Scherer R, Pfurtscheller G,
+% [2] SchlÃ¶gl A, Keinrath C, Scherer R, Pfurtscheller G,
 %	Information transfer of an EEG-based Bran-computer interface.
 %	Proceedings of the 1st International IEEE EMBS Conference on Neural Engineering, Capri, Italy, Mar 20-22, 2003 
-% [3] Schlögl A, Lee FY, Bischof H, Pfurtscheller G
+% [3] SchlÃ¶gl A, Lee FY, Bischof H, Pfurtscheller G
 %	Characterization of Four-Class Motor Imagery EEG Data for the BCI-Competition 2005.
 %	Journal of neural engineering 2 (2005) 4, S. L14-L22
-% [4] Schlögl A, Kronegg J, Huggins JE, Mason SG;
+% [4] SchlÃ¶gl A, Kronegg J, Huggins JE, Mason SG;
 %	Evaluation criteria in BCI research.
-%	(Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.Müller;
+%	(Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.MÃ¼ller;
 %	Towards Brain-Computer Interfacing, MIT Press, p327-342, 2007
 
 %   $Id$

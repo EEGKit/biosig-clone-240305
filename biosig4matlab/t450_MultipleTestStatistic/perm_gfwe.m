@@ -69,7 +69,7 @@ switch samp
                 case '<'
             	 t = -t;		% t-Werte einseitig
                end;%switch
-	       [y,lidx]=max(t);	% Maximum der Beträge der t-Werte
+	       [y,lidx]=max(t);	% Maximum der BetrÃ¤ge der t-Werte
    	       t0max=t(lidx);	% max. t-Wert
 	       t0=t0max;
     	end%switch tstat
@@ -111,7 +111,7 @@ switch samp
                 case '<'
             	 t = -t;		% t-Werte einseitig
                end;%switch
-	       [y,lidx]=max(t);	% Maximum der Beträge der t-Werte
+	       [y,lidx]=max(t);	% Maximum der BetrÃ¤ge der t-Werte
    	       t0max=t(lidx);	% max. t-Wert
 	       tp(j)=t0max;
     	    end%switch tstat                  
@@ -149,7 +149,7 @@ switch samp
                 case '<'
             	 t = -t;		% t-Werte einseitig
                end;%switch
-	       %[tmax1,lidx]=max(t);	% Maximum der Beträge der t-Werte
+	       %[tmax1,lidx]=max(t);	% Maximum der BetrÃ¤ge der t-Werte
    	       %t0max=tmax1(1);	% max. t-Wert
 	       t0max=max(t);
 	       t0=t0max;
@@ -192,7 +192,7 @@ switch samp
                 case '<'
             	 t = -t;		% t-Werte einseitig
                end;%switch
-	      % [tmax1,lidx]=max(t);	% Maximum der Beträge der t-Werte
+	      % [tmax1,lidx]=max(t);	% Maximum der BetrÃ¤ge der t-Werte
    	      % t0max=tmax1(1);
 	       t0max=max(t);
 	       tp(j)=t0max;
@@ -239,7 +239,7 @@ switch samp
                 case '<'
             	 t = -t;		% t-Werte einseitig
                end;%switch
-	       [y,lidx]=max(t);	% Maximum der Beträge der t-Werte
+	       [y,lidx]=max(t);	% Maximum der BetrÃ¤ge der t-Werte
    	       t0max=t(lidx);	% max. t-Wert
 	       t0=t0max;
 	   case 'ta'
@@ -268,7 +268,7 @@ switch samp
     	end%switch tstat         
  
     
-%Nun werden M Permutationen erzeugt und die zugehï¿½rigen
+%Nun werden M Permutationen erzeugt und die zugehÃ¯Â¿Å“rigen
 %p-Werte in Matrix P gespeichert
     
         I=[1:n1];
@@ -286,7 +286,7 @@ switch samp
         
             if M<=(nk/2)
          
-    %würfelt zufällig eine Kombination, testet ob Wiederholung 
+    %wÃ¼rfelt zufÃ¤llig eine Kombination, testet ob Wiederholung 
          
                 a=1;
                 while a
@@ -309,7 +309,7 @@ switch samp
             else  %M<=(nk/2)
         
     %Ermittel der Kombinationen indem alle iterativ erzeugt werden
-    %Dort wo E<=sprung, diese Kombinationen werden zufï¿½llig eleminiert
+    %Dort wo E<=sprung, diese Kombinationen werden zufÃ¯Â¿Å“llig eleminiert
          
    
                 a=1;
@@ -364,7 +364,7 @@ switch samp
                 case '<'
             	 t = -t;		% t-Werte einseitig
                end;%switch
-	       [y,lidx]=max(t);	% Maximum der Beträge der t-Werte
+	       [y,lidx]=max(t);	% Maximum der BetrÃ¤ge der t-Werte
    	       t0max=t(lidx);	% max. t-Wert
 	       tp(j)=t0max;
 	     case 'ta'

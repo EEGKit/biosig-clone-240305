@@ -31,13 +31,13 @@ function [AaH,pwert]=lehrom(p,k,alpha,gamma,vari);
 %--------------------------------------------------------------------------
 
 
-% Erweiterung von Holm für gamma in (0, 1) nach Lehmann und Romano (2004)
+% Erweiterung von Holm fÃ¼r gamma in (0, 1) nach Lehmann und Romano (2004)
 
 
  AaH=0;
  pwert=zeros(k,1);
  
- % t-Test für Einstichprobenfall
+ % t-Test fÃ¼r Einstichprobenfall
  
  if vari==1,
    c=(floor(gamma.*[1:k])+1)*alpha./(k+floor(gamma.*[1:k])+1-[1:k]);

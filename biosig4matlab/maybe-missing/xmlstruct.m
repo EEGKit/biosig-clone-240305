@@ -67,7 +67,7 @@
 %   LICENSE:
 %  ========= 
 %
-%   Copyright (C) Peter Rydesäter 2002, Mitthögskolan, SWEDEN
+%   Copyright (C) Peter RydesÃ¤ter 2002, MitthÃ¶gskolan, SWEDEN
 %
 %   This program is free software; you can redistribute it and/or
 %   modify it under the terms of the GNU General Public License
@@ -90,9 +90,9 @@
 %
 %   Peter.Rydesater@mh.se
 %
-%   Peter Rydesäter
-%   Mitthögskolan (Mid Sweden University)
-%   SE-831 25 ÖSTERSUND
+%   Peter RydesÃ¤ter
+%   MitthÃ¶gskolan (Mid Sweden University)
+%   SE-831 25 Ã–STERSUND
 %   SWEDEN
 %
 

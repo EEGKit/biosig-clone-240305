@@ -55,7 +55,7 @@ schranke=floor(alpha*M)+1;
 d=[1:k]; 
 
 
-[Q,d]=sort(P);	% ordne die Original p-Werte der Größe nach
+[Q,d]=sort(P);	% ordne die Original p-Werte der GrÃ¶ÃŸe nach
 d=d(:,1);%d ist Indexvektor der original p-Werte
 
 
@@ -74,7 +74,7 @@ if p(1)<y,
    adpval(1)=sum(mini(1:M)<=p(1)*ones(1,M))/M;
    
    %disp(sprintf('Komponente %g ist signifikant, p-Wert=%6.5f, adjustierter p-Wert=%6.5f',d(1),q(d(1)),adpval(1) ));
-else %disp('Können keine Hypothese ablehnen');
+else %disp('KÃ¶nnen keine Hypothese ablehnen');
      %[AaH1,pup1] = vereinMalt1(P,M,n,k,pWert,alpha,gamma);
 return;
 end;%if
@@ -115,7 +115,7 @@ N=5*M*k/4;
           pup(AaH)=d(r);
           %pup(2,AaH)=q(d(r));
 	  
-    else %disp(sprintf('Können H(%g) nicht ablehnen (Parameter %g, p= %g)',r,d(r),q(d(r))))
+    else %disp(sprintf('KÃ¶nnen H(%g) nicht ablehnen (Parameter %g, p= %g)',r,d(r),q(d(r))))
 	  %[AaH1,pup1] = vereinMalt1(P,M,n,k,pWert,alpha,gamma);
 	  return;
     end;%if

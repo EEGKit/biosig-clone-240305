@@ -53,21 +53,19 @@ function [o] = bci4eval(tsd,TRIG,cl,pre,post,Fs)
 % see also: SUMSKIPNAN, PLOTA, BCI3EVAL
 %
 % REFERENCES: 
-%  [1] Schlögl A., Neuper C. Pfurtscheller G.
+% [1] SchlÃ¶gl A., Neuper C. Pfurtscheller G.
 %	Estimating the mutual information of an EEG-based Brain-Computer-Interface
 %	Biomedizinische Technik 47(1-2): 3-8, 2002.
-%  [2] A. Schlögl, C. Keinrath, R. Scherer, G. Pfurtscheller,
+% [2] A. SchlÃ¶gl, C. Keinrath, R. Scherer, G. Pfurtscheller,
 %	Information transfer of an EEG-based Bran-computer interface.
 %	Proceedings of the 1st International IEEE EMBS Conference on Neural Engineering, pp.641-644, Mar 20-22, 2003. 
-%  [3]  A. Schlögl, Evaluation of the dataset III of the BCI-competition 2003. 
+% [3] A. SchlÃ¶gl, Evaluation of the dataset III of the BCI-competition 2003.
 %	http://ida.first.fraunhofer.de/projects/bci/competition/results/TR_BCI2003_III.pdf
-% [4] Schlögl A, Kronegg J, Huggins JE, Mason SG;
+% [4] SchlÃ¶gl A, Kronegg J, Huggins JE, Mason SG;
 %	Evaluation criteria in BCI research.
-%	(Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.Müller;
+%	(Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.MÃ¼ller;
 %	Towards Brain-Computer Interfacing, MIT Press, p327-342, 2007
 
-
-%    $Id$
 %    Copyright (C) 2003,2008 by Alois Schloegl <alois.schloegl@gmail.com>
 %    This is part of the BIOSIG-toolbox http://biosig.sf.net/
 

@@ -62,7 +62,7 @@ function [R,CC]=xval(D,classlabel,MODE,arg4)
 % References: 
 % [1] R. Duda, P. Hart, and D. Stork, Pattern Classification, second ed. 
 %       John Wiley & Sons, 2001. 
-% [2] A. Schl�gl, J. Kronegg, J.E. Huggins, S. G. Mason;
+% [2] A. Schlögl, J. Kronegg, J.E. Huggins, S. G. Mason;
 %       Evaluation criteria in BCI research.
 %       (Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.Müller;
 %       Towards Brain-Computer Interfacing, MIT Press, 2007, p.327-342

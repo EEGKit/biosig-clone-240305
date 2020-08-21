@@ -41,7 +41,7 @@ adpval=0;
 %psd
 
 for j=1:k
-    c=min(1,alpha*k/(k-j+1)^2);	% krit. Wert für bl01
+    c=min(1,alpha*k/(k-j+1)^2);	% krit. Wert fÃ¼r bl01
     if psd(j)<=c & psd(j) <= alpha,
        AaH=AaH+1;
        pup(AaH)=indexsd(j);

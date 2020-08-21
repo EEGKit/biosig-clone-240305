@@ -5,7 +5,6 @@ function [CNT,h,e]=cntopen(arg1,arg2,arg3,arg4,arg5,arg6)
 %
 % see also: SLOAD, SOPEN, SREAD, SCLOSE, SEOF, STELL, SSEEK.
 
-%  $Id$
 %  Copyright (c) 1997-2006,2007,2008,2009,2012 by Alois Schloegl <alois.schloegl@gmail.com>
 %  This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
@@ -401,7 +400,7 @@ CNT.SampleRate=h.rate;	% D-to-A rate
 CNT.Scale=h.scale;	% scale factor for calibration
 CNT.Scale2=h.ampsensitivity;
 CNT.HeadLen = 900 + 75*CNT.NS;
-%CNT.PhysDim = repmat({'µV'},CNT.NS,1);
+%CNT.PhysDim = repmat({'ÂµV'},CNT.NS,1);
 CNT.PhysDimCode = repmat(4275,CNT.NS,1); %% uV 
 
 % Scan4.3->Edit->Overall Setup->Amplifier->Notch->Off/50Hz/60Hz

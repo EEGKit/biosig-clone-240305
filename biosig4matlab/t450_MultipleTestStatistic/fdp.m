@@ -95,7 +95,7 @@ function [O] = fdp(Input,n1,samp,varargin)
 %-----------
 %
 % REFERENCES
-%  [1]	Hemmelmann, C., Horn, M., Süße, T., Vollandt, R., Weiss, S. (2005):
+%  [1]	Hemmelmann, C., Horn, M., SÃ¼ÃŸe, T., Vollandt, R., Weiss, S. (2005):
 %       New concepts of multiple tests and their use for evaluating
 %       high-dimensional EEG data, Vol 142/2 pp 209-217.
 %
@@ -421,7 +421,7 @@ if strcmp(samp,'single')       %for single sample
         FG=n1-1;
         p=tcdf(t,FG);
   	  case 'wilcox'     %Wilcoxen signed rank test
-            p = wilcoxon_test(X, Y, tail); % Wilcoxentest für gepaarte Stichproben
+            p = wilcoxon_test(X, Y, tail); % Wilcoxentest fÃ¼r gepaarte Stichproben
       case 'sign'       %sign test
             [p,h] = signtest(X,Y,alpha,tail); %Vorzeichentest
    	end %switch test sing
@@ -433,7 +433,7 @@ elseif strcmp(samp,'paired')  %for paired sample
     %einseitiger p-Wert des t-Tests  
         p=tcdf(t,FG);
     	case 'wilcox'   %Wilcoxen signed rank test
-            p = wilcoxon_test(X, Y, tail); % Wilcoxentest für gepaarte Stichproben
+            p = wilcoxon_test(X, Y, tail); % Wilcoxentest fÃ¼r gepaarte Stichproben
     	case 'sign'     %sign test
             [p,h] = signtest(X, Y, alpha, tail); %Vorzeichentest
 	end %switch test pair

@@ -56,7 +56,7 @@ if k>100
 
 Q=P;
     for j=1:k
-        P(j,:)=Q(d(j),:);        % ordne die Original p-Werte der Größe nach
+        P(j,:)=Q(d(j),:);        % ordne die Original p-Werte der GrÃ¶ÃŸe nach
     end;%for
 
 
@@ -75,7 +75,7 @@ else
 [Q,d]=sort(P(:,1));
 Q=P;
     for j=1:k
-        P(j,:)=Q(d(j),:);        % ordne die Original p-Werte der Größe nach
+        P(j,:)=Q(d(j),:);        % ordne die Original p-Werte der GrÃ¶ÃŸe nach
     end;%for
 
 p=P(:,1);
@@ -94,7 +94,7 @@ if p(1)<y,
     adpval(1)= sum(mini<=p(1)*ones(1,M))/M;
     %disp(sprintf('Komponente %g ist signifikant, p-Wert=%6.5f, adjustierter p-Wert=%6.5f',d(1),q(d(1)),adpval(1)));
     %pup(2,AaH)=q(d(1));
-else %disp('Können keine Hypothese ablehnen');
+else %disp('KÃ¶nnen keine Hypothese ablehnen');
     %size(P1),[anzahl1,AaH1,pup1,q1,adpval1]=exakteM(P1,M,n,k,pWert,fall,alpha,gamma);
 return;
 end;%if
@@ -126,7 +126,7 @@ for r=2:k,
    	            pup(AaH)=d(r);
    	             %pup(2,AaH)=q(d(r));
   	        else 
-	            %disp(sprintf('Können H(%g) nicht ablehnen (Parameter %g, p= %g)',r,d(r),q(d(r))));
+	            %disp(sprintf('KÃ¶nnen H(%g) nicht ablehnen (Parameter %g, p= %g)',r,d(r),q(d(r))));
    	       
                 %size(P1),[anzahl1,AaH1,pup1,q1,adpval1]=exakteM(P1,M,n,k,pWert,fall,alpha,gamma);
             return;
@@ -142,7 +142,7 @@ N=j*u;
 	
 	 grenze=1000;
 	 
-	     % wenn Anzahl Kombinationen zu groß, dann iterativ 
+	     % wenn Anzahl Kombinationen zu groÃŸ, dann iterativ 
 	     % Kombinationen bestimmen
 	     
 	        if j<=grenze
@@ -167,7 +167,7 @@ N=j*u;
 		                    Q(l,:)=P(x(l),:);
 		                end;%for l=1:u
                   
-		        %Nächste Kombination wird eingelesen
+		        %NÃ¤chste Kombination wird eingelesen
 		            if j<grenze
 		                x=I(i+1,:); 
 		            else

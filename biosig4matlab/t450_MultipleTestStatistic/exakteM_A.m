@@ -54,7 +54,7 @@ P1=P;%size(P1)
 [Q,d]=sort(P(:,1));
 Q=P;
 for j=1:k
-P(j,:)=Q(d(j),:);        % ordne die Original p-Werte der Grˆﬂe nach
+P(j,:)=Q(d(j),:);        % ordne die Original p-Werte der Gr√∂√üe nach
 end;%for
 
 p=P(:,1);
@@ -91,7 +91,7 @@ if u<=k
         N=j*u;
         groesser=(N*M>=10000);
 	    grenze=1000;
-	     % wenn Anzahl Kombinationen zu groﬂ, dann iterativ 
+	     % wenn Anzahl Kombinationen zu gro√ü, dann iterativ 
 	     % Kombinationen bestimmen
 	 
             if j<=grenze
@@ -112,7 +112,7 @@ if u<=k
                     Q(l,:)=P(x(l),:);
                     end;%for
 		
-                    %N‰chste Kombination wird eingelesen
+                    %N√§chste Kombination wird eingelesen
                     if j<grenze
                     x=I(i+1,:);
                     else
@@ -139,7 +139,7 @@ if u<=k
                     Q(l,:)=P(x(l),:);
                     end;%for
 		 
-                    %N‰chste Kombination wird eingelesen
+                    %N√§chste Kombination wird eingelesen
                     if j<grenze
                     x=I(i+1,:); 
                     else

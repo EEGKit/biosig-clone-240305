@@ -31,8 +31,8 @@ function [Y0,EVENT] = OAHE(S,Fs,varargin)
 %       Recommendations for Syndrome Definition, and Measurement Techniques in Clinical Research. Sleep, 22(5), 1999. 
 % [2] Meoli AL, Casey KR, Clark RW, Coleman JA Jr, Fayle RW, Troell RJ, Iber C; Clinical Practice Review Committee. 
 %       Hypopnea in Sleep-Disordered Breathing in Adults. Sleep. 2001 Jun 15;24(4):469-70.
-% [3] Penzel T.,  Brandenburg U., Fischer J., Jobert M., Kurella B., Mayer G., Nioewerth H.J., Peter J.H., Pollmächer T., Schäfer T., Steinberg R., Trowitzsch E., Warmuth R., Weeß H.-G., Wölk C., Zulley J., 
-%       Empfehlungen zur computerunterstützen Aufzeichnung und Auswertung von Polygraphien. Somnologie, 2, 42-48, 1998. 
+% [3] Penzel T.,  Brandenburg U., Fischer J., Jobert M., Kurella B., Mayer G., Nioewerth H.J., Peter J.H., PollmÃ¤cher T., SchÃ¤fer T., Steinberg R., Trowitzsch E., Warmuth R., WeeÃŸ H.-G., WÃ¶lk C., Zulley J., 
+%       Empfehlungen zur computerunterstÃ¼tzen Aufzeichnung und Auswertung von Polygraphien. Somnologie, 2, 42-48, 1998. 
 % [4] Ross SD, Sheinhait IA, Harrison KJ, Kvasz M, Connelly JE, Shea SA, Allen IE. 
 %       Systematic review and meta-analysis of the literature regarding the diagnosis of sleep apnea. Sleep. 2000 Jun 15;23(4):519-32.
 % [5] Schafer T. Methodik der Atmungsmessung im Schlaf: Kapneographie zur Beurteilung der Ventilation. 
@@ -41,7 +41,7 @@ function [Y0,EVENT] = OAHE(S,Fs,varargin)
 %       Am J Respir Crit Care Med. 2001 Nov 15;164(10 Pt 1):1914-9.
 % [7] Whitney CW, Gottlieb DJ, Redline S, Norman RG, Dodge RR, Shahar E, Surovec S, Nieto FJ. 
 %       Reliability of scoring respiratory disturbance indices and sleep staging. Sleep. 1998 Nov 1;21(7):749-57.
-% [8] Schlögl A, Kemp B, Penzel T, Kunz D, Himanen SL, Varri A, Dorffner G, Pfurtscheller 
+% [8] SchlÃ¶gl A, Kemp B, Penzel T, Kunz D, Himanen SL, Varri A, Dorffner G, Pfurtscheller 
 %       G. Quality control of polysomnographic sleep data by histogram and entropy analysis.
 %       Clin Neurophysiol. 1999 Dec;110(12):2165-70.
 

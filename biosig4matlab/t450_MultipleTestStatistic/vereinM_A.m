@@ -57,7 +57,7 @@ d=[1:k];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[Q,d]=sort(P);	% ordne die Original p-Werte der Größe nach
+[Q,d]=sort(P);	% ordne die Original p-Werte der GrÃ¶ÃŸe nach
 d=d(:,1);%d ist Indexvektor der original p-Werte
 p=Q(:,1);
 
@@ -86,7 +86,7 @@ AaH=u;
           AaH=AaH+1;
           pup(AaH)=d(r);
           %pup(2,AaH)=q(d(r));
-        else %disp(sprintf('Können H(%g) nicht ablehnen (Parameter %g, p= %g)',r,d(r),q(d(r))));
+        else %disp(sprintf('KÃ¶nnen H(%g) nicht ablehnen (Parameter %g, p= %g)',r,d(r),q(d(r))));
         return;
         end;%if	 
     end;%for

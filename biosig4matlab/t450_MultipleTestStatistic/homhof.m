@@ -3,7 +3,7 @@ function [AaH,pwert]=homhof(p,k,alpha,u);
 %The function[AaH,pwert] = homhof(p,k,alpha,u)) is a subfunction in the main-function fdp.m.
 %Use the main-function for help.
 %
-%Erweiterung von Holm für u=1,2,3... nach Hommel und Hoffmann (1987)
+%Erweiterung von Holm fÃ¼r u=1,2,3... nach Hommel und Hoffmann (1987)
 %
 %
 %Copyright (C) 2006 by Claudia Hemmelmann <claudia.hemmelmann@mti.uni-jena.de>
@@ -36,7 +36,7 @@ function [AaH,pwert]=homhof(p,k,alpha,u);
  AaH=0;
  pwert=zeros(k,1);
  
- % t-Test für Einstichprobenfall
+ % t-Test fÃ¼r Einstichprobenfall
  
  c=[ones(1,u+1)*(u+1)*alpha/k, (u+1)*alpha./[k-1:-1:u+1]];
  

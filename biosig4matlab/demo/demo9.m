@@ -6,30 +6,30 @@
 %
 %
 % References: 
-% [1] A. Schlögl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen, A. Värri, G. Dorffner, G. Pfurtscheller.
+% [1] A. SchlÃ¶gl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen, A. VÃ¤rri, G. Dorffner, G. Pfurtscheller.
 %       Quality Control of polysomnographic Sleep Data by Histogram and Entropy Analysis.
 %       Clin. Neurophysiol. 1999, Dec; 110(12): 2165 - 2170.
-% [2] Alois Schlögl (2000)
+% [2] Alois SchlÃ¶gl (2000)
 %       The electroencephalogram and the adaptive autoregressive model: theory and applications
 %       Shaker Verlag, Aachen, Germany, (ISBN3-8265-7640-3). 
-% [3] Schlögl A., Neuper C. Pfurtscheller G.
+% [3] SchlÃ¶gl A., Neuper C. Pfurtscheller G.
 %       Estimating the mutual information of an EEG-based Brain-Computer-Interface
 %       Biomedizinische Technik 47(1-2): 3-8, 2002.
-% [4] A. Schlögl, C. Keinrath, R. Scherer, G. Pfurtscheller,
+% [4] A. SchlÃ¶gl, C. Keinrath, R. Scherer, G. Pfurtscheller,
 %       Information transfer of an EEG-based Bran-computer interface.
 %       Proceedings of the 1st International IEEE EMBS Conference on Neural Engineering, Capri, Italy, Mar 20-22, 2003. 
-% [5] A. Schlögl, J. Kronegg, J.E. Huggins, S. G. Mason.
+% [5] A. SchlÃ¶gl, J. Kronegg, J.E. Huggins, S. G. Mason.
 %       Evaluation criteria in BCI research.
-%       (Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.Müller,
+%       (Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.MÃ¼ller,
 %       Towards Brain-Computer Interfacing. MIT Press, p.327-342, 2007.
-% [6] A. Schlögl, F.Y. Lee, H. Bischof, G. Pfurtscheller
+% [6] A. SchlÃ¶gl, F.Y. Lee, H. Bischof, G. Pfurtscheller
 %   	Characterization of Four-Class Motor Imagery EEG Data for the BCI-Competition 2005.
 %   	Journal of neural engineering 2 (2005) 4, S. L14-L22
-% [7] A. Schlögl, C. Brunner, R. Scherer, A. Glatz;
+% [7] A. SchlÃ¶gl, C. Brunner, R. Scherer, A. Glatz;
 %   	BioSig - an open source software library for BCI research.
-%   	(Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R. Müller;
+%   	(Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R. MÃ¼ller;
 %   	Towards Brain-Computer Interfacing, MIT Press, 2007, p.347-358. 
-% [8] A. Schlögl, C. Brunner
+% [8] A. SchlÃ¶gl, C. Brunner
 %   	BioSig: A Free and Open Source Software Library for BCI Research.
 %	Computer (2008, In Press)	
 

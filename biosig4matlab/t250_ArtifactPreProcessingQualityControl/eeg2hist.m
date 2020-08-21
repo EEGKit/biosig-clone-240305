@@ -18,18 +18,18 @@ function [HDR]=eeg2hist(FILENAME,CHAN);
 % see also: SOPEN, SLOAD, HIST2RES
 %
 % REFERENCES:
-% [1] A. Schlögl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen,A. Värri, G. Dorffner, G. Pfurtscheller.
+% [1] A. SchlÃ¶gl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen,A. VÃ¤rri, G. Dorffner, G. Pfurtscheller.
 %   Quality Control of polysomnographic Sleep Data by Histogram and EntropyAnalysis. 
 %   Clin. Neurophysiol. 1999, Dec; 110(12): 2165 - 2170.
 %   http://dx.doi.org/10.1016/S1388-2457(99)00172-8
 %
-% [2] A. Schlögl, G. Klösch, W. Koele, J. Zeitlhofer, P.Rappelsberger, G. Pfurtscheller
-% Qualitätskontrolle von Biosignalen,
-% Jahrestagung der Österreichischen Gesellschaft für Klinische Neurophysiologie, 27. Nov. 1999, Vienna.
+% [2] A. SchlÃ¶gl, G. KlÃ¶sch, W. Koele, J. Zeitlhofer, P.Rappelsberger, G. Pfurtscheller
+% QualitÃ¤tskontrolle von Biosignalen,
+% Jahrestagung der Ã–sterreichischen Gesellschaft fÃ¼r Klinische Neurophysiologie, 27. Nov. 1999, Vienna.
 %
 % [3] http://pub.ist.ac.at/~schloegl/lectures/Q/index.htm
 %
-% [4] A. Schlögl, Time Series Analysis toolbox for Matlab. 1996-2003
+% [4] A. SchlÃ¶gl, Time Series Analysis toolbox for Matlab. 1996-2003
 % http://pub.ist.ac.at/~schloegl/matlab/tsa/
 
 % 	$Id$

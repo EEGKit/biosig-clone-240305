@@ -40,7 +40,7 @@ function [lap, plot_index, n_rows, n_cols] = getMontage(montage, outfile)
 %   n_rows     ... Number of rows of the montage
 %   n_cols     ... Number of columns of the montage
 
-% Copyright by Clemens Brunner, Robert Leeb, Alois Schlögl 
+% Copyright by Clemens Brunner, Robert Leeb, Alois SchlÃ¶gl 
 % $Revision: 0.31 $ $Date: 10/27/2009 11:41:07 $
 % $Id$
 % E-Mail: clemens.brunner@tugraz.at

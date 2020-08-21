@@ -5,7 +5,6 @@ function [BKR,s]=bkropen(arg1,arg3,arg4,arg5,arg6)
 %
 % see also: SOPEN, SREAD, SSEEK, STELL, SCLOSE, SWRITE, SEOF
 
-%	$Id$
 %	Copyright (c) 1997-2008 by Alois Schloegl <alois.schloegl@gmail.com>
 %    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
@@ -51,7 +50,7 @@ if any(BKR.FILE.PERMISSION=='r'),
         %VARIABLE	TYPE			#bytes	OFFSET	COMMENT
 	BKR.VERSION     = fread(fid,1,'uint16');	%	2 Byte	0	Versionsnummer 
 	if ((BKR.VERSION<=200) | (BKR.VERSION>207)) fprintf(2,'LOADBKR: WARNING  Version BKR Format %i',BKR.VERSION); end;
-	BKR.NS          = fread(fid,1,'uint16');	%	2 Byte	2	Anzahl der Kanäle
+	BKR.NS          = fread(fid,1,'uint16');	%	2 Byte	2	Anzahl der KanÃ¤le
 	BKR.SampleRate  = fread(fid,1,'uint16');	%	2 Byte	4	Abtastfrequenz	
 	BKR.NRec        = fread(fid,1,'uint32');	%	4 Byte	6	Anzahl der Trials
 	BKR.SPR         = fread(fid,1,'uint32');	%	4 Byte	10	Anzahl Samples per Trial
@@ -62,17 +61,17 @@ if any(BKR.FILE.PERMISSION=='r'),
 	BKR.Filter.LowPass      = fread(fid,1, FLOAT);	%	4 Byte	22	untere Eckfrequenz
 	BKR.Filter.HighPass     = fread(fid,1, FLOAT);	%	4 Byte	26	obere Eckfrequenz
 	BKR.BKR.sref=fread(fid,1, ULONG);	%	4 Byte	30	Startzeitpunkt Referenz in Samples
-	BKR.BKR.eref=fread(fid,1, ULONG);	%	4 Byte	34	Länge Referenz in Samples	
+	BKR.BKR.eref=fread(fid,1, ULONG);	%	4 Byte	34	LÃ¤nge Referenz in Samples	
 	BKR.BKR.sact=fread(fid,1, ULONG);	%	4 Byte	38	Startzeitpunkt Aktion in Samples
-	BKR.BKR.eact=fread(fid,1, ULONG);	%	4 Byte	42	Länge Aktion in Samples
-	BKR.FLAG.TRIGGERED      = fread(fid,1,BOOL);	%	2 Byte	46	flag für Trigger
+	BKR.BKR.eact=fread(fid,1, ULONG);	%	4 Byte	42	LÃ¤nge Aktion in Samples
+	BKR.FLAG.TRIGGERED      = fread(fid,1,BOOL);	%	2 Byte	46	flag fÃ¼r Trigger
 	BKR.BKR.pre=fread(fid,1, ULONG);	%	4 Byte	48	Anzahl der Sampels vor dem Trigger
 	BKR.BKR.pst=fread(fid,1, ULONG);	%	4 Byte	52	Anzahl der Sampels nach dem Trigger
-	BKR.BKR.hav=fread(fid,1,BOOL);		%	2 Byte	56	flag für "horizontale" Mittelung
+	BKR.BKR.hav=fread(fid,1,BOOL);		%	2 Byte	56	flag fÃ¼r "horizontale" Mittelung
 	BKR.BKR.nah=fread(fid,1, ULONG);	%	4 Byte	58	Anzahl der gemittelten Trials
-	BKR.BKR.vav=fread(fid,1,BOOL);		%	2 Byte	62	flag für "vertikale" Mittelung	
-	BKR.BKR.nav=fread(fid,1,'uint16');	%	2 Byte	64	Anzahl der gemittelten Kanäle
-	BKR.BKR.cav=fread(fid,1,BOOL);		%	2 Byte	66	flag für Datenkomprimierung
+	BKR.BKR.vav=fread(fid,1,BOOL);		%	2 Byte	62	flag fÃ¼r "vertikale" Mittelung	
+	BKR.BKR.nav=fread(fid,1,'uint16');	%	2 Byte	64	Anzahl der gemittelten KanÃ¤le
+	BKR.BKR.cav=fread(fid,1,BOOL);		%	2 Byte	66	flag fÃ¼r Datenkomprimierung
 	BKR.BKR.nac=fread(fid,1, ULONG);	%	4 Byte	68	Anzahl der gemittelten Samples
 	BKR.FLAG.ref=fread(fid,4,BOOL);		%	2 Byte	72	flag: Common Average Reference
 	%       loc=fread(fid,1,BOOL);		%	2 Byte	74	flag: Local Average Reference
@@ -81,13 +80,13 @@ if any(BKR.FILE.PERMISSION=='r'),
 	BKR.BKR.pwr=fread(fid,1,BOOL);		%	2 Byte	80	flag: Leistung
 	BKR.BKR.avr=fread(fid,1,BOOL);		%	2 Byte	82	flag: Mittelwert
 	BKR.BKR.std=fread(fid,1,BOOL);		%	2 Byte	84	flag: Streuung
-	BKR.BKR.bps=fread(fid,1,BOOL);		%	2 Byte	86	flag: Bandpaß
+	BKR.BKR.bps=fread(fid,1,BOOL);		%	2 Byte	86	flag: BandpaÃŸ
 	BKR.BKR.erd=fread(fid,1,BOOL);		%	2 Byte	88	flag: ERD
 	BKR.BKR.sig=fread(fid,1,BOOL);		%	2 Byte	90	flag: Signifikanz 
-	BKR.BKR.coh=fread(fid,1,BOOL);		%	2 Byte	92	flag: Kohärenz
+	BKR.BKR.coh=fread(fid,1,BOOL);		%	2 Byte	92	flag: KohÃ¤renz
 	BKR.BKR.spc=fread(fid,1,BOOL);		%	2 Byte	94	flag: Spectrum
 	BKR.BKR.conf=fread(fid,1, FLOAT);	%	4 Byte	96	Konfidenz
-	BKR.BKR.csp=fread(fid,1,BOOL);		%	2 Byte	100	flag: Kohärenz Leistungsspektrum
+	BKR.BKR.csp=fread(fid,1,BOOL);		%	2 Byte	100	flag: KohÃ¤renz Leistungsspektrum
 	BKR.BKR.erc=fread(fid,1,BOOL);		%	2 Byte	102	flag: ERC
 	BKR.BKR.ham=fread(fid,1,BOOL);		%	2 Byte	104	flag: Hanning smoothed
 	BKR.BKR.ann=fread(fid,1,BOOL);		%	2 Byte	106	flag: art. Neuronal. NW. Filter (ANN)
@@ -103,9 +102,9 @@ if any(BKR.FILE.PERMISSION=='r'),
 	BKR.BKR.cwt=fread(fid,1,BOOL);		%	2 Byte	132	flag: kont. Wavelet transformtiert
 	cwt_fmin=fread(fid,1, FLOAT);	%	4 Byte	134	unterste Frequenz, kont. Wavelettransform.
 	cwt_fmax=fread(fid,1, FLOAT);	%	4 Byte	138	oberste Frequenz, kont. Wavelettransform.
-	scales=fread(fid,1,'uint16');	%	2 Byte	142	Anzahl Frequenzbänder für kont. WT
-	cwt_fe=fread(fid,1, FLOAT);	%	4 Byte	144	frequ. für Dt = Df = 1/2Öp
-	cwt_start=fread(fid,1, ULONG);	%	4 Byte	148	Startsample für kont. WT Berechnung
+	scales=fread(fid,1,'uint16');	%	2 Byte	142	Anzahl FrequenzbÃ¤nder fÃ¼r kont. WT
+	cwt_fe=fread(fid,1, FLOAT);	%	4 Byte	144	frequ. fÃ¼r Dt = Df = 1/2Ã–p
+	cwt_start=fread(fid,1, ULONG);	%	4 Byte	148	Startsample fÃ¼r kont. WT Berechnung
         %-- NULL --	-------------	--------	152	-- Offset bis 512 Byte --
         if 1, 
                 fread(fid,1024-152,'uint8');
@@ -113,8 +112,8 @@ if any(BKR.FILE.PERMISSION=='r'),
                 fread(fid,512-152,'uint8');
                 for i=1:BKR.NS,
                         eletyp(i)=fread(fid,1,'uchar');	%	1 Byte	512	Elektrode 1: Signalart (z.B: EEG)
-                        elenum(i)=fread(fid,1,'uchar');	%	1 Byte	513	Elektrode 1: Kanalnr. für gleiche Signalart
-                        ref(i)=fread(fid,1, FLOAT);	%	4 Byte	514	Referenzwert für Kanal 1
+                        elenum(i)=fread(fid,1,'uchar');	%	1 Byte	513	Elektrode 1: Kanalnr. fÃ¼r gleiche Signalart
+                        ref(i)=fread(fid,1, FLOAT);	%	4 Byte	514	Referenzwert fÃ¼r Kanal 1
                 end;
                 if BKR.NS>85,
                         fprintf(2,'Warning BKRLOAD: Number of channels larger than 85; Header does not support more\n');
@@ -134,7 +133,7 @@ if any(BKR.FILE.PERMISSION=='r'),
 	BKR.Cal=BKR.PhysMax./BKR.DigMax;
 	BKR.Off=zeros(BKR.NS,1);
         BKR.Calib = sparse(2:BKR.NS+1,1:BKR.NS,BKR.Cal,BKR.NS+1,BKR.NS);
-        %BKR.PhysDim = repmat({'µV'},BKR.NS,1);
+        %BKR.PhysDim = repmat({'ÂµV'},BKR.NS,1);
         BKR.PhysDimCode = repmat(4275,BKR.NS,1);  % uV 
 	tmp=sprintf('LowPass %4.1f Hz; HighPass %4.1f Hz; Notch ?',BKR.Filter.LowPass,BKR.Filter.HighPass);
 	BKR.PreFilt=tmp; %ones(BKR.NS,1)*[tmp 32+zeros(1,80-length(tmp))];
