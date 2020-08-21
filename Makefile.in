@@ -12,7 +12,7 @@ java: lib
 	make -C biosig4c++/java
 
 python: lib
-	make -C biosig4c++/python release
+	make -C biosig4c++/python build
 
 lib:
 	make -C biosig4c++ lib
@@ -34,12 +34,12 @@ R: lib
 
 install :: tools
 	make -C biosig4c++ install
-	install -d @prefix@/share/biosig/matlab
-	cp -r biosig4matlab/* @prefix@/share/biosig/matlab/
+	install -d $(DESTDIR)/share/biosig/matlab
+	cp -r biosig4matlab/* $(DESTDIR)/share/biosig/matlab/
 
 uninstall ::
 	make -C biosig4c++ uninstall
-	rm -rf @prefix@/share/biosig
+	rm -rf $(DESTDIR)/share/biosig
 
 clean ::
 	make -C biosig4c++/mma clean
@@ -93,8 +93,9 @@ endif
 
 ifneq (:,@PYTHON@)
 first ::
-	-PYTHON=@PYTHON@ make -C biosig4c++/python release
+	-PYTHON=@PYTHON@ make -C biosig4c++/python build
 install ::
+	-PYTHON=@PYTHON@ make -C biosig4c++/python install
 	-@PYTHON@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
 uninstall ::
 	-@PYTHON@ -m pip uninstall Biosig
