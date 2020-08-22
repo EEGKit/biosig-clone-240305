@@ -32,14 +32,15 @@ mex4o octave: lib
 R: lib
 	make -C biosig4c++/R
 
-install :: tools
+install ::
 	make -C biosig4c++ install
-	install -d $(DESTDIR)/share/biosig/matlab
-	cp -r biosig4matlab/* $(DESTDIR)/share/biosig/matlab/
+	install -d $(DESTDIR)@prefix@/share/biosig/matlab
+	cp -r biosig4matlab/* $(DESTDIR)@prefix@/share/biosig/matlab/
+	rm -rf $(DESTDIR)@prefix@/share/biosig/matlab/maybe-missing
 
 uninstall ::
 	make -C biosig4c++ uninstall
-	rm -rf $(DESTDIR)/share/biosig
+	rm -rf $(DESTDIR)@prefix@/share/biosig
 
 clean ::
 	make -C biosig4c++/mma clean
@@ -47,7 +48,6 @@ clean ::
 
 distclean ::
 	make -C biosig4c++ distclean
-
 
 
 ifneq (:,@JAVA@)
@@ -82,18 +82,34 @@ endif
 
 ifneq (:,@OCTAVE@)
 ifneq (:,@MKOCTFILE@)
+BIOSIG_MEX_DIR = $(shell octave-config -p LOCALOCTFILEDIR)/biosig
+BIOSIG_DIR     = $(shell octave-config -p LOCALFCNFILEDIR)/biosig
 first ::
+	make octave
 	make -C biosig4c++ mexbiosig
 install ::
+	# mexbiosig
 	-@OCTAVE@ --no-gui --eval "pkg install -global biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz"
+	# *.mex
+	mkdir -p $(BIOSIG_MEX_DIR)
+	install biosig4c++/mex/*.mex $(BIOSIG_MEX_DIR)
+	# biosig for octave and matlab
+	mkdir -p $(BIOSIG_DIR)
+	cp -r biosig4matlab/* $(BIOSIG_DIR)
+	rm -rf $(BIOSIG_DIR)/maybe-missing
 uninstall ::
+	# mexbiosig
 	-@OCTAVE@ --no-gui --eval "pkg uninstall -global mexbiosig"
+	# *.mex
+	rm -rf $(BIOSIG_MEX_DIR)
+	# biosig for octave and matlab
+	rm -rf $(BIOSIG_MEX_DIR)
 endif
 endif
 
 ifneq (:,@PYTHON@)
 first ::
-	-PYTHON=@PYTHON@ make -C biosig4c++/python build
+	-PYTHON=@PYTHON@ make -C biosig4c++/python release
 install ::
 	-PYTHON=@PYTHON@ make -C biosig4c++/python install
 	-@PYTHON@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
