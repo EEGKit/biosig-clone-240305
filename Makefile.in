@@ -103,7 +103,7 @@ uninstall ::
 	# *.mex
 	rm -rf $(BIOSIG_MEX_DIR)
 	# biosig for octave and matlab
-	rm -rf $(BIOSIG_MEX_DIR)
+	rm -rf $(BIOSIG_DIR)
 endif
 endif
 
