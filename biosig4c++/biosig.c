@@ -3889,7 +3889,8 @@ else if (!strncmp(MODE,"r",1)) {
 		}
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"SOPEN 101:\n");
 		count = ifread(hdr->AS.Header, 1, PAGESIZE, hdr);
-		if (count<32) {
+		if (count<25) {
+			if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): %s(...) count = %d\n",__FILE__,__LINE__,__func__,count);
 			biosigERROR(hdr, B4C_CANNOT_OPEN_FILE, "Error SOPEN(READ); file is empty (or too short)");
 			ifclose(hdr);
 			return(hdr);
@@ -9178,6 +9179,8 @@ if (VERBOSE_LEVEL>2)
 			double BlockSize=0;
 
 			CHANNEL_TYPE* hc = hdr->CHANNEL+k;
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
+
 		    	do line = strtok(NULL,"\x0d\x0a"); while (line[0]=='#'); // read next line
 
 			if (VERBOSE_LEVEL>7)
@@ -9195,6 +9198,7 @@ if (VERBOSE_LEVEL>2)
 			else if (FMT != fmt) {
 				biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "MIT/HEA/PhysioBank: different formats within a single data set is not supported");
 			}
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 
 			size_t DIV=1;
 			if (ptr[0]=='x') {
@@ -9203,13 +9207,15 @@ if (VERBOSE_LEVEL>2)
 				MUL = lcm(MUL, DIV);
 			}
 			hdr->CHANNEL[k].SPR = DIV;
-	
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
+
 			if (ptr[0]==':') skew = strtod(ptr+1,&ptr);
 			if (ptr[0]=='+') ByteOffset[k] = (size_t)strtod(ptr+1,&ptr);
 
 			if (ptr != NULL) ADCgain = strtod(ptr+1,&ptr);
 			if (ADCgain==0) ADCgain=200;	// DEFGAIN: https://www.physionet.org/physiotools/wag/header-5.htm
 
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 			if (ptr[0] == '(') {
 				baseline = strtod(ptr+1,&ptr);
 				ptr++;
@@ -9221,6 +9227,7 @@ if (VERBOSE_LEVEL>2)
 				ptr[0] = 0;
 				hc->PhysDimCode = PhysDimCode(PhysUnits);
 			}
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 
 			if (ptr != NULL) ADCresolution = strtod(ptr+1,&ptr);
 			if (ptr != NULL) ADCzero       = strtod(ptr+1,&ptr);
@@ -9233,6 +9240,7 @@ if (VERBOSE_LEVEL>2)
 			while (isspace(ptr[0])) ++ptr;
 
 			strncpy(hdr->CHANNEL[k].Label,ptr,MAX_LENGTH_LABEL);
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 
 			hc->Cal      = 1/ADCgain;
 			hc->Off      = -ADCzero*hc->Cal;
@@ -9240,6 +9248,8 @@ if (VERBOSE_LEVEL>2)
 			hc->Transducer[0] = '\0';
 			hc->LowPass  = -1;
 			hc->HighPass = -1;
+
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 			// hdr->FLAG.SWAP = (__BYTE_ORDER == __BIG_ENDIAN);
 			hdr->FILE.LittleEndian = 1;
 			switch (fmt) {
@@ -9256,6 +9266,7 @@ if (VERBOSE_LEVEL>2)
 				hc->DigMin = 0.0;
 				break;
 			case 16:
+				if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 			 	gdftyp = 3;
 				NUM = 2; DEN = 1;
 				hc->DigMax = ldexp( 1.0,15)-1.0;
@@ -9316,11 +9327,13 @@ if (VERBOSE_LEVEL>2)
 	 		hc->bi = hdr->AS.bpb;
 			hdr->AS.bpb += hdr->AS.bpb8>>3;
 
+			if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 		}
 		hdr->SampleRate *= MUL;
 		hdr->SPR 	*= MUL;
 
-                if (VERBOSE_LEVEL>7) hdr2ascii(hdr,stdout,4);                 
+		if (VERBOSE_LEVEL > 7) hdr2ascii(hdr,stdout,4);
+		if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 
 		/* read age, sex etc. */
 		line = strtok(NULL,"\x0d\x0a");
