@@ -2,7 +2,6 @@
 #   windows, how to add libbiosig.dll.a and alike
 #   https://github.com/lebigot/uncertainties/blob/master/setup.py
 
-
 try:
     from setuptools import setup, Extension
 except ImportError:
@@ -23,8 +22,8 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup (name = 'Biosig',
-        version = '2.0.4',
-        description = 'This is a Biosig package',
+        version = '2.0.5',
+        description = 'BioSig - tools for biomedical signal processing',
         author = 'Alois Schloegl',
         author_email = 'alois.schloegl@gmail.com',
         license = 'GPLv3+',

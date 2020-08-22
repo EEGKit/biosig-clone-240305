@@ -36,8 +36,8 @@ distclean:
 # https://packaging.python.org/tutorials/packaging-projects/
 release: setup.py biosigmodule.c
 	$(PYTHON) setup.py sdist
-	-python2 setup.py bdist_wheel bdist_egg
-	-python3 setup.py bdist_wheel bdist_egg
+	-python2 setup.py bdist_egg
+	-python3 setup.py bdist_egg
 
 check: release
 	twine check dist/*

@@ -1,6 +1,6 @@
 Package: biosig
-Version: 2.0.4
-Date: 2020-06-19
+Version: 2.0.5
+Date: 2020-08-22
 Encoding: UTF-8
 Title: Biomedical Signal Tools
 Authors@R: person("Alois", "Schlögl", role = c("aut", "cre"),
