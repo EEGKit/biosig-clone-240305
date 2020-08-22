@@ -24,8 +24,8 @@ function [S,HDR,time] = sread(HDR,NoS,StartPos)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	(C) 1997-2005,2007,2008,2011,2014 by Alois Schloegl <alois.schloegl@ist.ac.at>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 1997-2005,2007,2008,2014,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 S = [];
 time = []; 
@@ -1305,7 +1305,7 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),   %Brainvision
         
 elseif strcmp(HDR.TYPE,'SierraECG'),   %% SierraECG  1.03  *.open.xml from PHILIPS
         if ~isfield(HDR,'data');
-                [HDR.data,status] = str2double(HDR.XML.waveforms.parsedwaveforms);
+                [HDR.data,status] = biosig_str2double(HDR.XML.waveforms.parsedwaveforms);
                 if any(status)
                         error('SREAD: compressed SierraECG (Philips) format not supported')
                 end;
@@ -1341,7 +1341,7 @@ elseif strcmp(HDR.TYPE,'ATF');
 		%HDR.FILE.OPEN=0;
 		HDR.ATF.pos = [1, find(HDR.ATF.string==10)+1];
 		HDR.SPR = length(HDR.ATF.pos)-1;
-		d = str2double(HDR.ATF.string(HDR.ATF.pos(1):HDR.ATF.pos(3)-1));
+		d = biosig_str2double(HDR.ATF.string(HDR.ATF.pos(1):HDR.ATF.pos(3)-1));
 		HDR.SampleRate = 1000./(d(2,1)-d(1,1));
         end;
 	if nargin==3,
@@ -1351,7 +1351,7 @@ elseif strcmp(HDR.TYPE,'ATF');
 	S  = zeros(nr, HDR.NS);
 	for k = 1:nr,
 		l = HDR.FILE.POS+k;
-		d = str2double( HDR.ATF.string( HDR.ATF.pos(l):HDR.ATF.pos(l+1) - 1 ) );
+		d = biosig_str2double( HDR.ATF.string( HDR.ATF.pos(l):HDR.ATF.pos(l+1) - 1 ) );
 		S(k,:) = d;
 	end;
 	HDR.FILE.POS = HDR.FILE.POS + nr;
@@ -1432,7 +1432,7 @@ elseif strcmp(HDR.TYPE,'XML-FDA'),   % FDA-XML Format
                         tmp = tmp.derivedSeries.component.sequenceSet.component;
                 end;
                 for k = 1:length(HDR.InChanSelect);
-                        HDR.data(:,k) = str2double(tmp{HDR.InChanSelect(k)+1}.sequence.value.digits)';
+                        HDR.data(:,k) = biosig_str2double(tmp{HDR.InChanSelect(k)+1}.sequence.value.digits)';
                 end;
                 HDR.SPR = size(HDR.data,1);
         end;
@@ -1442,9 +1442,6 @@ elseif strcmp(HDR.TYPE,'XML-FDA'),   % FDA-XML Format
         nr = min(HDR.SampleRate*NoS, HDR.SPR-HDR.FILE.POS);
         S  = HDR.data(HDR.FILE.POS+(1:nr),:);
         HDR.FILE.POS = HDR.FILE.POS + nr;
-
-% using XML4MAT instead of XMLTREE
-% str2double(HDR.XML0{end}.component{1}.series{end}.derivation{:}.derivedSeries{5}.component{1}.sequenceSet{5}.component{1}.sequence{2}.value{3}.digits)'
 
         
 elseif strcmp(HDR.TYPE,'FIF'),

@@ -15,9 +15,8 @@ function [datatyp,limits,datatypes,numbits,GDFTYP] = gdfdatatype(GDFTYP)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	(C) 1997-2005,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 1997-2005,2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 
 if ischar(GDFTYP),
@@ -52,12 +51,12 @@ if iscell(GDFTYP),
                 elseif strncmpi(GDFTYP{k},'float128',7)
                         gdftyp(k) = 18;
                 elseif strncmpi(GDFTYP{k},'bit',3)
-                        [num,status] = str2double(GDFTYP{k}(4:end));
+                        [num,status] = biosig_str2double(GDFTYP{k}(4:end));
                         if ~status
                                 gdftyp(k) = 255+num;
                         end;
                 elseif strncmpi(GDFTYP{k},'ubit',4)
-                        [num,status] = str2double(GDFTYP{k}(5:end));
+                        [num,status] = biosig_str2double(GDFTYP{k}(5:end));
                         if ~status
                                 gdftyp(k) = 511+num;
                         end;

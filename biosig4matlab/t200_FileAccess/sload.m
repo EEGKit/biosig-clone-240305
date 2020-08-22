@@ -45,12 +45,9 @@ function [signal,H] = sload(FILENAME,varargin)
 %
 % Reference(s):
 
+% Copyright (C) 1997-20012,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
-%	$Id$
-%	Copyright (C) 1997-2007,2008,2009,2010,2011,2012 by Alois Schloegl 
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
-
-%
 %    BioSig is free software: you can redistribute it and/or modify
 %    it under the terms of the GNU General Public License as published by
 %    the Free Software Foundation, either version 3 of the License, or
@@ -880,7 +877,7 @@ elseif strcmp(H.TYPE,'MatrixMarket'),
         	line = fgetl(H.FILE.FID);
 	end;
 
-	[tmp,status] = str2double(line);
+	[tmp,status] = biosig_str2double(line);
 	if any(status)
 		fprintf(H.FILE.stderr,'SLOAD (MM): invalid size %s\n',line);
 	else
@@ -892,7 +889,7 @@ elseif strcmp(H.TYPE,'MatrixMarket'),
 		signal = sparse([],[],[],tmp(1),tmp(2),tmp(3));
 		for k = 1:H.Length,
 	        	line = fgetl(H.FILE.FID);
-			[tmp,status] = str2double(line);
+			[tmp,status] = biosig_str2double(line);
 			if any(status)
 				fprintf(H.FILE.stderr,'SLOAD (MM): invalid size %s\n',line);
 			elseif length(tmp)==4,	
@@ -932,7 +929,7 @@ elseif strcmp(H.TYPE,'MatrixMarket'),
 				
 		for k = 1:H.Length,
 	        	line = fgetl(H.FILE.FID);
-			[tmp,status] = str2double(line);
+			[tmp,status] = biosig_str2double(line);
 			if any(status)
 				error('SLOAD (MM)');
 			elseif length(tmp)==2,	
@@ -966,7 +963,7 @@ elseif strcmp(H.TYPE,'OFF'),
 		while ~feof(H.FILE.FID) && (line2(1)=='#'),
 	                line2 = fgetl(H.FILE.FID);
 		end;
-		[tmp,status] = str2double(line2);
+		[tmp,status] = biosig_str2double(line2);
 		if status || (size(tmp,2)~=3), 
 			fclose(H.FILE.FID);
 			error('SOPEN (OFF)');
@@ -983,7 +980,7 @@ elseif strcmp(H.TYPE,'OFF'),
 				line = fgetl(H.FILE.FID);
 			end;
 			len = min(length(line),min(find(line=='#')));
-			tmp = str2double(line(1:len));
+			tmp = biosig_str2double(line(1:len));
 			H.Vertex(k,:) = tmp(1:H.ND);
 		end;	
 		
@@ -994,7 +991,7 @@ elseif strcmp(H.TYPE,'OFF'),
 				line = fgetl(H.FILE.FID);
 			end;
 			len = min(length(line),min(find(line=='#')));
-			tmp = str2double(line(1:len));
+			tmp = biosig_str2double(line(1:len));
 			H.Ngon(k) = tmp(1);
 			H.Face{k} = tmp(2:tmp(1)+1) + 1;
 		end;	
@@ -1033,7 +1030,7 @@ elseif strcmp(H.TYPE,'SMF'),
 			elseif line(1)=='#';
 
 			elseif line(1)=='v';
-				[tmp,status] = str2double(line(3:end));
+				[tmp,status] = biosig_str2double(line(3:end));
 				if ~any(status)
 					VertexCount = VertexCount + 1 ;
 					H.Vertex(VertexCount,:) = tmp;
@@ -1042,7 +1039,7 @@ elseif strcmp(H.TYPE,'SMF'),
 				end;	
 
 			elseif line(1)=='f';
-				[tmp,status] = str2double(line(3:end));
+				[tmp,status] = biosig_str2double(line(3:end));
 				if ~any(status)
 					FaceCount  = FaceCount + 1; 
 					H.Ngon(FaceCount) = length(tmp);
@@ -1052,7 +1049,7 @@ elseif strcmp(H.TYPE,'SMF'),
 				end;	
 
 			elseif line(1)=='n';
-				[tmp,status] = str2double(line(3:end));
+				[tmp,status] = biosig_str2double(line(3:end));
 				if ~any(status)
 					H.NormalVector = tmp;
 				else
@@ -1060,7 +1057,7 @@ elseif strcmp(H.TYPE,'SMF'),
 				end;	
 
 			elseif line(1)=='c';
-				[tmp,status] = str2double(line(3:end));
+				[tmp,status] = biosig_str2double(line(3:end));
 				if ~any(status)
 					PalLen = PalLen +1; 
 					H.Palette(PalLen,:)= tmp;
@@ -1084,50 +1081,50 @@ elseif strcmp(H.TYPE,'TVF 1.1A'),
 	tmp = fgetl(H.FILE.FID);
 	H.TVF.Name = fgetl(H.FILE.FID);
 	H.TVF.Desc = fgetl(H.FILE.FID);
-	[tmp,status] = str2double(fgetl(H.FILE.FID));
+	[tmp,status] = biosig_str2double(fgetl(H.FILE.FID));
 	H.TVF.NTR = tmp(1);
 	H.TVF.NV  = tmp(2);
 	H.FLAG.CULL = ~~tmp(3);
-	[tmp,status] = str2double(fgetl(H.FILE.FID));
+	[tmp,status] = biosig_str2double(fgetl(H.FILE.FID));
 	H.TVF.NTRC  = tmp(1);
 	H.TVF.NTRM  = tmp(2);
-	[tmp,status] = str2double(fgetl(H.FILE.FID));
+	[tmp,status] = biosig_str2double(fgetl(H.FILE.FID));
 	H.TVF.NVC   = tmp(1);
 	H.TVF.NVN   = tmp(2);
-	[tmp,status] = str2double(fgetl(H.FILE.FID));
+	[tmp,status] = biosig_str2double(fgetl(H.FILE.FID));
 	H.TVF.GlobalColor = tmp;
-	[tmp,status] = str2double(fgetl(H.FILE.FID));
+	[tmp,status] = biosig_str2double(fgetl(H.FILE.FID));
 	H.TVF.GlobalMtrlProps = tmp;
 	
 	H.TVF.Triangles = repmat(NaN,[H.TVF.NTR,3]);
 	for k = 1:H.TVF.NTR,
-		[tmp, status] = str2double(fgetl(H.FILE.FID));
+		[tmp, status] = biosig_str2double(fgetl(H.FILE.FID));
 		H.TVF.Triangles(k,:) = tmp;
 	end;	
 	H.TVF.TrColorSets = reshape(NaN,[H.TVF.NTRC,H.TVF.NTR]);
 	for k = 1:H.TVF.NTRC,
-		[tmp, status] = str2double(fgetl(H.FILE.FID));
+		[tmp, status] = biosig_str2double(fgetl(H.FILE.FID));
 		H.TVF.TrColorSets(k,:) = tmp;
 	end;
 	H.TVF.TrMtrlSets = repmat(NaN, [H.TVF.NTRM,H.TVF.NTR]);
 	for k = 1:H.TVF.NTRM,
-		[tmp, status] = str2double(fgetl(H.FILE.FID));
+		[tmp, status] = biosig_str2double(fgetl(H.FILE.FID));
 		H.TVF.TrMtrlSets(k,:) = tmp;
 	end;
 
 	H.TVF.Vertices   = repmat(NaN, [H.TVF.NV,3]);
 	for k = 1:H.TVF.NV,
-		[tmp, status] = str2double(fgetl(H.FILE.FID));
+		[tmp, status] = biosig_str2double(fgetl(H.FILE.FID));
 		H.TVF.Vertices(k,:) = tmp;
 	end;
 	H.TVF.VColorSets = repmat(NaN, [H.TVF.NVC,H.TVF.NV]);
 	for k = 1:H.TVF.NVC,
-		[tmp, status] = str2double(fgetl(H.FILE.FID));
+		[tmp, status] = biosig_str2double(fgetl(H.FILE.FID));
 		H.TVF.VColorSets(k,:) = tmp;
 	end;
 	H.TVF.VNrmlSets  = repmat(NaN, [H.TVF.NVN,3]);
 	for k = 1:H.TVF.NVN,
-		[tmp, status] = str2double(fgetl(H.FILE.FID));
+		[tmp, status] = biosig_str2double(fgetl(H.FILE.FID));
 		H.TVF.VNrmlSets(k,:) = tmp;
 	end;
 
@@ -1188,7 +1185,7 @@ elseif strcmp(H.TYPE,'VTK'),
 				[dataType,r]=strtok(r);
 				[numComp ,r]=strtok(r);
 				if isempty(numComp), numComp=1;
-				else numComp = str2double(numComp); end;
+				else numComp = biosig_str2double(numComp); end;
 				tline = fgetl(fid);
 				if strcmp(tline,'LOOKUP_TABLE');
 	    				[t1,r]=strtok(tline);
@@ -1238,7 +1235,7 @@ if strcmp(H.TYPE,'CNT');
                 fid = fopen(f,'r');
 		tmp = fread(fid,inf,'uint8');
 		fclose(fid);
-		[tmp,v] = str2double(char(tmp'));
+		[tmp,v] = biosig_str2double(char(tmp'));
 		if ~any(v), 
             		H.Classlabel=tmp(:);                        
 	        end;
@@ -1248,7 +1245,7 @@ if strcmp(H.TYPE,'CNT');
                 fid = fopen(f,'r');
 		tmp = fread(fid,inf,'uint8');
 		fclose(fid);
-		[tmp,v] = str2double(char(tmp'));
+		[tmp,v] = biosig_str2double(char(tmp'));
 		if ~any(v), 
             		H.Classlabel=tmp(:);                        
 	        end;
@@ -1300,7 +1297,7 @@ if strcmp(H.TYPE,'CNT');
                 fid = fopen(f,'r');
 		tmp = fread(fid,inf,'uint8');
 		fclose(fid);
-		[tmp,v] = str2double(char(tmp'));
+		[tmp,v] = biosig_str2double(char(tmp'));
 		if any(isnan(tmp)) || any(tmp~=ceil(tmp)) || any(tmp<0) || (any(tmp==0) && any(tmp>1))
                         fprintf(2,'Warning SLOAD(CNT): corrupted SEL-file %s\n',f);
                 else
@@ -1375,7 +1372,7 @@ if strcmp(H.TYPE,'GDF')
         if fid>0,
                 [tmp,c] = fread(fid,[1,inf],'uint8');
                 fclose(fid);
-                [tmp,v,sa] = str2double(tmp);
+                [tmp,v,sa] = biosig_str2double(tmp);
                 if isempty(sa) || isempty(sa{1})
                         H.ArtifactSelection = repmat(0,length(H.TRIG),1);
                 elseif any(isnan(tmp)) || any(tmp~=ceil(tmp)) || any(tmp<0) || (any(tmp==0) && any(tmp>1))

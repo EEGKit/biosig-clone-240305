@@ -23,9 +23,8 @@ function [HDR] = leadidcodexyz(arg1)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	Copyright (C) 2006,2007,2008,2009 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2006-2009,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 
 global BIOSIG_GLOBAL;
@@ -83,7 +82,7 @@ if ~BIOSIG_GLOBAL.ISLOADED_XYZ;
                 elseif strncmp(x,'#',1)
                 else
                         N = N + 1;
-                        [num,status,strarray] = str2double(x);
+                        [num,status,strarray] = biosig_str2double(x);
                         Code(N,1)   = num(1);
                         Labels{N,1} = upper(strarray{2});
                         Phi(N,1)    = num(3);

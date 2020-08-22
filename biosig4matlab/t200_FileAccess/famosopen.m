@@ -7,9 +7,8 @@ function [HDR]=famosopen(arg1,arg3,arg4,arg5,arg6)
 
 % HDR=famosopen(HDR);
 
-%	$Id$
-%	Copyright (c) 2007 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2007,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License
@@ -65,7 +64,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 			% extract key, version, length
 			ix = find(tline==','); ix = ix(1:3); 
 
-		        [n,v,s] = str2double(tline(1:ix(3)),',');
+		        [n,v,s] = biosig_str2double(tline(1:ix(3)),',');
 		        keylen  = n(3); 
 		        if ix(3)+1+keylen <= length(tline),
 			        param  = tline(ix(3)+1:ix(3)+1+keylen);
@@ -88,38 +87,38 @@ if any(HDR.FILE.PERMISSION=='r'),
 		        	end; 	
 		        	
 		        elseif 0, strcmp(s{1},'NO') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CT') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CB') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CI') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CG') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CD') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CC') & (n(2)==1)
-			        [n1,v1,s1] = str2double(param,',');
+			        [n1,v1,s1] = biosig_str2double(param,',');
 %			        CHAN = CHAN+1;
 		        	
 		        elseif 0, strcmp(s{1},'NT') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CZ') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif 0, strcmp(s{1},'CC') & (n(2)==1)
-			        %[n1,v1,s1] = str2double(param,',')
+			        %[n1,v1,s1] = biosig_str2double(param,',')
 		        	
 		        elseif strcmp(s{1},'CP') & (n(2)==1)
-			        [n1,v1,s1] = str2double(param,',');
+			        [n1,v1,s1] = biosig_str2double(param,',');
 			        CHAN = n1(1); 
 				switch n1(3),
 				case 1, typ=2;	% uint8
@@ -145,22 +144,22 @@ if any(HDR.FILE.PERMISSION=='r'),
 				end; 			        
 		        	
 		        elseif strcmp(s{1},'Cb') & (n(2)==1)
-			        [n1,v1,s1] = str2double(param,',');
+			        [n1,v1,s1] = biosig_str2double(param,',');
 			        ch = n1(3); 
 				sz = n1(2); % bytes per sample
 				HDR.AS.start(ch) = n1(5);
 				HDR.AS.bytes(ch) = n1(6);
 		        	
 		        elseif 0, strcmp(s{1},'CG') & (n(2)==1)
-			        [n1,v1,s1] = str2double(param,',');
+			        [n1,v1,s1] = biosig_str2double(param,',');
 		        	
 		        elseif strcmp(s{1},'CD') & (n(2)==1)
-			        [n1,v1,s1] = str2double(param,',');
+			        [n1,v1,s1] = biosig_str2double(param,',');
 			        HDR.AS.SampleRate(length(HDR.AS.SampleRate)+1) = 1/n1(1);
 			        HDR.AS.PhysDimDeltaT = s1{4};
 		        	
 		        elseif strcmp(s{1},'CR') & (n(2)==1)
-			        [n1,v1,s1] = str2double(param,',');
+			        [n1,v1,s1] = biosig_str2double(param,',');
 				if length(s1)<6,			        
 				        HDR.PhysDim{CHAN} = ' '; 
 			        else
@@ -170,7 +169,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 			        %HDR.Cal(CHAN) = 1; 
 		        	
 		        elseif strcmp(s{1},'CN') & (n(2)==1)
-			        [n1,v1,s1] = str2double(param,',')
+			        [n1,v1,s1] = biosig_str2double(param,',')
 			        HDR.Label{CHAN} = s1{5}; 
 		        	
 		        elseif strcmp(s{1},'CS') & (n(2)==1)

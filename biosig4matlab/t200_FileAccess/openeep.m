@@ -4,9 +4,8 @@ function HDR=openeep(HDR,arg2,arg3,arg4,arg5,arg6)
 %
 % see also: SLOAD, SOPEN, SREAD, SCLOSE, SEOF, STELL, SSEEK.
 
-%	$Id$
-%	Copyright (c) 2007 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2007,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License
@@ -56,7 +55,7 @@ if strcmp(HDR.TYPE,'EEProbe-CNT'),
 						[line,s] = strtok(s,[10,13]); 
 						if ~strncmp(line,';',1);
 							k = k+1;
-							[num,status,sa]=str2double(line);
+							[num,status,sa]=biosig_str2double(line);
 							HDR.Label{k} = sa{1};
 							HDR.PhysDim{k,1} = sa{4};
 							HDR.Cal(k) = num(2)*num(3);
@@ -71,7 +70,7 @@ if strcmp(HDR.TYPE,'EEProbe-CNT'),
 				elseif strncmp(line,'[',1);				
 					field = '';      
 				elseif ~isempty(field);
-					[num,status,sa] = str2double(line);
+					[num,status,sa] = biosig_str2double(line);
 					if ~status,
 						HDR = setfield(HDR,field,num);     
 						field = '';
@@ -234,7 +233,7 @@ end;
 	        fid = fopen(fullfile(HDR.FILE.Path,[HDR.FILE.Name,'.trg']),'rt');
 	end;
 	if fid>0,
-                tmp = str2double(fgetl(fid));
+                tmp = biosig_str2double(fgetl(fid));
                 if ~isnan(tmp(1))
                 	HDR.EVENT.SampleRate = 1/tmp(1); 
 	                N = 0; 

@@ -4,8 +4,8 @@ function HDR = edfannot2evt(HDR)
 %  
 % see also: SLOAD, SOPEN
 
-%	Copyright (C) 2012-2017 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+%   Copyright (C) 2012-2017,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 %
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 
 			ix = find(t1==20);
 			if isempty(ix)
-				t0 = str2double(t1);
+				t0 = biosig_str2double(t1);
 				N        = N + 1;
 				tt0      = t0(1);
 				POS(N,1) = HDR.SPR * (k-1) + 1;
@@ -55,7 +55,7 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 			s1 = t1(1:ix(1)-1);
 			s2 = t1(ix(1)+1:ix(2)-1);
 			s1(s1==21)=0;
-			t0 = str2double(s1);
+			t0 = biosig_str2double(s1);
 			if ((length(ix)>=2) && ((ix(1)+1)==ix(2)) && strcmp(HDR.reserved1(2:5),'DF+D') ) 
 				%% time keeping annotation 
 				N        = N + 1;

@@ -1,6 +1,9 @@
-function [num,status,strarray] = str2double(s,cdelim,rdelim,ddelim)
+function [num,status,strarray] = biosig_str2double(s,cdelim,rdelim,ddelim)
 %% STR2DOUBLE converts strings into numeric values
 %%  [NUM, STATUS,STRARRAY] = STR2DOUBLE(STR) 
+%%
+%%  Because of a name space conflict, this function is renamed to
+%%  BIOSIG_STR2DOUBLE(...). An alternative is STR2ARRAY from the NaN-toolbox.
 %%  
 %%  STR2DOUBLE can replace STR2NUM, but avoids the insecure use of EVAL 
 %%  on unknown data [1]. 
@@ -69,10 +72,8 @@ function [num,status,strarray] = str2double(s,cdelim,rdelim,ddelim)
 %% along with this program; if not, write to the Free Software
 %% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-%%	$Revision: 1.4 $
-%%	$Id$
-%%	Copyright (C) 2004,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%%      This function is part of Octave-Forge http://octave.sourceforge.net/
+%%  Copyright (C) 2004,2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%%  This function is part of Biosig https://biosig.sourceforge.io
 
 FLAG_OCTAVE = exist('OCTAVE_VERSION','builtin');
 VER = version; 

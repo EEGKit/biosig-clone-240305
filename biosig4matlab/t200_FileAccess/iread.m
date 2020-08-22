@@ -10,9 +10,8 @@ function [data,HDR] = iread(HDR,CHAN,StartPos)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	(C) 2005,2006,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2006-2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 
 if 0, 
@@ -121,7 +120,7 @@ elseif strcmp(HDR.TYPE,'IMAGE:FITS'),
 		data = data';
 		s = repmat(NaN, HDR.FITS{KK}.NAXIS2, HDR.FITS{KK}.TFIELDS);
 		for k = 1:HDR.FITS{KK}.TFIELDS,
-			[s(:,k), status,sa(:,k)] = str2double(char(data(:,ix(k):ix(k+1)-1)));
+			[s(:,k), status,sa(:,k)] = biosig_str2double(char(data(:,ix(k):ix(k+1)-1)));
 		end;
 		HDR.TABLE{KK} = s;
         

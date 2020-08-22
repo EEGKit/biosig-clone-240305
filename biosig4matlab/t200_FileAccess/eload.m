@@ -14,11 +14,8 @@ function [HDR] = eload(filename,Fs)
 %
 
 
-%	$Revision: 1.2 $
-%	$Id$
-%	Copyright (C) 1997-2004 by Alois Schloegl 
-%	alois.schloegl@gmail.com
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+%  Copyright (C) 1997-2004,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 % This library is free software; you can redistribute it and/or
 % modify it under the terms of the GNU Library General Public
@@ -136,7 +133,7 @@ elseif strncmp(HDR.TYPE,'BrainVision',11);
 	        	HDR.EVENT.TYP(k1) = bitxor(hex2dec('8300'),HDR.EVENT.TYP(k1-1)); 
 	        	
 	        elseif ~isempty(tmp)
-	        	[n,v,s] = str2double(tmp(2:end)); 
+			[n,v,s] = biosig_str2double(tmp(2:end));
 	        	if (length(n)==1) & (~v)
 	        		HDR.EVENT.TYP(k1) = n; 
 	       		end; 

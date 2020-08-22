@@ -12,9 +12,8 @@ function [HDR]=bni2hdr(arg1,arg3,arg4,arg5,arg6)
 %
 % see also: SOPEN 
 
-%	$Id$
-%	Copyright (c) 2007,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+%  Copyright (C) 2007,2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License
@@ -60,17 +59,17 @@ while ~isempty(s),
 	elseif strncmpi(t1,'diagnosis',10)
 		HDR.Patient.Diagnosis = t2;
 	elseif strcmpi(t1,'MontageRaw')
-		[tmp1,tmp2,HDR.Label] = str2double(t2,',');
+		[tmp1,tmp2,HDR.Label] = biosig_str2double(t2,',');
 	elseif strcmpi(t1,'Age')
 		HDR.Patient.Age = str2double(t2);
 	elseif strcmp(t1,'Date')
 		if any(t2=='/')
 			t2(t2=='/')=' ';
-			HDR.T0([2,3,1])=str2double(t2); 	
+			HDR.T0([2,3,1])=biosig_str2double(t2);
 		end; 
 	elseif strcmp(t1,'Time')
 		t2(t2==':') = ' ';
-		HDR.T0(4:6) = str2double(t2);
+		HDR.T0(4:6) = biosig_str2double(t2);
 	elseif strcmp(t1,'Rate')
 		HDR.SampleRate = str2double(t2);
 	elseif strcmp(t1,'NchanFile')

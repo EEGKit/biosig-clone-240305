@@ -25,10 +25,8 @@ function [HDR,H1,h2]=opendicom(arg1,arg2,arg3,arg4,arg5,arg6)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-%	$Revision: 1.5 $
-%	$Id$
-%	(C) 1997-2002,2004,2009 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 1997-2004,2009,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 if nargin<2, 
         arg2='rb'; 
@@ -277,13 +275,13 @@ if any(PERMISSION=='r'),
 		elseif (TAG==hex2dec('00100030')),
 			[VAL,c] = fread(HDR.FILE.FID,[1,LEN],'uint8=>char');
 			if (c) 
-    				VAL = (VAL(VAL~=abs('.')));
-    				VAL = (VAL(VAL~=abs('-')));
-        			HDR.DICOM.BirthDate = VAL;
-            			tmp = repmat(',',1,10);
-                		tmp([1:4,6:7,9:10])=VAL;
-                		HDR.Patient.Birthday = [str2double(tmp,','),12,0,0];
-            		end;     
+				VAL = (VAL(VAL~=abs('.')));
+				VAL = (VAL(VAL~=abs('-')));
+				HDR.DICOM.BirthDate = VAL;
+				tmp = repmat(',',1,10);
+				tmp([1:4,6:7,9:10])=VAL;
+				HDR.Patient.Birthday = [biosig_str2double(tmp,','),12,0,0];
+			end;
 		elseif (TAG==hex2dec('00100040')),
 			[VAL,c] = fread(HDR.FILE.FID,[1,LEN],'uint8');
 			HDR.Patient.Sex = deblank(char(VAL));
@@ -355,7 +353,7 @@ if any(PERMISSION=='r'),
 			HDR.DICOM.AcquisitionNumber = char(VAL);
 		elseif (TAG==hex2dec('00200013')),
 			[VAL,c] = fread(HDR.FILE.FID,LEN,'uint8');
-			HDR.DICOM.InstanceNumber = str2double(VAL);
+			HDR.DICOM.InstanceNumber = biosig_str2double(VAL);
 		elseif (TAG==hex2dec('00200019')),
 			[VAL,c] = fread(HDR.FILE.FID,1,'uint8');
 			HDR.DICOM.ItemNumber = char(VAL);
@@ -581,7 +579,7 @@ if any(PERMISSION=='r'),
 		if length(HDR.DICOM.StudyDate)==8,
 			tmp([1:4,6:7,9:10]) = HDR.DICOM.StudyDate;
 			tmp([12:13,15:16,18:19]) = HDR.DICOM.StudyTime(1:6);
-			HDR.T0 = str2double(tmp,',');
+			HDR.T0 = biosig_str2double(tmp,',');
 		else
 			fprintf(1,'Warning OPENDICOM: StudyDate <%s> not supported\n',HDR.DICOM.StudyDate);
 		end; 	
@@ -590,7 +588,7 @@ if any(PERMISSION=='r'),
 		tmp = char(repmat(32,[1,20]));
 		tmp([1:4,6,7,9,10]) = HDR.DICOM.ContentDate;
 		tmp([12,13,15,16,18,19]) = HDR.DICOM.ContentTime(1:6);
-		HDR.T0 = str2double(tmp);
+		HDR.T0 = biosig_str2double(tmp);
 		HDR.TYPE = 'DICOM-ECG';
 	end;
 

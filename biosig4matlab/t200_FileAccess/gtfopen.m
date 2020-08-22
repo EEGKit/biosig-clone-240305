@@ -22,11 +22,8 @@ function [HDR]=gtfopen(HDR,PERMISSION,arg3,arg4,arg5,arg6)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-%	$Id$
-%	(C) 2005 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
-
-
+% Copyright (C) 2005,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
         HDR.FILE.FID = fopen(HDR.FileName,'rb','ieee-le');
         
@@ -45,7 +42,7 @@ function [HDR]=gtfopen(HDR,PERMISSION,arg3,arg4,arg5,arg6)
         fclose(HDR.FILE.FID);
         
 
-	[t,status] = str2double(char([HDR.H1(35:36),32,HDR.H1(37:39)]));	
+	[t,status] = biosig_str2double(char([HDR.H1(35:36),32,HDR.H1(37:39)]));
         if ~any(status) & all(t>0)
                 HDR.NS = t(1); 
                 HDR.SampleRate = t(2); 

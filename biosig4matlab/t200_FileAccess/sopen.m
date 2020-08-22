@@ -43,9 +43,8 @@ function [HDR,H1,h2] = sopen(arg1,PERMISSION,CHAN,MODE,arg5,arg6)
 %
 % see also: SLOAD, SREAD, SSEEK, STELL, SCLOSE, SWRITE, SEOF, BDF2BIOSIG_EVENTS
 
-
-%    Copyright (C) 1997-2020 by Alois Schloegl <alois.schloegl@ist.ac.at>
-%    This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 1997-2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 %
 %    BioSig is free software: you can redistribute it and/or modify
 %    it under the terms of the GNU General Public License as published by
@@ -60,14 +59,6 @@ function [HDR,H1,h2] = sopen(arg1,PERMISSION,CHAN,MODE,arg5,arg6)
 %    You should have received a copy of the GNU General Public License
 %    along with BioSig.  If not, see <http://www.gnu.org/licenses/>.
 
-
-if isnan(str2double('1, 3'));
-        fprintf(2,'Warning BIOSIG: incorrect version of STR2DOUBLE.\n');
-        fprintf(2,'- Make sure the path to this directory comes before the path to ... /matlab/toolbox/matlab/strfun/\n');
-        fprintf(2,'Running the script below should fix the problem. \n\n');
-        fprintf(2,'   x = fileparts( which(''sopen'') );\n');
-        fprintf(2,'   rmpath(x);\n   addpath(x,''-begin'');\n\n');
-end;
 
 global FLAG_NUMBER_OF_OPEN_FIF_FILES;
 
@@ -340,7 +331,7 @@ end;
                                 
                                 tmp = repmat(' ',1,22);
     		                tmp([1:4,6:7,9:10,12:13,15:16,18:21]) = char(H1(168+[1:16]));
-            		        HDR.T0(1:6)   = str2double(tmp);
+				HDR.T0(1:6)   = biosig_str2double(tmp);
                     		HDR.T0(6)     = HDR.T0(6)/100;
                                 HDR.reserved1 = fread(HDR.FILE.FID,[1,8*3+20],'uint8');   % 44 Byte reserved
                                 HDR.REC.Equipment  = HDR.reserved1(1:8);
@@ -391,7 +382,7 @@ end;
                         
                         tmp = repmat(' ',1,22);
                         tmp([3:4,6:7,9:10,12:13,15:16,18:19]) = H1(168+[7:8,4:5,1:2,9:10,12:13,15:16]);
-                        tmp1 = str2double(tmp);
+                        tmp1 = biosig_str2double(tmp);
                         if length(tmp1)==6,
                                 HDR.T0(1:6) = tmp1;
                         end;
@@ -401,11 +392,11 @@ end;
                                 
                                 tmp = H1(168 + [1:16]);
                                 tmp(tmp=='.' | tmp==':' | tmp=='/' | tmp=='-') = ' ';
-                                tmp1 = str2double(tmp(1:8));
+                                tmp1 = biosig_str2double(tmp(1:8));
                                 if length(tmp1)==3,
                                         HDR.T0 = tmp1([3,2,1]);
                                 end;	
-                                tmp1 = str2double(tmp(9:16));
+                                tmp1 = biosig_str2double(tmp(9:16));
                                 if length(tmp1)==3,
                                         HDR.T0(4:6) = tmp1; 
                                 end;
@@ -442,8 +433,8 @@ end;
                                 if (length(bd)==11),
                                 	HDR.Patient.Birthday = zeros(1,6); 
                                 	bd(bd=='-') = ' '; 
-                                	[n,v,s] = str2double(bd,' ');
-                                        month_of_birth = find(strcmp(lower(s{2}),{'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'}));
+					[n,v,s] = biosig_str2double(bd,' ');
+					month_of_birth = find(strcmp(lower(s{2}),{'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'}));
                                         if ~isempty(month_of_birth)
                                                 v(2) = 0;
                                         end
@@ -527,12 +518,12 @@ end;
                         HDR.Label      =    cellstr(h2(:,idx1(1)+1:idx1(2)));
                         HDR.Transducer =    cellstr(h2(:,idx1(2)+1:idx1(3)));
                         HDR.PhysDim    =    cellstr(h2(:,idx1(3)+1:idx1(4)));
-                        HDR.PhysMin    = str2double(cellstr(h2(:,idx1(4)+1:idx1(5))))';
-                        HDR.PhysMax    = str2double(cellstr(h2(:,idx1(5)+1:idx1(6))))';
-                        HDR.DigMin     = str2double(cellstr(h2(:,idx1(6)+1:idx1(7))))';
-                        HDR.DigMax     = str2double(cellstr(h2(:,idx1(7)+1:idx1(8))))';
+                        HDR.PhysMin    = biosig_str2double(cellstr(h2(:,idx1(4)+1:idx1(5))))';
+                        HDR.PhysMax    = biosig_str2double(cellstr(h2(:,idx1(5)+1:idx1(6))))';
+                        HDR.DigMin     = biosig_str2double(cellstr(h2(:,idx1(6)+1:idx1(7))))';
+                        HDR.DigMax     = biosig_str2double(cellstr(h2(:,idx1(7)+1:idx1(8))))';
                         HDR.PreFilt    =            h2(:,idx1(8)+1:idx1(9));
-                        HDR.AS.SPR     = str2double(cellstr(h2(:,idx1(9)+1:idx1(10))));
+                        HDR.AS.SPR     = biosig_str2double(cellstr(h2(:,idx1(9)+1:idx1(10))));
                         %if ~all(abs(HDR.VERSION)==[255,abs('BIOSEMI')]),
                         if (HDR.VERSION ~= -1),
                                 HDR.GDFTYP     = 3*ones(1,HDR.NS);	%	datatype
@@ -720,7 +711,7 @@ end;
                                 tmp = strfind(lower(F3),'hz');
                                 if ~isempty(tmp), F3=F3(1:tmp-1); end;
 
-                                tmp = str2double(F1); 
+                                tmp = biosig_str2double(F1);
                                 if isempty(tmp),tmp=NaN; end; 
                                 if strcmp(T1,'LP'), 
                                         HDR.Filter.LowPass(k) = tmp;
@@ -729,7 +720,7 @@ end;
                                 elseif strcmp(T1,'Notch'), 
                                         HDR.Filter.Notch(k)   = tmp;
                                 end;
-                                tmp = str2double(F2); 
+                                tmp = biosig_str2double(F2);
                                 if isempty(tmp),tmp=NaN; end; 
                                 if strcmp(T2,'LP'), 
                                         HDR.Filter.LowPass(k) = tmp;
@@ -738,7 +729,7 @@ end;
                                 elseif strcmp(T2,'Notch'), 
                                         HDR.Filter.Notch(k)   = tmp;
                                 end;
-                                tmp = str2double(F3); 
+                                tmp = biosig_str2double(F3);
                                 if isempty(tmp),tmp=NaN; end; 
                                 if strcmp(T3,'LP'), 
                                         HDR.Filter.LowPass(k) = tmp;
@@ -1008,7 +999,7 @@ end;
                         while ~isempty(r),
                                 [m,r] = strtok(r,[0,64]);
                                 tb = char([t(1:4),32,t(5:6),32,t(7:8),32,t(9:10),32,t(11:12),32,t(13:end)]);
-                                [ta, status] = str2double(tb);
+                                [ta, status] = biosig_str2double(tb);
                                 t1 = datenum(ta);
                                 
                                 if any(status),
@@ -1805,7 +1796,7 @@ end;
         		end; 	
                         H1(245:252)=tmp(1:8);
                         if length(tmp)~=8, 
-                        	tmp = str2double(tmp);
+				tmp = biosig_str2double(tmp);
                         	tmp = (HDR.Dur-tmp)/HDR.Dur; 
                         	if abs(tmp)>1e-10,
 	                        	fprintf(HDR.FILE.stderr,'Warning SOPEN(EDF write): Duration field truncated, error %e (%s instead of %-8f),\n',tmp,H1(245:252),HDR.Dur);
@@ -1846,8 +1837,8 @@ end;
                                                 end;
                                         end;
                                 end;
-                                c1 = str2double(cellstr(sPhysMax));
-                                c2 = str2double(cellstr(sPhysMin));
+                                c1 = biosig_str2double(cellstr(sPhysMax));
+                                c2 = biosig_str2double(cellstr(sPhysMin));
                                 e = ((HDR.PhysMax(:)-HDR.PhysMin(:))-(c1-c2))./(HDR.PhysMax(:)-HDR.PhysMin(:));
                                 if any(abs(e)>1e-8)
 	                                fprintf(HDR.FILE.stderr,'Warning SOPEN (EDF-Write): relative scaling error is %e (due to roundoff in PhysMax/Min)\n',max(abs(e)))
@@ -2112,7 +2103,7 @@ elseif strcmp(HDR.TYPE,'EPL'),        % San Diego EPL system
         HDR.EPL.H2 = char(fread(HDR.FILE.FID,[1,256],'uint8')); 
         ix = strfind(HDR.EPL.H2,' '); 
         %HDR.Patient.Name = HDR.EPL.H2(1:ix(2)); % do not support clear text name  
-        tmp = str2double(HDR.EPL.H2(ix(2)+1:ix(3)-1),'/'); % dd/mm/yy format 
+        tmp = biosig_str2double(HDR.EPL.H2(ix(2)+1:ix(3)-1),'/'); % dd/mm/yy format
         HDR.T0(1:3)= tmp([3,2,1]) + [2000,0,0]; 
         HDR.HeadLen= ftell(HDR.FILE.FID); 
         HDR.SPR    = 256; 
@@ -2182,7 +2173,7 @@ elseif strcmp(HDR.TYPE,'ePrime'),
 	try	
 		[N,V,S] = str2array(s,char(9),char(10));	
 	catch
-		[N,V,S] = str2double(s,char(9),char(10));	
+		[N,V,S] = biosig_str2double(s,char(9),char(10));
 	end
 
 	c = strmatch('Subject',fname);
@@ -2202,7 +2193,7 @@ elseif strcmp(HDR.TYPE,'ePrime'),
 	t = [S{2,strmatch('SessionDate',fname)}, ' ', S{2,strmatch('SessionTime',fname)}];
 	t(t==':' | t=='-')=' ';
 	try
-		T0 = str2double(t,' ');
+		T0 = biosig_str2double(t,' ');
 		HDR.T0 = T0([3,1,2,4,5,6]);
 	end; 
 
@@ -2281,7 +2272,7 @@ elseif strcmp(HDR.TYPE,'EBS'),
                 elseif tag==hex2dec('00000003') 
                 	[val,c] = fread(fid,4*l,'uint8=>char');
                 	%val = char(reshape(val(1:16*(HDR.NS)),16,HDR.NS))'
-                	%HDR.Cal = str2double(cellstr(val(:,1:8)));
+			%HDR.Cal = biosig_str2double(cellstr(val(:,1:8)));
                 	%HDR.PhysDim = cellstr(val(:,[10,12]));	
 
                 elseif tag==hex2dec('00000005') 
@@ -2295,14 +2286,14 @@ elseif strcmp(HDR.TYPE,'EBS'),
                 	t = fread(fid,4*l,'uint8=>char')';
                 	t2 = repmat(' ',1,20); 
                 	t2([1:4,6:7,9:10,13:14,16:17,19:20]) = t([1:8,10:15]);
-                	HDR.T0 = str2double(t2,' ');
+			HDR.T0 = biosig_str2double(t2,' ');
 
                 elseif tag==hex2dec('0000000d') HDR.CHANNEL_LOCATIONS	= fread(fid,2*l,'uint16=>char')';
                 elseif tag==hex2dec('0000000f') 
                 	t = fread(fid,4*l,'uint8=>char');
                 	t = reshape(t(1:28*floor(numel(t)/28)),28,floor(numel(t)/28))';
-                	HDR.Filter.LowPass = str2double(cellstr(t(:,5:8)));
-                	HDR.Filter.HighPass = str2double(cellstr(t(:,17:20))); 
+			HDR.Filter.LowPass = biosig_str2double(cellstr(t(:,5:8)));
+			HDR.Filter.HighPass = biosig_str2double(cellstr(t(:,17:20)));
                 else 
                 	break;
                 end;
@@ -2369,7 +2360,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
                                 [tag,s] = strtok(s,'= ');
                                 s(find(s=='='))=' ';
                                 [VAL,s1] = strtok(s,' ');
-                                [val,status] = str2double(VAL);
+                                [val,status] = biosig_str2double(VAL);
                                 if (state==0),
                                         try;         
                                         if any(status),
@@ -2392,7 +2383,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
                                 elseif (state==1)	% rawhead: channel info
                                         k1 = k1+1;
                                         HDR.Label{k1} = [tag,' ']; 
-                                        [num,status,sa] = str2double(s);
+                                        [num,status,sa] = biosig_str2double(s);
                                         XY(k1,1:2) = num(4:5);
                                         CHANTYPE{k1}  = sa{3};
                                         HDR.alpha.chanidx(k1)   = num(2);
@@ -2409,7 +2400,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
                                         end;			
                                 elseif (state==2)	% rawhead: info on channel type 
                                         k1 = k1+1; 
-                                        [num,status,sa] = str2double(s,',');
+                                        [num,status,sa] = biosig_str2double(s,',');
                                         chantyp.s{k1}   = s;
                                         chantyp.tag{k1} = tag;
                                 elseif (state==3)	% sleep: scoreing 
@@ -2451,7 +2442,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
 		for k = 1:HDR.NS,
 			HDR.Filter.HighPass(k) = num(1);
 			HDR.Filter.LowPass(k) = num(2);
-			[num,status,sa] = str2double(chantyp.s{k},',');
+			[num,status,sa] = biosig_str2double(chantyp.s{k},',');
 			if strcmp(sa{5},'%%'); 
 				sa{5}='%'; 
 			end;
@@ -2469,7 +2460,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
                 HDR.REC.Hospital = HDR.alpha.r_info.Laboratory;
 		tmp = [HDR.alpha.r_info.RecDate,' ',HDR.alpha.r_info.RecTime];
 		tmp(tmp=='.') = ' ';
-		[tmp,status]=str2double(tmp);
+		[tmp,status]=biosig_str2double(tmp);
 		if ~any(status)
 			HDR.T0 = tmp([3,2,1,4:6]);
 		end;	
@@ -2480,7 +2471,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
                 HDR.Patient.Handedness  = HDR.alpha.s_info.Handedness;
                 tmp = HDR.alpha.s_info.BirthDay;
                 tmp(tmp=='.')=' ';
-                t0 = str2double(tmp);
+                t0 = biosig_str2double(tmp);
                 age = [HDR.T0(1:3)-t0([3,2,1])]*[365.25;30;1]; % days 
                 if (age<100)
                         HDR.Patient.Age = sprintf('%i day',age);
@@ -2509,7 +2500,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
                 HDR.Cal = ones(HDR.NS,1);         
                 HDR.Off = ones(HDR.NS,1);         
 		s(s=='=') = ',';
-		[val,status,strarray]=str2double(s);
+		[val,status,strarray]=biosig_str2double(s);
 		if 0, %try,
                        	HDR.Cal = val(HDR.alpha.chanorder,3);
                 	HDR.Off = val(HDR.alpha.chanorder,4);
@@ -2549,7 +2540,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
 		fclose(fid);
 
 		s(s=='=') = ',';
-		[val,status,strarray]=str2double(s,', ');
+		[val,status,strarray]=biosig_str2double(s,', ');
 		HDR.EVENT.POS = val(:,3);
 		[HDR.EVENT.CodeDesc,tmp,HDR.EVENT.TYP] = unique(strarray(:,1));
 		ix = strmatch('off',strarray(:,2));
@@ -2571,7 +2562,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
 			elseif strncmp(tag,'Trace',5),
 				k = k+1; 
 				trace{k,K} = s(4:end);
-				[num,status,str] = str2double(s(4:end),[32,34,44]);
+				[num,status,str] = biosig_str2double(s(4:end),[32,34,44]);
 				if strcmpi(str{3},'xxx')
 					Label{k,K} = str{2};
 				else
@@ -2599,7 +2590,7 @@ elseif strcmp(HDR.TYPE,'alpha') && any(HDR.FILE.PERMISSION=='r'),
                         if ~isnumeric(s),
                                 [timestamp,s] = strtok(s,'='); 
                                 [type,io] = strtok(s,'=,');
-                                timestamp = str2double(timestamp);
+                                timestamp = biosig_str2double(timestamp);
                                 if ~isnan(timestamp),
                                         k = k + 1;
                                         POS(k) = timestamp;     
@@ -2922,7 +2913,7 @@ elseif strncmp(HDR.TYPE,'BLSC2',5),
         HDR.VERSION= H1(3:4)*[1;256]/100;
 	T0 = char(H1(25:34));
 	T0(T0=='-') = ' ';
-	T0 = str2double(T0);
+	T0 = biosig_str2double(T0);
 	HDR.T0     = T0([3,2,1]); 
         HDR.NS     = H1(347);
         HDR.SPR    = 1; 
@@ -3099,7 +3090,7 @@ elseif strcmp(HDR.TYPE,'RigSys'),       % thanks to  J. Chen
                 elseif strcmp(tag,'EMPTY HEADER CHARACTER'), 
                         [t,v]=strtok(value);
                         if strcmp(t,'ASCII')
-                                empty_char = str2double(v);
+                                empty_char = biosig_str2double(v);
                                 STOPFLAG = 0; 
                         else
                                 fprintf(HDR.FILE.stderr,'Warning SOPEN (RigSys): Couldnot identify empty character');;
@@ -3119,7 +3110,7 @@ elseif strcmp(HDR.TYPE,'RigSys'),       % thanks to  J. Chen
                 value = strtok(value,'=');
                 if 0, 
                 elseif strcmp(tag,'HEADER SIZE'), 
-                        HDR.RigSys.H1size = str2double(value);
+                        HDR.RigSys.H1size = biosig_str2double(value);
                         if    count == HDR.RigSys.H1size,
                         elseif count < HDR.RigSys.H1size,
                                 tmp = fread(HDR.FILE.FID,[1,HDR.RigSys.H1size-count],'uint8');
@@ -3128,15 +3119,15 @@ elseif strcmp(HDR.TYPE,'RigSys'),       % thanks to  J. Chen
                                 status = fseek(HDR.FILE.FID,HDR.RigSys.H1size);
                         end;        
                 elseif strcmp(tag,'CHANNEL HEADER SIZE'), 
-                        HDR.RigSys.H2size = str2double(value);
+                        HDR.RigSys.H2size = biosig_str2double(value);
                 elseif strcmp(tag,'FRAME HEADER SIZE'), 
-                        HDR.RigSys.H3size = str2double(value);
+                        HDR.RigSys.H3size = biosig_str2double(value);
                 elseif strcmp(tag,'NCHANNELS'), 
-                        HDR.NS = str2double(value);
+                        HDR.NS = biosig_str2double(value);
                 elseif strcmp(tag,'SAMPLE INTERVAL'), 
-                        HDR.SampleRate = 1/str2double(value);
+                        HDR.SampleRate = 1/biosig_str2double(value);
                 elseif strcmp(tag,'HISTORY LENGTH'), 
-                        HDR.AS.endpos = str2double(value);
+                        HDR.AS.endpos = biosig_str2double(value);
                 elseif strcmp(tag,'REFERENCE TIME'), 
                         HDR.RigSys.TO=value;
                         HDR.T0(1:6) = round(datevec(value)*1e4)*1e-4;
@@ -3368,7 +3359,7 @@ elseif strcmp(HDR.TYPE,'Sigma'),	% SigmaPLpro
 	        	elseif strcmp(tag,'Vorname'),
 	        	elseif strcmp(tag,'GebDat'),
 	        		val(val=='.')=' ';
-	        		tmp = str2double(val);
+				tmp = biosig_str2double(val);
 	        		HDR.Patient.Birthday = [tmp([3,2,1]),12,0,0];
 	        	elseif strcmp(tag,'ID'),
 	        		HDR.Patient.ID = val; 
@@ -3385,14 +3376,14 @@ elseif strcmp(HDR.TYPE,'Sigma'),	% SigmaPLpro
 	                for k2=1:4
 		                len = fread(HDR.FILE.FID,1,'uint8');
         		        val = fread(HDR.FILE.FID,[1,len],'uint8=>char');
-        	        	XXX.Val(k1,k2)=str2double(val); 
+				XXX.Val(k1,k2)=biosig_str2double(val);
         		end; 
 	        	HDR.Off(k1) = fread(HDR.FILE.FID,1,'int16');
                 	for k2=5:8
 		                len = fread(HDR.FILE.FID,1,'uint8');
         	        	val = fread(HDR.FILE.FID,[1,len],'uint8=>char');
-        		        XXX.Val(k1,k2)=str2double(val); 
-        		end; 
+				XXX.Val(k1,k2)=biosig_str2double(val);
+			end;
 	        	val = fread(HDR.FILE.FID,4,'int16');
 	        	HDR.ELEC.XYZ(k1,1:2)=val(1:2);
 	        	refxy(k1,:) = val(3:4);
@@ -3458,7 +3449,7 @@ elseif strncmp(HDR.TYPE,'EEG-1100',8),
                         fclose(HDR.FILE.FID);
                         return;
                 end;
-                HDR.T0(1:6) = str2double({H1(65:68),H1(69:70),H1(71:72),H1(6148:6149),H1(6150:6151),H1(6152:6153)});
+                HDR.T0(1:6) = biosig_str2double({H1(65:68),H1(69:70),H1(71:72),H1(6148:6149),H1(6150:6151),H1(6152:6153)});
                 if strcmp(HDR.FILE.Ext,'LOG')
                         [s,c] = fread(HDR.FILE.FID,[1,inf],'uint8');
                         s = char([H1(1025:end),s]);
@@ -3493,7 +3484,7 @@ elseif strcmp(HDR.TYPE,'GTF'),          % Galileo EBNeuro EEG Trace File
         [H.i8, count]    = fread(HDR.FILE.FID,inf,'int8');
         fclose(HDR.FILE.FID);
         
-        [t,status] = str2double(char([HDR.GTF.H1(35:36),32,HDR.GTF.H1(37:39)]));	
+        [t,status] = biosig_str2double(char([HDR.GTF.H1(35:36),32,HDR.GTF.H1(37:39)]));
         if ~any(status) && all(t>0)
                 HDR.NS = t(1); 
                 HDR.SampleRate = t(2); 
@@ -3583,7 +3574,7 @@ elseif strcmp(HDR.TYPE,'MatrixMarket'),
                         		k=3; 
                         		while (isspace(line(k))) k=k+1; end;
                         		[t,r] = strtok(line(k:end),char([9,32]));
-                        		ch = str2double(t);
+					ch = biosig_str2double(t);
                         		k = 1; 
                         		while (isspace(r(k))) k=k+1; end;
                         		r = r(k:end); 
@@ -3594,7 +3585,7 @@ elseif strcmp(HDR.TYPE,'MatrixMarket'),
                         elseif (line(1)=='%')
                         	;
                         else 
-                                [n,v,sa] = str2double(line);
+                                [n,v,sa] = biosig_str2double(line);
                                 K = K+1;
                                 if (K==1)
                                         HDR.Calib = sparse([],[],[],n(1),n(2),n(3));
@@ -4589,12 +4580,12 @@ elseif strcmp(HDR.TYPE,'Persyst'),
 						flag_interleaved = strcmp(val,'Interleaved');
 						flag_NK = strcmp(val,'NihonKohden');
 					case {'SamplingRate'}
-						HDR.SampleRate = str2double(val); 
+						HDR.SampleRate = biosig_str2double(val);
 						HDR.EVENT.SampleRate = HDR.SampleRate; 
 					case {'Calibration'}
-						HDR.Cal = str2double(val); 
+						HDR.Cal = biosig_str2double(val);
 					case {'WaveformCount'}
-						HDR.NS = str2double(val); 
+						HDR.NS = biosig_str2double(val);
 					case {'DataType'}
 						switch (val)	
 						case {'0'} 
@@ -4613,7 +4604,7 @@ elseif strcmp(HDR.TYPE,'Persyst'),
 					end; 
 				case {2}
 					[tag,val]=strtok(line,'=');
-					ch = str2double(val(2:end));
+					ch = biosig_str2double(val(2:end));
 					HDR.Label{ch} = tag; 
 				case {3}
 				case {4}
@@ -4623,8 +4614,8 @@ elseif strcmp(HDR.TYPE,'Persyst'),
 					[ign,ll]=strtok(ll,',');
 					[ign,ll]=strtok(ll,',');
 					Desc{HDR.EVENT.N} = ll(2:end); 
-					HDR.EVENT.POS(HDR.EVENT.N) = str2double(pos)*HDR.EVENT.SampleRate;	
-					HDR.EVENT.DUR(HDR.EVENT.N) = str2double(dur)*HDR.EVENT.SampleRate;	
+					HDR.EVENT.POS(HDR.EVENT.N) = biosig_str2double(pos)*HDR.EVENT.SampleRate;
+					HDR.EVENT.DUR(HDR.EVENT.N) = biosig_str2double(dur)*HDR.EVENT.SampleRate;
 				case {5}
 					[tag,val]=strtok(line,'=');
 					val = val(2:end);
@@ -4641,21 +4632,21 @@ elseif strcmp(HDR.TYPE,'Persyst'),
 						HDR.Patient.Sex = any(val(1)=='mM') + any(val(1)=='fF') * 2;
 					case {'BirthDate'}
 						val(val==47)=' ';
-						t = str2double(val);
+						t = biosig_str2double(val);
 						if t(3) < 30, 	c = 2000; 
 						else 		c = 1900; 
 						end; 
 						HDR.Patient.Birthday = [t(3)+c,t(1),t(2), 0, 0, 0]; 
 					case {'TestDate'}
 						val(val=='/')=' ';
-						t = str2double(val);
+						t = biosig_str2double(val);
 						if t(3) < 80, 	c = 2000; 
 						else 		c = 1900; 
 						end; 
 						HDR.T0(1:3) = [t(3)+c,t(1),t(2)]; 
 					case {'TestTime'}
 						val(val==':')=' ';
-						t = str2double(val);
+						t = biosig_str2double(val);
 						HDR.T0(4:6) = t; 
 					case {'ID'}
 						HDR.Patient.Id = val;
@@ -4943,8 +4934,8 @@ elseif strcmp(HDR.TYPE,'UFF58b'),	% implementation of this format is not finishe
                        	fclose(fid); 
                        	return; 
 		end; 		        
-		[HDR.UFF.NoLines,v,str] = str2double(tline(20:31)); 
-		[HDR.UFF.NoBytes,v,str] = str2double(tline(32:43)); 
+		[HDR.UFF.NoLines,v,str] = biosig_str2double(tline(20:31));
+		[HDR.UFF.NoBytes,v,str] = biosig_str2double(tline(32:43));
 	        for k = 1:HDR.UFF.NoLines, 
 	        	tline = fgetl(HDR.FILE.FID);  %line k+2
 	        	if strncmp(tline,'NONE',4)
@@ -5584,10 +5575,10 @@ elseif strcmp(HDR.TYPE,'MIT')
 	                [s,t] = strtok(t,[9,10,13,32]);
 			Z{k}  = s;
 			if any(s==':'),
-                                t0 = str2double(s,':');
+                                t0 = biosig_str2double(s,':');
 				HDR.T0(3+(1:length(t0))) = t0;
 			elseif sum(s=='/')==2,
-				HDR.T0([3,2,1])=str2double(s,'/');
+				HDR.T0([3,2,1])=biosig_str2double(s,'/');
 			end;	
 		end;	
                 HDR.NS   = str2double(Z{2});   % number of signals
@@ -5661,7 +5652,7 @@ elseif strcmp(HDR.TYPE,'MIT')
                                                 HDR.AS.SPR(k) = 1; 
 	                                        if isempty(tmp1)
                                                 elseif tmp1(1)=='x'
-	                                                HDR.AS.SPR(k) = str2double(tmp1(2:end)); 
+	                                                HDR.AS.SPR(k) = biosig_str2double(tmp1(2:end));
 	                                        elseif tmp1(1)==':'
                                                         fprintf(HDR.FILE.stderr,'Warning SOPEN: skew information in %s is ignored.\n', HDR.FileName);
 	                                        end                                                
@@ -6117,7 +6108,7 @@ elseif strcmp(HDR.TYPE,'TMSiLOG'),
 			val = deblank(line(ix+1:end));
 			if strcmp(tag,'DateTime')
 				val(val=='/' | val=='-' | val==':') = ' ';
-				HDR.T0 = str2double(val);
+				HDR.T0 = biosig_str2double(val);
 			elseif strcmp(tag,'Format')
 				if     strcmp(val,'Int16') GDFTYP = 3; 	
 				elseif strcmp(val,'Int32') GDFTYP = 5; 	
@@ -6177,7 +6168,7 @@ elseif strcmp(HDR.TYPE,'TMSiLOG'),
 				line = fgetl(fid);
 				tmp  = fread(fid,[1,inf],'uint8=>char');
 				fclose(fid);
-				[n,v,sa] = str2double(tmp);
+				[n,v,sa] = biosig_str2double(tmp);
 				HDR.data = n(:,2:end);
 			end;
 		end
@@ -6242,9 +6233,9 @@ elseif strcmp(HDR.TYPE,'MAT4') && any(HDR.FILE.PERMISSION=='r'),
                         c=0; 
                         %% find the ADICHT data channels
                         if strfind(HDR.Var(k).Name,'data_block'),
-                                HDR.ADI.DB(str2double(HDR.Var(k).Name(11:length(HDR.Var(k).Name))))=k;
+                                HDR.ADI.DB(biosig_str2double(HDR.Var(k).Name(11:length(HDR.Var(k).Name))))=k;
                         elseif strfind(HDR.Var(k).Name,'ticktimes_block'),
-                                HDR.ADI.TB(str2double(HDR.Var(k).Name(16:length(HDR.Var(k).Name))))=k;
+                                HDR.ADI.TB(biosig_str2double(HDR.Var(k).Name(16:length(HDR.Var(k).Name))))=k;
                         end;
                         
                         tmp1=ftell(HDR.FILE.FID);
@@ -6389,7 +6380,7 @@ elseif strcmp(HDR.TYPE,'BCI2002b');
         			fid = fopen(fullfile(tmp,'sensorlocations.txt'));
         			s = fread(fid,[1,inf],'uint8=>char'); 
         			fclose(fid); 
-        			[NUM, STATUS,STRARRAY] = str2double(s); 
+				[NUM, STATUS,STRARRAY] = biosig_str2double(s);
         			HDR.Label = STRARRAY(:,1);
         			HDR.ELEC.XYZ = NUM(:,2:4); 
         			tmp = '';
@@ -7066,7 +7057,7 @@ elseif strncmp(HDR.TYPE,'MAT',3),
 			fclose(fid); 
 			t = char(t); 
 			t(t=='-') = ' '; 
-			[n,v,t]=str2double(t); 
+			[n,v,t]=biosig_str2double(t);
 		end;         	
         	
 
@@ -7493,7 +7484,7 @@ elseif strncmp(HDR.TYPE,'BCI2000',7),
                 [HDR.Header,count] = fread(HDR.FILE.FID,[1,256],'uint8');
 		[tmp,rr] = strtok(char(HDR.Header),[10,13]);
                 tmp(tmp=='=') = ' ';
-                [t,status,sa] = str2double(tmp,[9,32],[10,13]);
+                [t,status,sa] = biosig_str2double(tmp,[9,32],[10,13]);
                 if (HDR.VERSION==1) && strcmp(sa{3},'SourceCh') && strcmp(sa{5},'StatevectorLen') && ~any(status([2,4,6]))
                         HDR.HeadLen = t(2);
                         HDR.NS = t(4);
@@ -7554,7 +7545,7 @@ elseif strncmp(HDR.TYPE,'BCI2000',7),
 			
 			elseif STATUSFLAG==1, 
 				[t,r] = strtok(tline);
-				val = str2double(r);
+				val = biosig_str2double(r);
 				%HDR.BCI2000 = setfield(HDR.BCI2000,t,val);
 				STATECOUNT = STATECOUNT + 1; 
 				HDR.BCI2000.StateVector(STATECOUNT,:) = val; 
@@ -7564,41 +7555,41 @@ elseif strncmp(HDR.TYPE,'BCI2000',7),
 				[tag,r] = strtok(tline,'=');
 				[val,r] = strtok(r,'=');
 				if ~isempty(strfind(tag,'SamplingRate'))
-					[tmp,status] = str2double(val);
+					[tmp,status] = biosig_str2double(val);
 					HDR.SampleRate = tmp(1);
 				elseif ~isempty(strfind(tag,'SourceChGain'))
-					[tmp,status] = str2double(val);
+					[tmp,status] = biosig_str2double(val);
 					HDR.Cal = tmp(2:tmp(1)+1);
 				elseif ~isempty(strfind(tag,'SourceChOffset'))
-					[tmp,status] = str2double(val);
+					[tmp,status] = biosig_str2double(val);
 					HDR.Off = tmp(2:tmp(1)+1);
 				elseif ~isempty(strfind(tag,'SourceMin'))
-					[tmp,status] = str2double(val);
+					[tmp,status] = biosig_str2double(val);
 					HDR.DigMin = tmp(1);
 				elseif ~isempty(strfind(tag,'SourceMax'))
-					[tmp,status] = str2double(val);
+					[tmp,status] = biosig_str2double(val);
 					HDR.DigMax = tmp(1);
 				elseif ~isempty(strfind(tag,'NotchFilter'))
-					[tmp,status] = str2double(val);
+					[tmp,status] = biosig_str2double(val);
 					if tmp(1)==0, HDR.Filter.Notch = 0; 
 					elseif tmp(1)==1, HDR.Filter.Notch = 50; 
 					elseif tmp(1)==2, HDR.Filter.Notch = 60;
 					end; 
 				elseif ~isempty(strfind(tag,'TargetOrientation'))
-					[tmp,status] = str2double(val);
+					[tmp,status] = biosig_str2double(val);
 					ORIENT = tmp(1);
 				elseif ~isempty(strfind(tag,'StorageTime'))
 					ix = strfind(val,'%20');
 					if length(ix)==4,
 						val([ix,ix+1,ix+2])=' ';
 						val(val==':') = ' ';
-						[n,v,s] = str2double(val);
+						[n,v,s] = biosig_str2double(val);
 						n(1)=n(7);
 						n(2)=strmatch(s{2},{'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'});
 						HDR.T0 = n(1:6);
 					end;	
 				elseif ~isempty(strfind(tag,'ChannelNames'))
-					[tmp,status,labels] = str2double(val);
+					[tmp,status,labels] = biosig_str2double(val);
 					HDR.Label(1:tmp(1))=labels(2:tmp(1)+1);
 				end;
 			end;	
@@ -7705,7 +7696,7 @@ elseif strcmp(HDR.TYPE,'BioSig'),
  
  		%%%%%%%%%% fixed header
         	HDR.H1(HDR.H1=='=') = 9; 
-        	[n,v,s]=str2double(HDR.H1,9);
+		[n,v,s]=biosig_str2double(HDR.H1,9);
         	HDR.SampleRate = n(strmatch('SamplingRate',s(:,1)),2);
         	HDR.NS = n(strmatch('NumberOfChannels',s(:,1)),2);
         	HDR.SPR = n(strmatch('Number_of_Samples',s(:,1)),2);
@@ -7717,7 +7708,7 @@ elseif strcmp(HDR.TYPE,'BioSig'),
  		s = HDR.H2;
  		[tline,s] = strtok(s,[10,13]);
  		[tline,s] = strtok(s,[10,13]);
-        	[n,v,s]=str2double(s,9,[10,13]);
+		[n,v,s]=biosig_str2double(s,9,[10,13]);
         	HDR.Label = s(:,3)'; 
         	HDR.LeadIdCode = n(:,2); 
         	HDR.AS.SampleRate = n(:,4); 
@@ -7740,14 +7731,14 @@ elseif strcmp(HDR.TYPE,'BioSig'),
 	 	end; 
         	[p,v] = strtok(tline,'=');
         	[p,v] = strtok(v,'=');
-        	N  = str2double(p);
+		N  = biosig_str2double(p);
         	ET = repmat(NaN,N,4);
  		[tline,s] = strtok(s,[10,13]);
 		for k = 1:N,
 	 		[tline,s] = strtok(s,[10,13]);
 	 		[typ,tline] = strtok(tline,[9,10,13]);
 	 		ET(k,1)   = hex2dec(typ(3:end));
-	        	[n,v,st]  = str2double(tline,[9]);
+			[n,v,st]  = biosig_str2double(tline,[9]);
 	        	ET(k,2:4) = n(1:3);
 	        end;
         	HDR.EVENT.TYP = ET(:,1); 
@@ -8424,10 +8415,10 @@ elseif strncmp(HDR.TYPE,'SIGIF',5),
                 HDR.Segment_separator = fgetl(HDR.FILE.FID);  		% 19
                 %HDR.Segment_separator = hex2dec(fgetl(HDR.FILE.FID));  
                 
-                HDR.FLAG.TimeStamp = str2double(fgetl(HDR.FILE.FID));  	% 20
+                HDR.FLAG.TimeStamp = biosig_str2double(fgetl(HDR.FILE.FID));  	% 20
                 
                 if HDR.VERSION>=3,
-                        HDR.FLAG.SegmentLength = str2double(fgetl(HDR.FILE.FID));	% 21  
+                        HDR.FLAG.SegmentLength = biosig_str2double(fgetl(HDR.FILE.FID));	% 21
                         HDR.AppStartMark = fgetl(HDR.FILE.FID);  		% 22
                         HDR.AppInfo = fgetl(HDR.FILE.FID);  			% 23
                 else
@@ -8512,7 +8503,7 @@ elseif strcmp(HDR.TYPE,'AINF'),
  				HDR.SampleRate = str2double(t);
  			end; 	
 		end;             
-		[n,v,sa]  = str2double([tline,s]); 
+		[n,v,sa]  = biosig_str2double([tline,s]);
 		HDR.NS    = max(n(:,1)); 
 		for k = 1:HDR.NS,
 			HDR.Label{k} = [sa{k,2},' ',sa{k,3}];
@@ -8546,13 +8537,13 @@ elseif strcmp(HDR.TYPE,'CTF'),
 		fseek(HDR.FILE.FID,778,'bof');
 		tmp = char(fread(HDR.FILE.FID,255,'uint8')');
                 tmp(tmp==':')=' ';
-                tmp = str2double(tmp);
+                tmp = biosig_str2double(tmp);
                 if length(tmp)==3,
                         HDR.T0(4:6)=tmp;
                 end;
 		tmp = char(fread(HDR.FILE.FID,255,'uint8')');
                 tmp(tmp=='/')=' ';
-                tmp = str2double(tmp);
+                tmp = biosig_str2double(tmp);
                 if length(tmp)==3,
                         HDR.T0(1:3) = tmp;
                 end;
@@ -8620,7 +8611,7 @@ elseif strcmp(HDR.TYPE,'CTF'),
                                         N = 0; 
                                         x = fgetl(fid);
                                         while ~isempty(x),
-                                                tmp = str2double(x);
+                                                tmp = biosig_str2double(x);
                                                 N = N+1;
                                                 HDR.EVENT.POS(N,1) = tmp(1)*HDR.SPR+tmp(2)*HDR.SampleRate;
                                                 HDR.EVENT.TYP(N,1) = 1;
@@ -8682,17 +8673,17 @@ elseif strcmp(HDR.TYPE,'BrainVision_MarkerFile'),
                                 [N,s] = strtok(u(3:end),'=');
                                 ix = find(s==',');
                                 ix(length(ix)+1) = length(s)+1;
-                                N = str2double(N);
-                                HDR.EVENT.POS(N,1) = str2double(s(ix(2)+1:ix(3)-1));
+                                N = biosig_str2double(N);
+                                HDR.EVENT.POS(N,1) = biosig_str2double(s(ix(2)+1:ix(3)-1));
                                 HDR.EVENT.TYP(N,1) = 0;
-                                HDR.EVENT.DUR(N,1) = str2double(s(ix(3)+1:ix(4)-1));
-                                HDR.EVENT.CHN(N,1) = str2double(s(ix(4)+1:ix(5)-1));
+                                HDR.EVENT.DUR(N,1) = biosig_str2double(s(ix(3)+1:ix(4)-1));
+                                HDR.EVENT.CHN(N,1) = biosig_str2double(s(ix(4)+1:ix(5)-1));
                                 HDR.EVENT.TeegType{N,1} = s(2:ix(1)-1);
                                 Desc{N,1} = s(ix(1)+1:ix(2)-1);
                                 if strncmp('New Segment',s(2:ix(1)-1),4); 
                                         t = s(ix(5)+1:end); 
                                         NoSegs = NoSegs+1; 
-                                        HDR.EVENT.Segments{NoSegs}.T0 = str2double(char([t(1:4),32,t(5:6),32,t(7:8),32,t(9:10),32,t(11:12),32,t(13:14)])); 
+                                        HDR.EVENT.Segments{NoSegs}.T0 = biosig_str2double(char([t(1:4),32,t(5:6),32,t(7:8),32,t(9:10),32,t(11:12),32,t(13:14)]));
                                         HDR.EVENT.Segments{NoSegs}.Start = HDR.EVENT.POS(N); 
 	                                HDR.EVENT.TYP(N,1) = hex2dec('7ffe');
                                 end; 
@@ -8748,7 +8739,7 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),
                 elseif any(flag==[2,3]),
                         [t1,r] = strtok(tline,'=');
                         [t2,r] = strtok(r,['=',char([10,13])]);
-                        [n2,v2,s2] = str2double(t2); 
+                        [n2,v2,s2] = biosig_str2double(t2);
                         if isempty(n2),
                         elseif isnan(n2)
                                 HDR.BV = setfield(HDR.BV,t1,t2);
@@ -8763,7 +8754,7 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),
                 elseif flag==4,        
                         [t1,r] = strtok(tline,'=');
                         [t2,r] = strtok(r, ['=',char([10,13])]);
-                        [chan, stat1] = str2double(t1(3:end));
+                        [chan, stat1] = biosig_str2double(t1(3:end));
                         ix = [find(t2==','),length(t2)+1];
                         tmp = [t2(1:ix(1)-1),' '];
                         ix2 = strfind(tmp,'\1'); 
@@ -8772,7 +8763,7 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),
                         end;                                 
                         HDR.Label{chan,1} = strtrim(tmp);
                         HDR.BV.reference{chan,1} = t2(ix(1)+1:ix(2)-1);
-                        [v, stat] = str2double(t2(ix(2)+1:ix(3)-1));          % in microvolt
+                        [v, stat] = biosig_str2double(t2(ix(2)+1:ix(3)-1));          % in microvolt
                         if (prod(size(v))==1) && ~any(stat)
                                 HDR.Cal(chan) = v;                                
                         else
@@ -8790,7 +8781,7 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),
                 elseif flag==5,   
                 	% Coordinates: <R>,<theta>,<phi>
                         tline(tline=='=')=',';
-                        v = str2double(tline(3:end));
+                        v = biosig_str2double(tline(3:end));
                         chan = v(1); R=v(2); Theta = v(3)*pi/180; Phi = v(4)*pi/180; 
                         HDR.ELEC.XYZ(chan,:) = R*[sin(Theta).*cos(Phi),sin(Theta).*sin(Phi),cos(Theta)]; 
                         
@@ -8809,8 +8800,8 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),
                                         	flag = 7.2; % stop 
                                         end;
                                 else
-                                        %[n,v,s] = str2double(tline(19:end)); 
-                                        [n,v,s] = str2double(tline);
+                                        %[n,v,s] = biosig_str2double(tline(19:end));
+                                        [n,v,s] = biosig_str2double(tline);
                                         ch = n(1);
                                         if ch>0,
 	                                        HDR.Label{ch} = tline(7:18);
@@ -8827,14 +8818,14 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),
         	                         end;	
                                 end;
                         elseif flag==7.2,
-                        	[n,v,s]=str2double(tline,[': ',9]); 
-                        	ch = strmatch(s{1},HDR.Label);
-                        	if ~isempty(strfind(tline,'Out of Range!'))
-                        		n(2) = Inf; 
-                       		end; 
-                        	if any(ch),
-	                        	HDR.Impedance(ch,1) = n(2)*Zscale;
-                        	end; 
+				[n,v,s]=biosig_str2double(tline,[': ',9]);
+				ch = strmatch(s{1},HDR.Label);
+				if ~isempty(strfind(tline,'Out of Range!'))
+					n(2) = Inf;
+				end;
+				if any(ch),
+					HDR.Impedance(ch,1) = n(2)*Zscale;
+				end;
                         end; 
                 end;
         end;
@@ -8960,7 +8951,7 @@ elseif strncmp(HDR.TYPE,'BrainVision',11),
         	if isfield(HDR.BV,'DecimalSymbol')
 	                s(s==HDR.BV.DecimalSymbol)='.';
 	        end;        
-                [tmp,status] = str2double(s);
+                [tmp,status] = biosig_str2double(s);
        		if (HDR.BV.SkipColumns>0),
        			tmp = tmp(:,HDR.BV.SkipColumns+1:end); 
        		end;
@@ -9039,7 +9030,7 @@ elseif strncmp(HDR.TYPE,'EEProbe',7),
 						[line,s] = strtok(s,[10,13]); 
 						if ~strncmp(line,';',1);
 							k = k+1;
-							[num,status,sa]=str2double(line);
+							[num,status,sa]=biosig_str2double(line);
 							HDR.Label{k} = sa{1};
 							HDR.PhysDim{k} = sa{4};
 							HDR.Cal(k) = num(2)*num(3);
@@ -9049,7 +9040,7 @@ elseif strncmp(HDR.TYPE,'EEProbe',7),
 				elseif strncmp(line,'[',1);				
 					field = '';      
 				elseif ~isempty(field);
-					[num,status,sa] = str2double(line);
+					[num,status,sa] = biosig_str2double(line);
 					if ~status,
 						HDR = setfield(HDR,field,num);     
 					end;	
@@ -9072,7 +9063,7 @@ elseif strncmp(HDR.TYPE,'EEProbe',7),
 	        fid = fopen(fullfile(HDR.FILE.Path,[HDR.FILE.Name,'.trg']),'rt');
 	end;
 	if fid>0,
-                tmp = str2double(fgetl(fid));
+                tmp = biosig_str2double(fgetl(fid));
                 if ~isnan(tmp(1))
                 	HDR.EVENT.SampleRate = 1/tmp(1); 
 	                N = 0; 
@@ -9086,7 +9077,7 @@ elseif strncmp(HDR.TYPE,'EEProbe',7),
 	                                %HDR.EVENT.CHN(N,1) = 0;
 	                                
 	                                HDR.EVENT.TeegType{N,1} = char(tmp(3:end));
-	                                HDR.EVENT.TYP(N,1)  = str2double(HDR.EVENT.TeegType{N,1});		% numeric
+	                                HDR.EVENT.TYP(N,1)  = biosig_str2double(HDR.EVENT.TeegType{N,1});		% numeric
 	                        end
 	                end;
 	                HDR.EVENT.TYP(isnan(HDR.EVENT.TYP))=0;
@@ -9200,20 +9191,20 @@ elseif strcmp(HDR.TYPE,'AndrewsHerzberg1985')
 		if any(s(ix1(k-1)+1:ix1(k))>64) && (s(ix1(k-1)+1)==' ')
 			ix3 = [ix3,k-1];
 			HDR.Label{length(ix3)} = s(ix1(k-1)+1:ix1(k)-1);
-			t = str2double(s(ix1(k-2)+1:ix1(k-1)-1));
+			t = biosig_str2double(s(ix1(k-2)+1:ix1(k-1)-1));
 			if length(t)>1, t=t(2); end; 
 			HDR.AS.SPR(length(ix3)) = t; 
 		end;	 	
 	end; 
 	ix3 = [ix3,length(ix1)];
 	for k=1:length(ix3)-1
-		t = str2double(s(ix1(ix3(k)+2)+1:ix1(ix3(k+1)-1)))';
+		t = biosig_str2double(s(ix1(ix3(k)+2)+1:ix1(ix3(k+1)-1)))';
 		HDR.data{k} = t(1:HDR.AS.SPR(k)); 	
 	end; 
 	
 elseif strcmp(HDR.TYPE,'CinC2007Challenge')
-	ix = find(HDR.s==10); 
-	d  = str2double(HDR.data(ix(4)+1:end));	
+	ix = find(HDR.s==10);
+	d  = biosig_str2double(HDR.data(ix(4)+1:end));
 	HDR.data = d(:,7:end);
 	HDR.TYPE = 'native';
 	[HDR.SPR,HDR.NS] = size(HDR.data); 
@@ -9281,7 +9272,7 @@ elseif strncmp(HDR.TYPE,'WINEEG',3),
                 fseek(HDR.FILE.FID,0,'bof'); 
 		HDR.EEG.H1u16  = fread(HDR.FILE.FID,[1,1152/2],'uint16'); 
 		tmp = HDR.EEG.H1(197:218); tmp(tmp==47) = ' '; tmp(tmp==0) = ' '; tmp(tmp==':') = ' ';  
-		[n,v,s] = str2double(char(tmp));
+		[n,v,s] = biosig_str2double(char(tmp));
 		HDR.T0  = n([3,2,1,4,5,6]);
 		HDR.NS  = HDR.EEG.H1(3:4)*[1;256]; 
 		HDR.SampleRate = HDR.EEG.H1(5:6)*[1;256]; 
@@ -9344,7 +9335,7 @@ elseif strncmp(HDR.TYPE,'GEO:STL:BIN',11),
                 HDR.H1 = char(fread(HDR.FILE.FID,[1,80],'uint8'));
                 tmp = HDR.H1(53:72); tmp(tmp==':')=' ';
                 HDR.T0(2) = strmatch(tmp(1:3),['Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec']);
-                HDR.T0([3:6,1]) = str2double(tmp(5:end));
+                HDR.T0([3:6,1]) = biosig_str2double(tmp(5:end));
                 N = fread(HDR.FILE.FID,1,'int32');
                 HDR.HeadLen = ftell(HDR.FILE.FID);
                 if HDR.FILE.size~=HDR.HeadLen+N*50;
@@ -9407,7 +9398,7 @@ elseif 0, strcmp(HDR.TYPE,'DXF'),
 	                line1 = fgetl(HDR.FILE.FID);
     		        line2 = fgetl(HDR.FILE.FID);
 			
-			[val,status] = str2double(line1);
+			[val,status] = biosig_str2double(line1);
 			
 			if any(status),
 				error('SOPEN (DXF)');
@@ -9817,7 +9808,7 @@ elseif strcmp(HDR.TYPE,'ATF'),  % axon text file
         if any(HDR.FILE.PERMISSION=='r'),
                 HDR.FILE.FID = fopen(HDR.FileName,[HDR.FILE.PERMISSION,'t'],'ieee-le');
                 t = fgetl(HDR.FILE.FID)
-                t = str2double(fgetl(HDR.FILE.FID))
+                t = biosig_str2double(fgetl(HDR.FILE.FID))
                 HDR.ATF.NoptHdr = t(1);
                 HDR.ATF.NS = t(2);
                 HDR.NS = t(2);
@@ -9845,7 +9836,7 @@ elseif strcmp(HDR.TYPE,'ATF'),  % axon text file
                 if isfield(HDR.ATF,'DateTime');
                         tmp = HDR.ATF.DateTime;
                         tmp(tmp=='/' | tmp==':')=' ';
-                        HDR.T0 = str2double(tmp);
+                        HDR.T0 = biosig_str2double(tmp);
                 end;
                 HDR.FILE.OPEN = 1; 
                 HDR.FILE.POS  = 0;
@@ -10042,7 +10033,7 @@ elseif strcmp(HDR.TYPE,'ETG4000') 	 % NIRS - Hitachi ETG 4000
 		dlm = char(9); 
                 [t,s] = strtok(HDR.s,[10,13]); 
                 while ((t(1)<'0') || (t(1)>'9'))
-         		[NUM, STATUS,STRARRAY] = str2double(t,dlm); 
+			[NUM, STATUS,STRARRAY] = biosig_str2double(t,dlm);
                         if 0,
                         elseif strncmp(t,'File Version',12)
                                 HDR.VERSION = NUM(2);
@@ -10056,7 +10047,7 @@ elseif strcmp(HDR.TYPE,'ETG4000') 	 % NIRS - Hitachi ETG 4000
                                         if (lower(tmp(end))=='y')
                                                 tmp = tmp(1:end-1); 
                                         end;
-                                        HDR.Patient.Age = str2double(tmp);
+                                        HDR.Patient.Age = biosig_str2double(tmp);
                                 else
                                         HDR.Patient.Age = NUM(2);
                                 end
@@ -10064,7 +10055,7 @@ elseif strcmp(HDR.TYPE,'ETG4000') 	 % NIRS - Hitachi ETG 4000
                                 tmp = STRARRAY{2}; 
                                 tmp((tmp==47) | (tmp==':')) = ' ';
                                 HDR.T0 = zeros(1,6);
-                                tmp = str2double(tmp); 
+                                tmp = biosig_str2double(tmp);
                                 HDR.T0(1:length(tmp)) = tmp; 
                         elseif strncmp(t,'HPF[Hz]',7)
                                 HDR.Filter.HighPass = NUM(2);         
@@ -10159,7 +10150,7 @@ elseif strcmp(HDR.TYPE,'FEPI3'), 	% Freiburg epileptic seizure prediction Contes
 			[line,t]=strtok(t,[10,13]);
 			[t1,r] = strtok(line,'='); 
 			[t2,r] = strtok(r,'='); 
-			num = str2double(t2); 
+			num = biosig_str2double(t2);
 			if strcmp(t1,'SamplingRate')
 				HDR.SampleRate = num; 
 			elseif strcmp(t1,'NbOfChannels')
@@ -10168,9 +10159,9 @@ elseif strcmp(HDR.TYPE,'FEPI3'), 	% Freiburg epileptic seizure prediction Contes
 				HDR.PhysDim = repmat({t2},HDR.NS,1); 
 			elseif strcmp(t1,'FirstSampleTime')
 				t2(t2==':')=' '; 
-				HDR.T0(4:6) = str2double(t2); 
+				HDR.T0(4:6) = biosig_str2double(t2);
 			elseif strcmp(t1,'Gainx1000')
-				HDR.Cal = str2double(t2,',')/1000;
+				HDR.Cal = biosig_str2double(t2,',')/1000;
 			elseif strcmp(t1,'PatientNo')
 				switch num,
 				case 1,
@@ -10216,7 +10207,7 @@ elseif strcmp(HDR.TYPE,'FEPI3'), 	% Freiburg epileptic seizure prediction Contes
 					case 1,
 						[t1,r] = strtok(line,[10,13,'=']); 
 						[t2,r] = strtok(r,[10,13,'=']); 
-						num    = str2double(t2);
+						num    = biosig_str2double(t2);
 						if strcmp(t1,'FirstSample')
 							HDR.FEPI.SEG(k,1) = num; 
 						elseif strcmp(t1,'LastSample')
@@ -10227,7 +10218,7 @@ elseif strcmp(HDR.TYPE,'FEPI3'), 	% Freiburg epileptic seizure prediction Contes
 						[t2,r] = strtok(r,',');
 						[t3,r] = strtok(t2,': ');
 						[t4,r] = strtok(r,': ()');
-						num = str2double(t1);
+						num = biosig_str2double(t1);
 						K = K+1;
 						HDR.EVENT.POS(K,1) = num; 
 						tmp = 0; 
@@ -10307,7 +10298,7 @@ elseif strcmp(HDR.TYPE,'nakamura'),
 	fid = fopen(fullfile(HDR.FILE.Path,[HDR.FILE.Name,'.chn']),'r');
 	s = char(fread(fid,[1,inf],'uint8')); 
 	fclose(fid);
-	[tmp1,tmp2,HDR.Label]=str2double(s); 
+	[tmp1,tmp2,HDR.Label]=biosig_str2double(s);
 	HDR.NS = length(HDR.Label); 
 	for k=1:HDR.NS
 		HDR.Label{k} = sprintf('#%02i: %s',k,HDR.Label{k}); 
@@ -10316,7 +10307,7 @@ elseif strcmp(HDR.TYPE,'nakamura'),
 	fid = fopen(fullfile(HDR.FILE.Path,[HDR.FILE.Name,'.log']),'r');
 	s = char(fread(fid,[1,inf],'uint8')); 
 	fclose(fid);
-	[n,v,sa]    = str2double(s);
+	[n,v,sa]    = biosig_str2double(s);
 	HDR.NRec    = size(n,1);
 	HDR.LOG.num = n(:,3:2:end); 
 	HDR.LOG.str = sa(:,2:2:end); 
@@ -10326,7 +10317,7 @@ elseif strcmp(HDR.TYPE,'nakamura'),
 	rtmIDX = strmatch('rstm',sa(1,:),'exact')+1;	% response time
 	
 	fid = fopen(fullfile(HDR.FILE.Path,[HDR.FILE.Name,'.dm6']),'r','ieee-le');
-	[s,count] = fread(fid,[1,inf],'float'); 
+	[s,count] = fread(fid,[1,inf],'float');
 	fclose(fid);
 	HDR.SPR  = count/(HDR.NS*HDR.NRec);
 	HDR.SampleRate = 200; 
@@ -10444,7 +10435,7 @@ elseif strcmp(HDR.TYPE,'ASCII:IBI')
 			f=deblank(strtok(line,':'));
 			v=deblank(strtok(line,':'));
 			if strcmp(f,'File version')
-				HDR.VERSION = str2double(v); 
+				HDR.VERSION = biosig_str2double(v);
 			elseif strcmp(f,'Identification')
 				HDR.Patient.Name = v; 
 			end;	
@@ -10583,7 +10574,7 @@ elseif strcmp(HDR.TYPE,'ZIP'),
                                                 tmp = strarray{k1,k2};
                                                 tmp(tmp==',')=='.';
                                                 if ~isempty(tmp)
-                                                        tmp = str2double(tmp)
+                                                        tmp = biosig_str2double(tmp)
                                                 end;
                                                 if prod(size(tmp))==1,
                                                         HDR.data(k1,k2) = tmp;
@@ -10621,7 +10612,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
         if HDR.FLAG.ASCII, 
         	s = HDR.s; 
                 if strcmpi(HDR.FILE.Ext,'DAT') 
-                	[NUM, STATUS,STRARRAY] = str2double(char(s));
+			[NUM, STATUS,STRARRAY] = biosig_str2double(char(s));
                         if (size(NUM,2)<4) && ~any(any(STATUS))
                                 HDR.Label = STRARRAY(:,1);
                                 r2 = sum(NUM(:,2:3).^2,2);
@@ -10651,15 +10642,15 @@ elseif strcmp(HDR.TYPE,'unknown'),
                         K = 0; 
                         [tline, s] = strtok(s, [10,13]);
                         while ~isempty(s),
-                                [num, stat, strarray] = str2double(tline); 
-                                if strcmp(strarray{1},'NumberPositions')
+				[num, stat, strarray] = biosig_str2double(tline);
+				if strcmp(strarray{1},'NumberPositions')
                                         NK = num(2); 
                                 elseif strcmp(strarray{1},'UnitPosition')
                                         HDR.ELEC.PositionUnit = strarray{2};
                                 elseif strcmp(strarray{1},'Positions')
                                         ix = strfind(s,'Labels');
                                         ix = min([ix-1,length(s)]);
-                                        [num, stat, strarray] = str2double(s(1:ix));
+                                        [num, stat, strarray] = biosig_str2double(s(1:ix));
                                         s(1:ix) = [];
                                         if ~any(any(stat))
                                                 HDR.ELEC.XYZ = num*[0,-1,0;1,0,0;0,0,1]; 
@@ -10667,7 +10658,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
                                         end;
                                 elseif strcmp(strarray{1},'Labels')
                                         [tline, s] = strtok(s, [10,13]); 
-                                        [num, stat, strarray] = str2double(tline);
+                                        [num, stat, strarray] = biosig_str2double(tline);
                                         HDR.Label = strarray';
                                 end
                                 [tline, s] = strtok(s, [10,13]);
@@ -10677,7 +10668,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
                 elseif strncmp(s,'Site',4) && strcmpi(HDR.FILE.Ext,'txt'); 
                         [line1, s] = strtok(s, [10,13]); 
                         s(s==',') = '.';
-                        [NUM, STATUS, STRARRAY] = str2double(s,[9,32]);
+                        [NUM, STATUS, STRARRAY] = biosig_str2double(s,[9,32]);
                         if (size(NUM,2)==3) && ~any(any(STATUS(:,2:3)))
                                 HDR.Label = STRARRAY(:,1);
                                 Theta     = abs(NUM(:,2))*pi/180; 
@@ -10694,7 +10685,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
                         
                 elseif strcmpi(HDR.FILE.Ext,'elp')
                         [line1,s]=strtok(s,[10,13]);
-                        [NUM, STATUS,STRARRAY] = str2double(char(s));
+                        [NUM, STATUS,STRARRAY] = biosig_str2double(char(s));
                         if size(NUM,2)==3,
                                 if ~any(any(STATUS(:,2:3)))
                                         HDR.Label = STRARRAY(:,1);
@@ -10719,7 +10710,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
                         
                 elseif strcmpi(HDR.FILE.Ext,'ced')
                         [line1,s]=strtok(char(s),[10,13]);
-                        [NUM, STATUS,STRARRAY] = str2double(char(s));
+                        [NUM, STATUS,STRARRAY] = biosig_str2double(char(s));
                         if ~any(any(STATUS(:,[1,5:7])))
                                 HDR.Label = STRARRAY(:,2);
                                 HDR.ELEC.XYZ  = NUM(:,5:7)*[0,1,0;-1,0,0;0,0,1]; 
@@ -10731,7 +10722,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
                         
                 elseif (strcmpi(HDR.FILE.Ext,'loc') || strcmpi(HDR.FILE.Ext,'locs'))
 %                        [line1,s]=strtok(char(s),[10,13]);
-                        [NUM, STATUS,STRARRAY] = str2double(char(s));
+                        [NUM, STATUS,STRARRAY] = biosig_str2double(char(s));
                         if ~any(any(STATUS(:,1:3)))
                                 HDR.Label = STRARRAY(:,4);
                                 HDR.CHAN  = NUM(:,1); 
@@ -10744,7 +10735,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
                         return;
                         
                 elseif strcmpi(HDR.FILE.Ext,'sfp')
-                        [NUM, STATUS,STRARRAY] = str2double(char(s));
+                        [NUM, STATUS,STRARRAY] = biosig_str2double(char(s));
                         if ~any(any(STATUS(:,2:4)))
                                 HDR.Label    = STRARRAY(:,1);
                                 HDR.ELEC.XYZ = NUM(:,2:4); 
@@ -10753,7 +10744,7 @@ elseif strcmp(HDR.TYPE,'unknown'),
                         return;
 
                 elseif strcmpi(HDR.FILE.Ext,'xyz')
-                        [NUM, STATUS,STRARRAY] = str2double(char(s));
+                        [NUM, STATUS,STRARRAY] = biosig_str2double(char(s));
                         if ~any(any(STATUS(:,2:4)))
                                 HDR.Label    = STRARRAY(:,5);
                                 HDR.ELEC.CHAN= NUM(:,1); 

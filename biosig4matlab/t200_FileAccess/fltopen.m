@@ -7,8 +7,8 @@ function [HDR]=fltopen(arg1,arg3,arg4,arg5,arg6)
 
 % HDR=fltopen(HDR);
 
-%	Copyright (c) 2006,2007,2008,2009,2015 by Alois Schloegl <alois.schloegl@ist.ac.at>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2006-2009,2015,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License
@@ -64,7 +64,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 				b = setfield(b,tok1,tok);
 				body = body(min(find(body=='}'))+1:end);
 			else
-				[num,v,sa] = str2double(tok2);
+				[num,v,sa] = biosig_str2double(tok2);
 				if v,
 					b = setfield(b,tok1,tok2);
 				else
@@ -78,7 +78,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 	HDR.SPR = HDR.FLT.Dataformat.number_of_samples;
 	HDR.NRec = 1;
 	HDR.NS = HDR.FLT.System.number_of_channels;
-	[n,v,sa]=str2double(HDR.FLT.System.parameter_of_sensors);
+	[n,v,sa]=biosig_str2double(HDR.FLT.System.parameter_of_sensors);
 	%HDR.FLT.System = rmfield(HDR.FLT.System,'parameter_of_sensors');
 	HDR.FLT.sensors.id = n(:,1);
 	HDR.FLT.sensors.name = sa(:,2);
@@ -92,7 +92,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 %	HDR.FLT.sensors.mod(n(:,1)+1,:)  = n(:,4);
 %	HDR.FLT.sensors.XYZabcArea(n(:,1)+1,:) = n(:,5:11);
 
-	[n,v,sa]=str2double(HDR.FLT.System.parameter_of_groups);
+	[n,v,sa]=biosig_str2double(HDR.FLT.System.parameter_of_groups);
 %	HDR.FLT.System = rmfield(HDR.FLT.System,'parameter_of_groups');
 	HDR.FLT.groups.id = n(:,1);
 	HDR.FLT.groups.usage = n(:,2);
@@ -103,7 +103,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 	Cal_Group(n(:,1)+1)  = n(:,6).*10.^n(:,5);
 	PhysDim_Group(n(:,1)+1) = sa(:,4);
 
-	[n,v,sa]=str2double(HDR.FLT.System.parameter_of_modules);
+	[n,v,sa]=biosig_str2double(HDR.FLT.System.parameter_of_modules);
 	HDR.FLT.System = rmfield(HDR.FLT.System,'parameter_of_modules');
 	HDR.FLT.modules.id = n(:,1);
 	HDR.FLT.modules.name = sa(:,2);
@@ -124,7 +124,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 
 	[tline,tch] = strtok(HDR.FLT.System.parameter_of_channels,[10,13]);
 	while ~isempty(tline),
-		[n,v,sa]=str2double(tline);
+		[n,v,sa]=biosig_str2double(tline);
 		K = K+1;
 		HDR.FLT.channels.num(K,:)=n;
 
@@ -141,7 +141,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 
 		for k=1:n(9);
 			[tline,tch] = strtok(tch,[10,13]);
-			[n1,v1,sa]=str2double(tline);
+			[n1,v1,sa]=biosig_str2double(tline);
 			%sen = n1(1);
 			sen = find(n1(1)==HDR.FLT.sensors.id);
 			HDR.FLT.channels.Cal(ch,sen) = n1(2);
@@ -182,7 +182,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 	tmp = [HDR.FLT.Measurement.measurement_day,' ',HDR.FLT.Measurement.measurement_time];
 	tmp (tmp=='.')=' ';
 	tmp (tmp==':')=' ';
-	HDR.T0([3,2,1,4:6]) = str2double(tmp);
+	HDR.T0([3,2,1,4:6]) = biosig_str2double(tmp);
 	if isfield(HDR.FLT,'Patient'),
         	HDR.Patient.Sex = 0; % unknown
 		HDR.FLT.Patient.remark = 'Do Not Modify !!!';
@@ -195,7 +195,7 @@ if any(HDR.FILE.PERMISSION=='r'),
 		if isfield(HDR.FLT.Patient,'birthday')
         		tmp = deblank(HDR.FLT.Patient.birthday);
         		tmp(tmp=='.' | tmp=='-' | tmp=='/')=' ';
-			[tmp,v,sa] = str2double(tmp);
+			[tmp,v,sa] = biosig_str2double(tmp);
 			if length(tmp)==3 && ~any(v),
         			HDR.Patient.Birthday(1:3) = tmp;
         		end
@@ -230,10 +230,10 @@ if any(HDR.FILE.PERMISSION=='r'),
 		end;
 		if fid>0,
 			c   = fread(fid,[1,inf],'uint8=>char'); fclose(fid);
-			[n1,v1,sa1] = str2double(c,9,[10,13]);
+			[n1,v1,sa1] = biosig_str2double(c,9,[10,13]);
 			%fid = fopen(fullfile(HDR.FILE.Path,[HDR.FILE.Name(1:ix-1),'.calib2.txt']),'r');
 			%c  = fread(fid,[1,inf],'uint8'); fclose(fid);
-			%[n2,v2,sa2] = str2double(c);
+			%[n2,v2,sa2] = biosig_str2double(c);
 			%HDR.Calib = sparse(2:HDR.NS+1,1:HDR.NS,(n2(4:131,5).*n1(4:131,3)./n2(4:131,4))./100);
 			HDR.Calib = sparse(2:HDR.NS+1,1:HDR.NS,n1(4:131,3)*1e-13*(2^-12));
 			HDR.FLAG = FLAG; % restore

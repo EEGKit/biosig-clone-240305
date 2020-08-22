@@ -16,8 +16,8 @@ function HDR=bv2biosig_events(EVENT)
 % 
 % see also: doc/eventcodes.txt
 
-%	Copyright(C)2006,2007,2017 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2006,2007,2017,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 % This library is free software; you can redistribute it and/or
 % modify it under the terms of the GNU Library General Public
@@ -191,7 +191,7 @@ for k1 = 1:length(HDR.EVENT.POS)
         	HDR.EVENT.TYP(k1) = bitxor(hex2dec('8000'),HDR.EVENT.TYP(k1-1)); 
 
         elseif ~isempty(tmp)
-        	[n,v,s] = str2double(tmp(2:end));
+		[n,v,s] = biosig_str2double(tmp(2:end));
 		if (length(n)==1) && (~v)
         		HDR.EVENT.TYP(k1) = n; 
        		end; 

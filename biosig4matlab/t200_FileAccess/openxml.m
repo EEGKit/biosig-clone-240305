@@ -18,9 +18,8 @@ function [HDR]=openxml(arg1,CHAN,arg4,arg5,arg6)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	Copyright 2006,2007,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2006-2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 if ischar(arg1); 
         HDR.FileName = arg1; 
@@ -78,10 +77,10 @@ end;
 
                         tmp = HDR.XML.TestDemographics.AcquisitionDate; 
                         tmp(tmp=='-') = ' '; 
-                        HDR.T0([3,2,1])=str2double(tmp);
+                        HDR.T0([3,2,1])=biosig_str2double(tmp);
                         tmp = HDR.XML.TestDemographics.AcquisitionTime; 
                         tmp(tmp==':') = ' '; 
-                        HDR.T0(4:6) = str2double(tmp);
+                        HDR.T0(4:6) = biosig_str2double(tmp);
 
                         HDR.NS = str2double(HDR.XML.Waveform.NumberofLeads);
                         HDR.SampleRate = str2double(HDR.XML.Waveform.SampleBase); 

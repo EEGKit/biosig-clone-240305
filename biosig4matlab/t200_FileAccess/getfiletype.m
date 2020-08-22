@@ -19,8 +19,8 @@ function [HDR] = getfiletype(arg1)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%  (C) 2004,2005,2007,2008,2019 by Alois Schloegl <alois.schloegl@gmail.com>
-%  This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
+% Copyright (C) 2004-2008,2019,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 
 if ischar(arg1),
@@ -552,9 +552,9 @@ else
                 	HDR.TYPE = 'unipro'; 
                 	tmp=repmat(',',1,19);
                 	tmp([1:4,6:7,9:10,12:13,15:16,18:19])=s([153:160,162:167]);
-			HDR.T0 = str2double(char(tmp));                	
+			HDR.T0 = biosig_str2double(char(tmp));
                 	tmp([1:4,6:7,9:10])=s([128:135]);
-			HDR.Patient.Birthday = str2double(char(tmp));
+			HDR.Patient.Birthday = biosig_str2double(char(tmp));
 			frewind(fid); 
 			HDR.s8=fread(fid,[1,inf],'uint8'); 
 			frewind(fid); 
@@ -658,7 +658,7 @@ else
                 elseif strncmp(ss,'GF1PATCH110',12); 
                         HDR.TYPE='GF1';
                 elseif strcmp(ss([1:6,12]),'(DWF V)'); 
-                        HDR.VERSION = str2double(ss(7:11));
+                        HDR.VERSION = biosig_str2double(ss(7:11));
                         if ~isnan(HDR.VERSION),
                                 HDR.TYPE='IMAGE:DWF';           % Design Web Format  from Autodesk
                         end;
@@ -830,10 +830,10 @@ else
 				[t,ss] = strtok(ss,[10,13]);
 				lt = lt + length(t) + 1; 
 			end;	
-			HDR.IMAGE.Size = str2double(t);
+			HDR.IMAGE.Size = biosig_str2double(t);
 			[t,ss] = strtok(ss,[10,13]);
 			lt = lt + length(t) + 1;
-			HDR.DigMax  = str2double(t);
+			HDR.DigMax  = biosig_str2double(t);
 			HDR.HeadLen = lt;
 
                 elseif strcmpi(HDR.FILE.Ext,'XBM') && ~isempty(strfind(ss,'bits[]')) && ~isempty(strfind(ss,'width')) && ~isempty(strfind(ss,'height'))
@@ -1054,7 +1054,7 @@ else
 			[t,r]=strtok(r,char([10,13]));
 			k = 1; 
 			while sum(t==',')>3,
-				[n,v,sa] = str2double(t,', ');
+				[n,v,sa] = biosig_str2double(t,', ');
 				Desc{k,1} = sa{2};
 				HDR.EVENT.POS(k,1) = n(3);
 				HDR.EVENT.DUR(k,1) = n(4);
@@ -1141,17 +1141,17 @@ else
 					HDR.TYPE = 'AndrewsHerzberg1985';
 				elseif (length(ix) > 3)
 					line = HDR.s(1:ix(1)-1);
-					[n,v,sa] = str2double(line);
+					[n,v,sa] = biosig_str2double(line);
 					HDR.SampleRate = 1000/n(1);
 					%HDR.EVENT.POS = n([2,4])/1000*HDR.SampleRate;
 					%HDR.EVENT.DUR = (n([3,5])-n([2,4]))/1000*HDR.SampleRate;
 					%HDR.EVENT.TYP = [hex2dec('502');hex2dec('503');hex2dec('506')];
 					line = HDR.s(ix(1)+1:ix(2)-1);
-					[n,v,sa] = str2double(line);
+					[n,v,sa] = biosig_str2double(line);
 					HDR.Patient.Sex = strncmpi(sa{3},'M',1) + strncmpi(sa{3},'F',1)*2;
 					HDR.Patient.Age = n(4); 
 					line = HDR.s(ix(2)+1:ix(3)-1);
-					[n,v,sa] = str2double(line);
+					[n,v,sa] = biosig_str2double(line);
 					line = HDR.s(ix(3)+1:ix(4)-1);
 
 					HDR.HeadLen = ix(4);

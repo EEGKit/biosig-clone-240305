@@ -13,12 +13,9 @@ function [HDR]=openxlt(fn)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	(C) 2004,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
-%
+% Copyright (C) 2004,2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
 %       Thanks to Andrey Vankov for his support. 
-
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 fprintf(2,'Warning: OPENXLT is in an experimental state and is most likely not useful to you.\n'); 
 fprintf(2,'\t Do not use it unless you are sure know what you do. At least you are warned!\n');
@@ -53,7 +50,7 @@ if fid>0,
                 if strncmp(tline,'Stamp',5),
                         [t,r] = strtok(tline,' ');
                         [t,r] = strtok(r,' ');
-                        [HDR.XLT.timebase2,c] = str2double(t);
+                        [HDR.XLT.timebase2,c] = biosig_str2double(t);
                         ix = strfind(tline,'patient');
                 else
                         

@@ -18,9 +18,8 @@ function [HDR,data] = iopen(HDR,PERMISSION,CHAN,MODE,arg5,arg6)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	(C) 2005,2007,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2005,2007,2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 data = [];
 
@@ -92,13 +91,13 @@ elseif strcmp(HDR.TYPE,'IMAGE:FITS'),
 				elseif all(s(11:len)==' '), 	% empty
 					HDR.FITS{KK} = setfield(HDR.FITS{KK},key,[]);
 				elseif all(s(11:len)=='('), 	% complex
-					[val,status] = str2double(s(11:len),[],'(,)');
+					[val,status] = biosig_str2double(s(11:len),[],'(,)');
 					HDR.FITS{KK} = setfield(HDR.FITS{KK},key,val(1)+i*val(2));
 				else 				% numerical
-					[val,status] = str2double(s(11:len));
+					[val,status] = biosig_str2double(s(11:len));
 					if any(status),
 						s(s=='D')='E';
-						[val,status] = str2double(s(11:len));
+						[val,status] = biosig_str2double(s(11:len));
 					end;
 					if any(status),
 						fprintf(2,'Warning SOPEN (FITS): Expected numerical value - found string \n\t%s: %s\n',key,s(11:len));
@@ -292,7 +291,7 @@ elseif strcmp(HDR.TYPE,'IMAGE:EXIF') | strncmp(HDR.TYPE,'IMAGE:JPG',9),
                                                 HDR.EXIF.SoftwareVersion = char(tmp');
                                         elseif tagid(k)==306
                                                 HDR.EXIF.Date = char(tmp');
-						HDR.T0 = str2double(HDR.EXIF.Date,': ');
+						HDR.T0 = biosig_str2double(HDR.EXIF.Date,': ');
                                         elseif tagid(k)==531
                                                 HDR.EXIF.YCbCrPositioning = tmp;
                                         elseif tagid(k)==33432
@@ -468,19 +467,19 @@ elseif strcmp(HDR.TYPE,'IMAGE:PBMA') | strcmp(HDR.TYPE,'IMAGE:PGMA')  | strcmp(H
 		elseif line(1)=='#',
 		elseif isnumeric(line),
 		elseif K==1,
-			[tmp, status] = str2double(line);
+			[tmp, status] = biosig_str2double(line);
 			K = K + 1;
 			HDR.IMAGE.Size = tmp;
 			if status
 				error('IOPEN (PPMA)');
 			end;
 		elseif K==N,
-			[tmp, status] = str2double(line);
+			[tmp, status] = biosig_str2double(line);
 			K = K + 1;
 			HDR.DigMax = tmp; 
 		else
 			line = line(1:min([find(line=='#'),length(line)]));	% remove comment
-			[tmp,status] = str2double(char(line)); %,[],[9,10,13,32])
+			[tmp,status] = biosig_str2double(char(line)); %,[],[9,10,13,32])
 			if ~any(status),
 				s = [s; tmp'];
 			end;	
@@ -680,7 +679,7 @@ elseif strcmp(HDR.TYPE,'IMAGE:TIFF'),
                                 HDR.Software = VALUE;
                         elseif TAG==306,
                                 HDR.TIFF.DateTime = VALUE;
-                                [tmp,status] = str2double(VALUE,': ');
+                                [tmp,status] = biosig_str2double(VALUE,': ');
                                 if ~any(status)
                                         HDR.T0 = tmp;
                                 end;	
@@ -1046,7 +1045,7 @@ elseif strcmp(HDR.TYPE,'IMAGE:XPM'),
 
                 line = fgetl(HDR.FILE.FID);
 		[s,t]=strtok(line,char(34));
-		[tmp,status] = str2double(s);
+		[tmp,status] = biosig_str2double(s);
 
 		code1 = repmat(NaN,tmp(3),1);
 		code2 = repmat(0,256,1);

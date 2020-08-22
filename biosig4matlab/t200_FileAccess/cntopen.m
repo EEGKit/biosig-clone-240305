@@ -5,8 +5,8 @@ function [CNT,h,e]=cntopen(arg1,arg2,arg3,arg4,arg5,arg6)
 %
 % see also: SLOAD, SOPEN, SREAD, SCLOSE, SEOF, STELL, SSEEK.
 
-%  Copyright (c) 1997-2006,2007,2008,2009,2012 by Alois Schloegl <alois.schloegl@gmail.com>
-%  This is part of the BIOSIG-toolbox http://biosig.sf.net/
+%  Copyright (c) 1997-2009,2012,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 % BioSig is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License

@@ -28,9 +28,8 @@ function [out,scale] = physicalunits(arg1)
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
 
-%	$Id$
-%	Copyright (C) 2005,2008 by Alois Schloegl <alois.schloegl@gmail.com>
-%    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (C) 2005,2008,2020 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This is part of the BIOSIG-toolbox https://biosig.sourceforge.io/
 
 
 
@@ -51,9 +50,9 @@ if ~BIOSIG_GLOBAL.ISLOADED;
         while ~feof(fid), 
 		if ~strncmp(line,'#',1),
 			N1 = N1 + 1;
-               		[n,v,s] = str2double(line);
-               		n = n(~v);
-               		DecimalFactor.Code(N1,1) = n(2);
+			[n,v,s] = biosig_str2double(line);
+			n = n(~v);
+			DecimalFactor.Code(N1,1) = n(2);
                		DecimalFactor.Cal(N1,1) = n(1);
                		s = s(~~v);
                		if any(v)
@@ -86,7 +85,7 @@ if ~BIOSIG_GLOBAL.ISLOADED;
 				t2 = line(ix(1)+1:ix(2)-1);
 				t3 = line(ix(2)+1:ix(3)-1);
 				t4 = line(ix(3)+1:end);
-				Code = str2double(t1);
+				Code = biosig_str2double(t1);
 				if ~isempty(Code)
 					N1 = N1 + 1;
 					UnitsOfMeasurement.Code(N1,1)   = Code;
@@ -120,7 +119,7 @@ if ~BIOSIG_GLOBAL.ISLOADED;
 				end; 	
 			end;
 			K2 = length(ix)-1; 
-			tab{K1,6} = str2double(line(ix(K2)+1:ix(K2+1)-1));
+			tab{K1,6} = biosig_str2double(line(ix(K2)+1:ix(K2+1)-1));
 			 
 			[line,r] = strtok(r,[10,13]);
 			K1 = K1+1; 
