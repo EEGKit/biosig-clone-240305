@@ -10,7 +10,6 @@ clean:
 	rm *.o *.so *.gz $(BIOSIG4R_PKG)
 
 $(BIOSIG4R_PKG):
-	sed -i 's#^Version.*$$#Version: @PACKAGE_VERSION@#g' DESCRIPTION
 	R CMD build .
 	R CMD check --as-cran $@
 

@@ -35,7 +35,8 @@ config.h
 config.log
 config.status
 configure
-# Make output
+biosig4c++/python/setup.py
+biosig4c++/R/DESCRIPTION
 Makefile
 biosig4c++/CMakeCache.txt
 biosig4c++/CMakeFiles

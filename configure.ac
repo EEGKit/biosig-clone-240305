@@ -108,7 +108,6 @@ AC_CHECK_FUNCS([alarm atexit bzero dup2 floor getcwd getdelim gethostbyname geth
 
 AC_CONFIG_FILES([Makefile
                  biosig4c++/Makefile
-                 biosig4c++/R/Makefile
                  biosig4c++/examples/Makefile
                  biosig4c++/igor/Makefile
                  biosig4c++/java/Makefile
@@ -118,6 +117,9 @@ AC_CONFIG_FILES([Makefile
                  biosig4c++/perl/Makefile
                  biosig4c++/php/Makefile
                  biosig4c++/python/Makefile
+                 biosig4c++/python/setup.py
+                 biosig4c++/R/Makefile
+                 biosig4c++/R/DESCRIPTION
                  biosig4c++/ruby/Makefile
                  biosig4c++/t240/Makefile
                  biosig4c++/t241/Makefile
