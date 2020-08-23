@@ -1012,7 +1012,9 @@ install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
 	install save2gdf${BINEXT}	$(DESTDIR)$(bindir)
-	install heka2itx rec2bin bin2rec	$(DESTDIR)$(bindir)
+	install heka2itx		$(DESTDIR)$(bindir)
+	install rec2bin			$(DESTDIR)$(bindir)
+	install bin2rec			$(DESTDIR)$(bindir)
 	install save2aecg 		$(DESTDIR)$(bindir)
 	install save2scp  		$(DESTDIR)$(bindir)
 	install physicalunits${BINEXT}	$(DESTDIR)$(bindir)
