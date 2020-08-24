@@ -12,7 +12,7 @@ java: lib
 	make -C biosig4c++/java
 
 python: lib
-	make -C biosig4c++/python build
+	make -C biosig4c++/python
 
 lib:
 	make -C biosig4c++ lib
@@ -36,27 +36,29 @@ install ::
 	make -C biosig4c++ install
 	install -d $(DESTDIR)@prefix@/share/biosig/matlab
 	cp -r biosig4matlab/* $(DESTDIR)@prefix@/share/biosig/matlab/
-	rm -rf $(DESTDIR)@prefix@/share/biosig/matlab/maybe-missing
+	-rm -rf $(DESTDIR)@prefix@/share/biosig/matlab/maybe-missing
 
 uninstall ::
 	make -C biosig4c++ uninstall
-	rm -rf $(DESTDIR)@prefix@/share/biosig
+	-rm -rf $(DESTDIR)@prefix@/share/biosig
 
 clean ::
 	make -C biosig4c++/mma clean
 	make -C biosig4c++ clean
 
-distclean ::
-	make -C biosig4c++ distclean
-
+distclean : clean
+        # also configure.ac for list of files
+	rm Makefile biosig4c++/Makefile biosig4c++/*/Makefile \
+		biosig4c++/python/setup.py \
+		biosig4c++/R/DESCRIPTION
 
 ifneq (:,@JAVA@)
 ifneq (:,@JAVAC@)
 first :: lib
 	-make -C biosig4c++/java
+endif
 clean ::
 	-make -C biosig4c++/java clean
-endif
 test ::
 	-make -C biosig4c++/java test
 endif
@@ -82,8 +84,8 @@ endif
 
 ifneq (:,@OCTAVE@)
 ifneq (:,@MKOCTFILE@)
-BIOSIG_MEX_DIR = $(shell octave-config -p LOCALOCTFILEDIR)/biosig
-BIOSIG_DIR     = $(shell octave-config -p LOCALFCNFILEDIR)/biosig
+BIOSIG_MEX_DIR = $(DESTDIR)$(shell octave-config -p LOCALOCTFILEDIR)/biosig
+BIOSIG_DIR     = $(DESTDIR)$(shell octave-config -p LOCALFCNFILEDIR)/biosig
 first ::
 	make octave
 	make -C biosig4c++ mexbiosig
@@ -91,50 +93,46 @@ install ::
 	# mexbiosig
 	#-@OCTAVE@ --no-gui --eval "pkg install -global biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz"
 	# *.mex
-	mkdir -p $(DESTDIR)$(BIOSIG_MEX_DIR)
-	install biosig4c++/mex/*.mex $(DESTDIR)$(BIOSIG_MEX_DIR)
+	install -d $(BIOSIG_MEX_DIR)
+	install biosig4c++/mex/*.mex $(BIOSIG_MEX_DIR)
 	# biosig for octave and matlab
-	mkdir -p  $(DESTDIR)$(BIOSIG_DIR)
-	cp -r biosig4matlab/*  $(DESTDIR)$(BIOSIG_DIR)
-	rm -rf $(DESTDIR)$(BIOSIG_DIR)/maybe-missing
+	install -d $(BIOSIG_DIR)
+	cp -r biosig4matlab/*  $(BIOSIG_DIR)
+	-rm -rf $(BIOSIG_DIR)/maybe-missing
+
 uninstall ::
 	# mexbiosig
 	#-@OCTAVE@ --no-gui --eval "pkg uninstall -global mexbiosig"
 	# *.mex
-	rm -rf $(DESTDIR)$(BIOSIG_MEX_DIR)
+	-rm -rf $(BIOSIG_MEX_DIR)
 	# biosig for octave and matlab
-	rm -rf $(BIOSIG_DIR)
+	-rm -rf $(BIOSIG_DIR)
 endif
 endif
 
 ifneq (:,@PYTHON@)
-first ::
-	-PYTHON=@PYTHON@ make -C biosig4c++/python release
-install ::
-	-PYTHON=@PYTHON@ make -C biosig4c++/python install
-	-@PYTHON@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+first biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz ::
+	-PYTHON=@PYTHON@ make -C biosig4c++/python dist/Biosig-@PACKAGE_VERSION@.tar.gz
+install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+	-@PYTHON@ -m pip install $<
 uninstall ::
-	-@PYTHON@ -m pip uninstall Biosig
+	-@PYTHON@ -m pip uninstall -y Biosig
 clean ::
 	make -C biosig4c++/python clean
 endif
 
 ifneq (:,@PYTHON2@)
-first ::
-	-PYTHON=@PYTHON2@ make -C biosig4c++/python build
-install ::
-	-@PYTHON2@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+	-@PYTHON2@ -m pip install $<
 uninstall ::
-	-@PYTHON2@ -m pip uninstall Biosig
+	-@PYTHON2@ -m pip uninstall -y Biosig
 endif
 
 ifneq (:,@PYTHON3@)
-first ::
-	-PYTHON=@PYTHON3@ make -C biosig4c++/python build
-install ::
-	-@PYTHON3@ -m pip install biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
+	-@PYTHON3@ -m pip install $<
 uninstall ::
-	-@PYTHON3@ -m pip uninstall Biosig
+	-@PYTHON3@ -m pip uninstall -y Biosig
 endif
 
 ifneq (:,@R@)
@@ -142,7 +140,31 @@ first ::
 	-make -C biosig4c++/R build
 install ::
 	-make -C biosig4c++/R install
+clean ::
+	-make -C biosig4c++/R clean
 endif
 
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
+
+#---- automatic remaking ---------------------------------------------------#
+#   https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/Automatic-Remaking.html#Automatic-Remaking
+#---------------------------------------------------------------------------#
+$(srcdir)/configure: configure.ac aclocal.m4
+	autoconf
+
+# autoheader might not change config.h.in, so touch a stamp file.
+$(srcdir)/config.h.in: stamp-h.in
+$(srcdir)/stamp-h.in: configure.ac aclocal.m4
+	autoheader
+	echo timestamp > '$(srcdir)/stamp-h.in'
+
+config.h: stamp-h
+stamp-h: config.h.in config.status
+	./config.status
+
+Makefile: Makefile.in config.status
+	./config.status
+
+config.status: configure
+	./config.status --recheck
 

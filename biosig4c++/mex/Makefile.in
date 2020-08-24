@@ -221,7 +221,3 @@ endif
 clean:
 	-$(DELETE) *.o *.obj *.o64 core octave-core *.oct *.mex* mexSOPEN.cpp
 
-distclean:
-	-$(DELETE) *.o *.obj *.o64 core octave-core *.oct *.mex* Makefile  mexSOPEN.cpp
-
-

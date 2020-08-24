@@ -85,8 +85,4 @@ XOPas.xop:XOPas.o XOPSupport.o libIgor.a  XOPasres.o
 
 clean:
 	rm *.o *.xop *.exe
-distclean:
-	rm *.o *.xop *~
-	
-	
-	
+

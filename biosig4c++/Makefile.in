@@ -22,7 +22,6 @@
 ## make mexw32     - makes mexSLOAD.mexw32, mexSOPEN.mexw32 (requires that mingw32, gnumex libraries from Matlab/Win32)
 ## make mexw64     - makes mexSLOAD.mexw64, mexSOPEN.mexw64 (requires that mce-w32, gnumex libraries from Matlab/Win64)
 ## make mex        - mex4o, mex4m, mexw32, mexw64 combined
-## make biosig4python - makes python interface (requires Python)
 ## make biosig4java - makes Java interface (experimental)
 ## make biosig4php - makes PHP interface (experimental)
 ## make biosig4perl - makes perl interface (experimental)
@@ -324,11 +323,6 @@ endif
 
 OCT           := mkoctfile$(OCTAVE_VERSION)
 ##########################################################
-
-##########################################################
-## set variables for Python
-PYTHON         ?= python3
-PYTHONVER      := $(shell $(PYTHON) -c "import sys; print(sys.version[:3])")
 
 ##########################################################
 ## set variables for MinGW Crosscompiler: compile on linux binaries for windows
@@ -646,16 +640,6 @@ win64/sigviewer.exe: win64/libbiosig.a win64/libbiosig.dll
 #	other language bindings (on Linux)
 #############################################################
 
-## biosig4python based on module extensions
-biosig4python : python
-
-python: libbiosig
-	make -C python build
-
-install_python: python
-	make -C python install
-
-
 java: libbiosig
 	$(MAKE) -C java
 perl: libbiosig
@@ -916,35 +900,7 @@ bin/flowmon: flowmon.o gdf.o gdftime.o physicalunits.o
 #	INSTALL and DE-INSTALL
 #############################################################
 
-.PHONY: clean distclean install install_libbiosig remove install_sigviewer asc bin testscp testhl7 testbin test test6 zip
-
-distclean: clean
-	-$(DELETE) -r autom4te.cache
-	-$(DELETE) aclocal.m4 config.h config.log config.status depcomp missing stamp-h1
-	-$(DELETE) Makefile.am doc/Makefile.am python/Makefile.am
-	-$(DELETE) ltmain.sh
-	-$(DELETE) *.lib
-	-$(DELETE) *.so *.dylib
-	-$(DELETE) *.so.*
-	-$(DELETE) libbiosig.pc
-	-$(DELETE) t5.scp t6.scp save2gdf gztest test_scp_decode biosig_server biosig_client
-	-$(DELETE) t?.[bge]df* t?.hl7* t?.scp* t?.cfw* t?.gd1* t?.*.gz *.fil $(TEMP_DIR)t1.* $(DATA_DIR)t1.*
-	-$(DELETE) python/swig_wrap.* python/biosig.py* python/_biosig.so python/biosig2.py* python/_biosig2.so
-	-$(DELETE) python/*_wrap.*
-	-$(DELETE) QMakefile
-	-$(DELETE) igor/libIgor.a
-	-$(DELETE) win32/*.a win32/*.lib win32/libbiosig.* win32/*.obj win32/*.exe
-	-$(DELETE) win64/*.a win64/*.lib win64/libbiosig.* win64/*.obj win64/*.exe
-	-$(DELETE) -rf win32/zlib
-	-$(MAKE) -C java clean
-	-$(MAKE) -C mex clean
-	-$(MAKE) -C mma clean
-	-$(MAKE) -C perl clean
-	-$(MAKE) -C php clean
-	-$(MAKE) -C python clean
-	-$(MAKE) -C R clean
-	-$(MAKE) -C ruby clean
-	-$(MAKE) -C tcl clean
+.PHONY: clean install install_libbiosig remove install_sigviewer asc bin testscp testhl7 testbin test test6 zip
 
 clean:
 	-$(DELETE) *~
@@ -959,8 +915,6 @@ clean:
 	-$(DELETE) *.oct
 	-$(DELETE) libbiosig.pc
 	-$(DELETE) $(TEMP_DIR)t1.*
-	-$(DELETE) python/biosig.py* _biosig.so python/biosig2.py* _biosig2.so
-	-$(DELETE) python/swig_wrap.* python/biosig2_wrap.*
 	-$(DELETE) win32/*.exe win32/*.o* win32/*.lib win32/*.a
 	-$(DELETE) win64/*.exe win64/*.o* win64/*.lib win64/*.a
 	-$(DELETE) t240/*.o*

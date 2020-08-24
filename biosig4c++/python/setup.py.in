@@ -1,3 +1,4 @@
+# encoding: utf-8
 #
 # Copyright (C) 2016-2020 Alois Schlögl <alois.schloegl@gmail.com>
 #
@@ -46,7 +47,7 @@ def read(fname):
 setup (name = 'Biosig',
         version = '@PACKAGE_VERSION@',
         description = 'BioSig - tools for biomedical signal processing',
-        author = 'Alois Schloegl',
+        author = 'Alois Schlögl',
         author_email = 'alois.schloegl@gmail.com',
         license = 'GPLv3+',
         url = 'https://biosig.sourceforge.io',

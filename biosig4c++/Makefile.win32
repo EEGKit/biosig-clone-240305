@@ -450,33 +450,6 @@ save2aecg: save2gdf
 #	INSTALL and DE-INSTALL
 #############################################################
 
-distclean:
-	-$(DELETE) *.a
-	-$(DELETE) eventcodes.i
-	-$(DELETE) *.o
-	-$(DELETE) *.lib
-	-$(DELETE) *.so
-	-$(DELETE) *.so.*
-	-$(DELETE) *.mex*
-	-$(DELETE) *.oct
-	-$(DELETE) t5.scp t6.scp save2gdf gztest test_scp_decode biosig_server biosig_client
-	-$(DELETE) t?.[bge]df* t?.hl7* t?.scp* t?.cfw* t?.gd1* t?.*.gz *.fil $(TEMP_DIR)/t1.*
-	-$(DELETE) python/swig_wrap.* python/biosig.py* python/_biosig.so
-	-$(DELETE) QMakefile
-	-$(DELETE) win32/*.a
-	-$(DELETE) win32/*.lib
-	-$(DELETE) win32/libbiosig.*
-	-$(DELETE) win32/*.obj
-	-$(DELETE) win32/*.exe
-	-$(DELETE) -rf win32/zlib
-	-make -C java clean
-	-make -C matlab clean
-	-make -C mma clean
-	-make -C php clean
-	-make -C perl clean
-	-make -C ruby clean
-	-make -C tcl clean
-
 clean:
 	-$(DELETE) *~
 	-$(DELETE) *.a

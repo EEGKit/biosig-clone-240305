@@ -10,10 +10,15 @@ PYTHON ?= python3
 PYVER  := $(shell $(PYTHON) -c "import sys; print(sys.version[:3])")
 
 
-build: setup.py biosigmodule.c
-	$(PYTHON) setup.py build
+release build target: dist/Biosig-@PACKAGE_VERSION@.tar.gz
 
-install: build
+# https://packaging.python.org/tutorials/packaging-projects/
+dist/Biosig-@PACKAGE_VERSION@.tar.gz: setup.py biosigmodule.c
+	$(PYTHON) setup.py sdist
+	-python2 setup.py bdist_egg
+	-python3 setup.py bdist_egg
+
+install:
 	$(PYTHON) setup.py install
 
 test:
@@ -28,16 +33,6 @@ clean:
 	-rm -rf build/*
 	-rm -rf dist/*
 	-rm *.so
-distclean:
-	-rm -rf build
-	-rm -rf dist
-	-rm *.so
-
-# https://packaging.python.org/tutorials/packaging-projects/
-release: setup.py biosigmodule.c
-	$(PYTHON) setup.py sdist
-	-python2 setup.py bdist_egg
-	-python3 setup.py bdist_egg
 
 check: release
 	twine check dist/*
