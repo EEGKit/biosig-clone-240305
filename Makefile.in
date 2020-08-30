@@ -77,9 +77,9 @@ MATLAB_MEX := $(shell dirname @MATLAB@)/mex
 first ::
 	make -C biosig4c++/mex mex4m
 install ::
-	make -C biosig4c++ install_mex
+	make -C biosig4c++/mex install
 uninstall ::
-	make -C biosig4c++ uninstall_mex
+	make -C biosig4c++/mex uninstall
 endif
 
 ifneq (:,@OCTAVE@)

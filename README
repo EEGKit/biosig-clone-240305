@@ -16,15 +16,16 @@ for Octave, Matlab, Mathematica, R, and Java.
 
    apt-get install \
 	gawk \
-	libb64-dev tinyxml-dev \
-	liboctave-dev \
+	libb64-dev tinyxml-dev libdcmtk-dev \
+	liboctave-dev octave \
 	python-numpy python3-numpy \
+	python-setuptools python3-setuptools \
 	libpython-dev libpython3-dev \
 	R openjdk-11-jdk
 
 --- Recommended packages at runtime ---
    apt-get install \
-	libb64 tinyxml \
+	libb64 tinyxml libdcmtk14 \
 	python-numpy python3-numpy \
 	R openjdk-11-jre \
 	octave octave-tsa octave-nan

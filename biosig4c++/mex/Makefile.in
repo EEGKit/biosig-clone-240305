@@ -129,14 +129,13 @@ COPY          = cp -f
 DATA_DIR      = data/
 DATA_DIR_CFS  = $(HOME)/L/data/test/CFS/
 TEMP_DIR      = test/
-SED           = sed
 VERBOSE	     := -V0
 
 ##########################################################
 ## set Matlab and Octave variables
 MATLABDIR ?= $(shell dirname @MATLAB@)
 
-ifeq (,$(MATLABDIR))
+ifeq (.,$(MATLABDIR))
   #$(warning MATLABDIR is not defined)
 else
   MEX         = $(MATLABDIR)/mex
@@ -154,9 +153,24 @@ endif
 OCT           := mkoctfile$(OCTAVE_VERSION)
 ##########################################################
 
-
 first: mex4o 
 
+### Install mexbiosig for Matlab and Octave
+install:
+	mkdir -p $(DESTDIR)@libexecdir@/biosig/matlab
+	install mex/*.mex*   $(DESTDIR)@libexecdir@/biosig/matlab
+	@echo "  mexBiosig for Matlab is installed in $(libexecdir)/biosig/matlab";
+	@echo "  Usage: Start Matlab and addpath ";
+	@echo " addpath('@libexecdir@/biosig/matlab')";
+	@echo " mexSLOAD";
+
+uninstall:
+	# from older source installations
+	-${RM} $(DESTDIR)@datadir@/biosig/mex/*
+	-cd $(DESTDIR)@datadir@ && rmdir -p biosig
+	# from later than 2.0.6 installations
+	-${RM} $(DESTDIR)@libexecdir@/biosig/matlab/{mexSLOAD,mexSOPEN,mexSSAVE,physicalunits}.mex*
+	-cd $(DESTDIR)@libexecdir@ && rmdir -p biosig/matlab
 
 #############################################################
 #	Compilation: Implicit, default rules
@@ -220,4 +234,3 @@ endif
 
 clean:
 	-$(DELETE) *.o *.obj *.o64 core octave-core *.oct *.mex* mexSOPEN.cpp
-

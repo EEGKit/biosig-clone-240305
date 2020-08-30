@@ -102,8 +102,6 @@ CFLAGS       += -fvisibility=hidden
 
 prefix        = @prefix@
 exec_prefix   = @exec_prefix@
-datarootdir   = @datarootdir@
-datadir       = @datadir@
 libdir        = @libdir@
 includedir    = @includedir@
 bindir        = @bindir@
@@ -997,18 +995,11 @@ uninstall_mexbiosig:
 
 
 ### Install mexbiosig for Matlab and Octave
-install_mex: mex4m mex4o
-	mkdir -p $(DESTDIR)$(datadir)/biosig/mex
-	install mex/mex*.mex*   $(DESTDIR)$(datadir)/biosig/mex
-	@echo "  mexBiosig for Matlab is installed in $(datadir)/biosig/mex";
-	@echo "  Usage: Start Matlab and addpath ";
-	@echo "\taddpath(\"$(datadir)/biosig/mex)";
-	@echo "\tmexSLOAD";
+install_mex:
+	make -C mex install
 
 uninstall_mex:
-	-${RM} $(DESTDIR)$(datadir)/biosig/mex/*
-	-cd $(DESTDIR)$(datadir) && rmdir -p biosig/mex
-
+	make -C mex uninstall
 
 uninstall remove: uninstall_mexbiosig uninstall_tools
 	-$(DELETE) $(DESTDIR)$(bindir)/ttl2trig
