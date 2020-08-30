@@ -13,12 +13,7 @@
 CROSS   ?= /home/schloegl/src/mxe.github.schloegl/usr/bin/i686-w64-mingw32.static
 CROSS64 ?= /home/schloegl/src/mxe.github.schloegl/usr/bin/x86_64-w64-mingw32.static
 
-prefix        = @prefix@
-exec_prefix   = @exec_prefix@
-libdir        = @libdir@
-includedir    = @includedir@
-bindir        = @bindir@
-mandir        = @mandir@
+exec_prefix ?= @prefix@
 
 ###########################################
 ## set Mathematica variables
@@ -98,8 +93,8 @@ ${SYS}/%.exe: %.o %tm.o
 
 ### Install Biosig for Mathematica
 install : biosig.exe
-	mkdir -p $(DESTDIR)@libexecdir@/biosig/mathematica
-	install biosig.exe	$(DESTDIR)@libexecdir@/biosig/mathematica/
+	mkdir -p $(DESTDIR)$(exec_prefix)/libexec/biosig/mathematica
+	install biosig.exe	$(DESTDIR)$(exec_prefix)/libexec/biosig/mathematica/
 	@echo "  Biosig for Mathematica is installed in $(datadir)/biosig/mathematica/biosig.exe";
 	@echo "  Usage: Start Mathematica and run";
 	@echo "\tlink=Install[\"$(datadir)/biosig/mathematica/biosig.exe\"];";
@@ -108,8 +103,8 @@ install : biosig.exe
 uninstall:
 	${RM} $(DESTDIR)$(datadir)/biosig/mathematica/{sload,biosig}.exe
 	-cd $(DESTDIR)$(datadir) && rmdir -p biosig/mathematica
-	${RM} $(DESTDIR)@libexecdir@/biosig/mathematica/biosig.exe
-	-cd $(DESTDIR)@libexecdir@ && rmdir -p biosig/mathematica
+	${RM} $(DESTDIR)$(exec_prefix)/libexec/biosig/mathematica/biosig.exe
+	-cd $(DESTDIR)$(exec_prefix)/libexec && rmdir -p biosig/mathematica
 
 ###########################################
 #   Win32 - cross-compilation

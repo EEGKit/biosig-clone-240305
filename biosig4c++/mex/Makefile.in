@@ -116,9 +116,7 @@ else
 	SONAME_POSTFIX = .$(DLEXT).${MAJOR_VERSION}.${MINOR_VERSION}
 endif
 
-ifeq (,$(prefix))
-	prefix  := /usr/local
-endif
+exec_prefix ?= $(prefix)
 
 DEFINES_ALL   = #-D=NDEBUG
 
@@ -157,11 +155,11 @@ first: mex4o
 
 ### Install mexbiosig for Matlab and Octave
 install:
-	mkdir -p $(DESTDIR)@libexecdir@/biosig/matlab
-	install mex/*.mex*   $(DESTDIR)@libexecdir@/biosig/matlab
-	@echo "  mexBiosig for Matlab is installed in $(libexecdir)/biosig/matlab";
+	mkdir -p $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab
+	install mex/*.mex*   $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab
+	@echo "  mexBiosig for Matlab is installed in $(exec_prefix)/libexec/biosig/matlab";
 	@echo "  Usage: Start Matlab and addpath ";
-	@echo " addpath('@libexecdir@/biosig/matlab')";
+	@echo " addpath('$(exec_prefix)/libexec/biosig/matlab')";
 	@echo " mexSLOAD";
 
 uninstall:
@@ -169,8 +167,8 @@ uninstall:
 	-${RM} $(DESTDIR)@datadir@/biosig/mex/*
 	-cd $(DESTDIR)@datadir@ && rmdir -p biosig
 	# from later than 2.0.6 installations
-	-${RM} $(DESTDIR)@libexecdir@/biosig/matlab/{mexSLOAD,mexSOPEN,mexSSAVE,physicalunits}.mex*
-	-cd $(DESTDIR)@libexecdir@ && rmdir -p biosig/matlab
+	-${RM} $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab/{mexSLOAD,mexSOPEN,mexSSAVE,physicalunits}.mex*
+	-cd $(DESTDIR)$(exec_prefix)/libexec && rmdir -p biosig/matlab
 
 #############################################################
 #	Compilation: Implicit, default rules
