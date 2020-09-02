@@ -116,6 +116,7 @@ else
 	SONAME_POSTFIX = .$(DLEXT).${MAJOR_VERSION}.${MINOR_VERSION}
 endif
 
+prefix      ?= /usr/local
 exec_prefix ?= $(prefix)
 
 DEFINES_ALL   = #-D=NDEBUG
@@ -156,7 +157,7 @@ first: mex4o
 ### Install mexbiosig for Matlab and Octave
 install:
 	mkdir -p $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab
-	install mex/*.mex*   $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab
+	install *.mex*   $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab
 	@echo "  mexBiosig for Matlab is installed in $(exec_prefix)/libexec/biosig/matlab";
 	@echo "  Usage: Start Matlab and addpath ";
 	@echo " addpath('$(exec_prefix)/libexec/biosig/matlab')";
