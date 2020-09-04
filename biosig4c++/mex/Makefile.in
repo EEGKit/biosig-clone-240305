@@ -116,8 +116,7 @@ else
 	SONAME_POSTFIX = .$(DLEXT).${MAJOR_VERSION}.${MINOR_VERSION}
 endif
 
-prefix      ?= /usr/local
-exec_prefix ?= $(prefix)
+exec_prefix ?= @prefix@
 
 DEFINES_ALL   = #-D=NDEBUG
 
@@ -202,13 +201,8 @@ ifdef MEX_EXT
 mex: mex4o mex4m mexw32 mexw64
 mex4m: $(patsubst %.cpp, %.$(MEX_EXT), $(MEX_OBJECTS))
 
-ifneq (Darwin,$(shell uname))
 %.$(MEX_EXT): %.cpp
 	$(MEX) $(MEX_OPTION) $(DEFINES) -I.. "$<" -L.. -lbiosig -output "$@"
-else
-%.$(MEX_EXT): %.cpp
-	$(MEX) $(DEFINES) -I.. -outdir mex "$<" -L.. -lbiosig
-endif
 
 else
 mex: mex4o mexw32 mexw64
