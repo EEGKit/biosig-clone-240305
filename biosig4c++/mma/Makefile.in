@@ -95,9 +95,9 @@ ${SYS}/%.exe: %.o %tm.o
 install : biosig.exe
 	mkdir -p $(DESTDIR)$(exec_prefix)/libexec/biosig/mathematica
 	install biosig.exe	$(DESTDIR)$(exec_prefix)/libexec/biosig/mathematica/
-	@echo "  Biosig for Mathematica is installed in $(datadir)/biosig/mathematica/biosig.exe";
+	@echo "  Biosig for Mathematica is installed in $(exec_prefix)/libexec/biosig/mathematica/biosig.exe";
 	@echo "  Usage: Start Mathematica and run";
-	@echo "\tlink=Install[\"$(datadir)/biosig/mathematica/biosig.exe\"];";
+	@echo "\tlink=Install[\"$(exec_prefix)/libexec/biosig/mathematica/biosig.exe\"];";
 	@echo "\t?Sload\n\t?Uload\n";
 
 uninstall:
