@@ -396,6 +396,7 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 								ChannelName = hc->Label;
 								hc->Cal    = 0.195;
 								hc->Off    = -32768 * hc->Cal;
+								hc->PhysDimCode = 4275; // [uV]
 							}
 							else if ((k2+1)==nn) {
 								// Stimulation Data
@@ -412,8 +413,8 @@ int sopen_rhs2000_read(HDRTYPE* hdr) {
 								sprintf(hc->Label,"DC_AmpData %s",ChannelName);
 								hc->Cal    = 19.23;
 								hc->Off    = -512 * hc->Cal;
+								hc->PhysDimCode = 4274; // [mV]
 							}
-							hc->PhysDimCode = 4256; // [V]
 							break;
 						/*
 						case 2: 	// supply voltage channel
@@ -659,12 +660,13 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 						case 0: 	// amplifier channel
 							hc->Cal    = 0.195;
 							hc->Off    = -32768*hc->Cal;
-							hc->PhysDimCode = 4256; // [V]
+							hc->PhysDimCode = 4275; // [uV]
 							break;
 						case 1: 	// auxilary input channel
 							hc->SPR    = hc->SPR/4;
 							hc->Cal    = 0.0000374;
 							hc->Off    = -32768*hc->Cal;
+							hc->PhysDimCode = 4256; // [V]
 							break;
 						case 2: 	// supply voltage channel
 							hc->SPR    = channelEnabled;
