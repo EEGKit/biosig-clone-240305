@@ -601,7 +601,7 @@ char* ifgets(char *str, int n, HDRTYPE* hdr) {
 	return(fgets(str,n,hdr->FILE.FID));
 }
 
-int ifseek(HDRTYPE* hdr, long offset, int whence) {
+int ifseek(HDRTYPE* hdr, ssize_t offset, int whence) {
 #ifdef ZLIB_H
 	if (hdr->FILE.COMPRESSION) {
 	if (whence==SEEK_END)
@@ -609,10 +609,14 @@ int ifseek(HDRTYPE* hdr, long offset, int whence) {
 	return(gzseek(hdr->FILE.gzFID,offset,whence));
 	} else
 #endif
+#if defined(__MINGW64__)
+	return(_fseeki64(hdr->FILE.FID,offset,whence));
+#else
 	return(fseek(hdr->FILE.FID,offset,whence));
+#endif
 }
 
-long int iftell(HDRTYPE* hdr) {
+ssize_t iftell(HDRTYPE* hdr) {
 #ifdef ZLIB_H
 	if (hdr->FILE.COMPRESSION)
 	return(gztell(hdr->FILE.gzFID));

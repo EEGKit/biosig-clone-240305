@@ -1052,6 +1052,7 @@ typedef struct aecg {
 /*
         file access wrapper: use ZLIB (if available) or STDIO
  */
+
 HDRTYPE* 	ifopen(HDRTYPE* hdr, const char* mode );
 int 		ifclose(HDRTYPE* hdr);
 int             ifeof(HDRTYPE* hdr);
@@ -1062,8 +1063,8 @@ int             ifprintf(HDRTYPE* hdr, const char *format, va_list arg);
 int             ifputc(int c, HDRTYPE* hdr);
 int 		ifgetc(HDRTYPE* hdr);
 char*           ifgets(char *str, int n, HDRTYPE* hdr);
-int             ifseek(HDRTYPE* hdr, long offset, int whence );
-long            iftell(HDRTYPE* hdr);
+int             ifseek(HDRTYPE* hdr, ssize_t offset, int whence );
+ssize_t         iftell(HDRTYPE* hdr);
 int 		ifgetpos(HDRTYPE* hdr, size_t *pos);
 int             iferror(HDRTYPE* hdr);
 
