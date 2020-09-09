@@ -13764,7 +13764,7 @@ void srewind(HDRTYPE* hdr)
 /****************************************************************************/
 /**                     SSEEK                                              **/
 /****************************************************************************/
-int sseek(HDRTYPE* hdr, long int offset, int whence)
+int sseek(HDRTYPE* hdr, ssize_t offset, int whence)
 {
 	int64_t pos=0;
 
@@ -13789,9 +13789,9 @@ int sseek(HDRTYPE* hdr, long int offset, int whence)
 /****************************************************************************/
 /**                     STELL                                              **/
 /****************************************************************************/
-long int stell(HDRTYPE* hdr)
+ssize_t stell(HDRTYPE* hdr)
 {
-	long int pos = iftell(hdr);
+	ssize_t pos = iftell(hdr);
 
 	if (pos<0)
 		return(-1);
@@ -13806,9 +13806,8 @@ long int stell(HDRTYPE* hdr)
 /****************************************************************************/
 /**                     SCLOSE                                             **/
 /****************************************************************************/
-int sclose(HDRTYPE* hdr)
-{
-	int32_t 	pos, len;
+int sclose(HDRTYPE* hdr) {
+	ssize_t pos, len;
 
 	if (VERBOSE_LEVEL>6)
 		fprintf(stdout,"SCLOSE( %s ) MODE=%i\n",hdr->FileName, hdr->FILE.OPEN);
@@ -14016,7 +14015,7 @@ int sflush_gdf_event_table(HDRTYPE* hdr)
 	if ((hdr->TYPE!=GDF) || hdr->FILE.COMPRESSION)
 		return(-1);
 
-	long int filepos = iftell(hdr);
+	ssize_t filepos = iftell(hdr);
 	ifclose(hdr);
 	hdr = ifopen(hdr,"rb+");
 	if (!hdr->FILE.OPEN) {

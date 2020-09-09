@@ -156,14 +156,14 @@ void	srewind(HDRTYPE* hdr);
  --------------------------------------------------------------- */
 
 
-int 	sseek(HDRTYPE* hdr, long int offset, int whence);
+int 	sseek(HDRTYPE* hdr, ssize_t offset, int whence);
 /*	positions file pointer
  *
  *	Currently, this function is meaning less because sread requires always the start value
  --------------------------------------------------------------- */
 
 
-long int stell(HDRTYPE* hdr);
+ssize_t stell(HDRTYPE* hdr);
 /*	returns position of file point in segments
  --------------------------------------------------------------- */
 
