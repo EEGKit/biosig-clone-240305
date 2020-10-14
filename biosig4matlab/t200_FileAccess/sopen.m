@@ -1683,14 +1683,17 @@ end;
                 HDR.AS.bpb   = sum(ceil(HDR.AS.SPR(:).*GDFTYP_BYTE(HDR.GDFTYP(:)+1)'));	% Bytes per Block
                 HDR.FILE.POS  = 0;
 
-                if (HDR.VERSION>=1.9),	% do some header checks
-                        if datenum([1850,1,1,0,0,0])>datenum(HDR.Patient.Birthday),
-                                fprintf(HDR.FILE.stderr,'Warning SOPEN (GDF) WRITE: HDR.Patient.Birthday is not correctly defined.\n');
-                        end;
+		if (HDR.AS.bpb > 2^31),
+			fprintf(HDR.FILE.stderr,'Error SOPEN (GDF/EDF/BDF) WRITE: block size exceeds 2 GB - files are most likely not readable.\n');
+		end
+		if (HDR.VERSION>=1.9),	% do some header checks
+			if datenum([1850,1,1,0,0,0])>datenum(HDR.Patient.Birthday),
+				fprintf(HDR.FILE.stderr,'Warning SOPEN (GDF) WRITE: HDR.Patient.Birthday is not correctly defined.\n');
+			end;
 		elseif (HDR.VERSION == 0)
-                        if sum(HDR.AS.bpb)>61440;
-                                fprintf(HDR.FILE.stderr,'\nWarning SOPEN (EDF): One block exceeds 61440 bytes.\n')
-                        end;
+			if (HDR.AS.bpb > 61440),
+				fprintf(HDR.FILE.stderr,'\nWarning SOPEN (EDF): One block exceeds 61440 bytes.\n')
+			end;
 		end;
 
                 %%%%% Open File 
