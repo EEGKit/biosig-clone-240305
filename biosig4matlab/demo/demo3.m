@@ -49,9 +49,9 @@ HDR.RID = 'TestFile 001'; %StudyID/Investigation [consecutive number];
 HDR.REC.Hospital   = 'BioSig Test Lab'; 
 if exist('OCTAVE_VERSION','builtin')
 	t = getpwuid(getuid);
-	HDR.REC.Techician = strtok(t.gecos,',')
+	HDR.REC.Technician = strtok(t.gecos,',')
 else
-	HDR.REC.Techician = 'Mister Muster';
+	HDR.REC.Technician = 'Mister Master';
 end;
 HDR.REC.Equipment  = 'biosig';
 HDR.REC.IPaddr	   = [127,0,0,1];	% IP address of recording system 	

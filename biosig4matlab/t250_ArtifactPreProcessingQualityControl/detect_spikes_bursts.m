@@ -267,6 +267,8 @@ Fs = 20000; 	% assumed samplerate
 				EVENT.TimeStamp = [EVENT.TimeStamp; repmat(NaN, size(POS)) ];
 			end;
 		end
+	else
+		fprintf(1,'Channel #%d is not a voltage channel - skip\n',ch)
 	end;
 	end;
 

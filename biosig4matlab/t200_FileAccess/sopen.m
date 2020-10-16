@@ -2016,8 +2016,8 @@ elseif any(strcmp(HDR.TYPE,{'CNT';'AVG';'EEG'}))
                         HDR.SPR = 0;
                 end;	
                 type = 2;
-                if strmatch(HDR.TYPE,'EEG'), type = 1;
-                elseif strmatch(HDR.TYPE,'AVG'), type = 0;
+                if strcmp(HDR.TYPE,'EEG'), type = 1;
+                elseif strcmp(HDR.TYPE,'AVG'), type = 0;
                 end;
                 
                 if ~isfield(HDR,'PID')
