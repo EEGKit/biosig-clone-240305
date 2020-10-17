@@ -13,7 +13,7 @@
 ## TODO: add freetb4matlab
 ## Tagging a release
 
-B4OMversion=3.7.2
+B4OMversion=3.7.3
 
 SRCDIR=/home/schloegl/src
 MXEDIR=$SRCDIR"/mxe.github.schloegl"
@@ -39,7 +39,8 @@ rm -rf biosig-code/biosig4python
 rm -rf biosig-code/bioprofeed
 rm -rf biosig-code/release
 ### generate ./configure ###
-(cd biosig-code && autoreconf -fi)
+sed -i '/^AC_INIT/ s/^.*$/AC_INIT([biosig], ['$1'])/g' biosig-code/configure.ac
+(cd biosig-code && autoreconf -fi && ./configure)
 ### precompute all *.i and avoid need for gawk at build time
 (cd biosig-code/biosig4c++ && \
 	gawk -f eventcodes.awk   "../biosig4matlab/doc/eventcodes.txt" && \

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([biosig], [2.0.6])
+AC_INIT([biosig], [2.1.0])
 AC_COPYRIGHT([Copyright (C) 2019-2020 Alois Schlögl])
 AC_CONFIG_SRCDIR([biosig4c++/biosig.c])
 AC_CONFIG_HEADERS([config.h])
@@ -43,7 +43,7 @@ AC_CHECK_LIB([z],       [gzopen],              AC_SUBST(HAVE_LIBZ,       "1") )
 AC_CHECK_LIB([iconv], [iconv_open])
 AC_CHECK_HEADER([iconv.h], ,[AC_MSG_ERROR([can not find iconv.h])])
 AC_CHECK_LIB([tinyxml] , [main],        AC_SUBST(HAVE_LIBTINYXML, "1")  [TEST_LIBS="$TEST_LIBS -ltinyxml"],   AC_MSG_WARN([libtinyxml is not installed.]))
-#AC_CHECK_LIB([tinyxml2], [main],        AC_SUBST(HAVE_LIBTINYXML2, "1") [TEST_LIBS="$TEST_LIBS -ltinyxml2"],  AC_MSG_WARN([libtinyxml2 is not installed.]))
+# AC_CHECK_LIB([tinyxml2], [main],        AC_SUBST(HAVE_LIBTINYXML2, "1") [TEST_LIBS="$TEST_LIBS -ltinyxml2"],  AC_MSG_WARN([libtinyxml2 is not installed.]))
 
 AC_PATH_PROG([JAVA],        [java],        [:])
 AC_PATH_PROG([JAVAC],       [javac],       [:])
