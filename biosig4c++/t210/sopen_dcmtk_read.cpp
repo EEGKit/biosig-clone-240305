@@ -57,7 +57,7 @@
 	#include "dcmtk/dcmdata/dcistrmz.h"    /* for dcmZlibExpectRFC1950Encoding */
 	#include "dcmtk/dcmdata/dcfilefo.h"	/* for convertToUTF8 */
 
-	#ifdef WITH_ZLIB
+	#ifdef HAVE_ZLIB
 	#include <zlib.h>                      /* for zlibVersion() */
 	#endif
 	#ifdef DCMTK_ENABLE_CHARSET_CONVERSION

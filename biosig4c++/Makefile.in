@@ -349,13 +349,6 @@ STEPPING       := $(word 3, $(shell grep '\#define BIOSIG_PATCHLEVEL' biosig-dev
 BIOSIG_VERSION := @PACKAGE_VERSION@
 TODAY          := $(shell date +%Y%m%d)
 
-####### External directory
-ifneq (`ls -l extern |wc -l`,1)
-  EXTERN  = extern
-else
-  EXTERN  = ../biosig4matlab/doc
-endif
-
 ####### Output directory
 OBJ	      = ./obj
 
@@ -567,13 +560,13 @@ biosig.c: eventcodes.i eventcodegroups.i 11073-10102-AnnexB.i biosig.h biosig-de
 
 physicalunits.c: units.i physicalunits.h
 
-eventcodes.i eventcodegroups.i : $(EXTERN)/eventcodes.txt
+eventcodes.i eventcodegroups.i : ../biosig4matlab/doc/eventcodes.txt
 	gawk -f eventcodes.awk "$<"
 
-units.i : $(EXTERN)/units.csv
+units.i : ../biosig4matlab/doc/units.csv
 	awk -f units.awk "$<" > "$@"
 
-11073-10102-AnnexB.i : $(EXTERN)/11073-10102-AnnexB.txt
+11073-10102-AnnexB.i : ../biosig4matlab/doc//11073-10102-AnnexB.txt
 	awk -f annotatedECG.awk "$<" > "$@"
 
 
