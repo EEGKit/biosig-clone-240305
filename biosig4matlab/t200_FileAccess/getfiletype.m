@@ -1128,7 +1128,7 @@ else
                         % MIT-ECG / Physiobank format
                 	HDR.TYPE='MIT';
 
-		elseif length(HDR.FILE.Ext) && ~isempty(strncmp(HDR.FILE.Ext,{'16a','abp','al','apn','ari','atr','atr-','ecg','pap','ple','qrs','qrsc','sta','stb','stc'})),
+		elseif length(HDR.FILE.Ext) && any(strcmp(HDR.FILE.Ext,{'16a','abp','al','apn','ari','atr','atr-','ecg','pap','ple','qrs','qrsc','sta','stb','stc'})),
 			% Physiobank annotation files 
 			HDR.TYPE='MIT-ATR';
 			
