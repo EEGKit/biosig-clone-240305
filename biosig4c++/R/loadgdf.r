@@ -104,12 +104,21 @@ GDFTYPE_BITS=as.integer(c(
 #' Loads biomedical signal data in GDF format
 #'
 #' @param filename name of the gdf data file
-#' @param channel indicates which channel should be loaded, (default 0: indicaes all channels)
+#' @param channel indicates which channel(s) should be loaded, (default 0: indicaes all channels)
 #' @return HeaderType data HDR
-#'     HDR@data  is a matrix containing sample values with HDR@NS columns (i.e. channels)
+#'	HDR@data  is a matrix containing sample values with HDR@NS columns (i.e. channels)
 #'          and HDR@NRec*HDR@SPR rows (sampling time points)
-#'     HDR@SampleRate  is the sampling rate
-#'     HDR@Label contain the channel labels
+#'	HDR@SampleRate  is the sampling rate
+#'	HDR@Label contain the channel labels
+#'
+#' Usage:
+#'	HDR=loadgdf(filename)   # loads all channels
+#'	HDR@Label        # shows channel names
+#'	HDR=loadgdf(filename, 1)   # loads 1st channel
+#'	HDR=loadgdf(filename, 2)   # loads 2nd channel
+#'	HDR=loadgdf(filename, c(1,2))   # loads 1st and 2nd channel
+#'	HDR@data     contain the data samples
+
 loadgdf <- function(filename, chan=0) {
 	fid <- file(filename, "rb")
 	HDR <- new("HeaderType")
@@ -150,7 +159,7 @@ loadgdf <- function(filename, chan=0) {
 	HDR@HighPass<- readBin(fid, "double", size=4, n=HDR@NS, endian="little")
 	HDR@Notch   <- readBin(fid, "double", size=4, n=HDR@NS, endian="little")
 	HDR@spr     <- readBin(fid, "int",    size=4, n=HDR@NS, endian="little")
-	for (v in unique(HDR@spr(chan))) HDR@SPR <- (HDR@SPR %lcm% v)
+	for (v in unique(HDR@spr[chan])) HDR@SPR <- (HDR@SPR %lcm% v)
 	HDR@SampleRate <- HDR@SPR / HDR@Dur
 
 	HDR@GDFTYP  <- readBin(fid, "int", size=4, n=HDR@NS, endian="little")
@@ -225,11 +234,5 @@ loadgdf <- function(filename, chan=0) {
 	close(fid)
 	return(HDR)
 }
-
-HDR=loadgdf("../data/Newtest17-256.gdf")
-
-# plot(c(1:10000)/HDR@SampleRate, HDR@data[1:10000],type='l')
-plot(HDR@data[,1], type='l')
-plot( c(1:length(HDR@data[,5]))/HDR@SampleRate, HDR@data[,5], type='l')
 
 
