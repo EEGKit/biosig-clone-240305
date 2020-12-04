@@ -310,7 +310,7 @@ size_t strfgdftime(char *out, size_t outbytesleft, const char *FMT, gdftime_t T)
 			out[cout++] = FMT[cin++];
 		}
 	}
-	if (out < outbytesleft) out[cout]=0;
+	if (0 < outbytesleft) out[cout]=0;
 	return cout;
 }
 

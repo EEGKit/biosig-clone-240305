@@ -37,7 +37,9 @@
 #else
     #include <inttypes.h>
 #endif
+#include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include <time.h>
 
 #ifdef __cplusplus
