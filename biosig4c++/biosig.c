@@ -2449,6 +2449,7 @@ void struct2gdfbin(HDRTYPE *hdr)
 	    		biosigERROR(hdr, B4C_MEMORY_ALLOCATION_FAILED, "Memory allocation failed");
 			return; 
 	    	}
+		memset(Header1, 0, 256*(1+hdr->NS));
 	     	sprintf((char*)hdr->AS.Header,"GDF %4.2f",hdr->VERSION);
 	    	uint8_t* Header2 = hdr->AS.Header+256;
 
@@ -11499,7 +11500,7 @@ if (VERBOSE_LEVEL>2)
 
 	if (!hdr->EVENT.SampleRate) hdr->EVENT.SampleRate = hdr->SampleRate; 	
 	/*
-	convert2to4_event_table(hdr->EVENT);
+	convert2to4_eventtable(hdr);
 	convert into canonical form if needed
 	*/
 
