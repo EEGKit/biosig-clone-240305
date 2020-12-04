@@ -112,29 +112,15 @@ uninstall ::
 endif
 endif
 
-ifneq (:,@PYTHON@)
+ifneq (:,@PYTHON3@)
 first biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz ::
-	-PYTHON=@PYTHON@ make -C biosig4c++/python dist/Biosig-@PACKAGE_VERSION@.tar.gz
+	-PYTHON=@PYTHON3@ make -C biosig4c++/python dist/Biosig-@PACKAGE_VERSION@.tar.gz
 install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
-	-@PYTHON@ -m pip install $<
+	$(foreach py, $(shell pyversions -i) $(shell py3versions -i), $(py) -m pip install $<;)
 uninstall ::
-	-@PYTHON@ -m pip uninstall -y Biosig
+	$(foreach py, $(shell pyversions -i) $(shell py3versions -i), $(py) -m pip uninstall -y Biosig;)
 clean ::
 	make -C biosig4c++/python clean
-endif
-
-ifneq (:,@PYTHON2@)
-install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
-	-@PYTHON2@ -m pip install $<
-uninstall ::
-	-@PYTHON2@ -m pip uninstall -y Biosig
-endif
-
-ifneq (:,@PYTHON3@)
-install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
-	-@PYTHON3@ -m pip install $<
-uninstall ::
-	-@PYTHON3@ -m pip uninstall -y Biosig
 endif
 
 ifneq (:,@R@)
