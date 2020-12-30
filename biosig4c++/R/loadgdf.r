@@ -100,6 +100,7 @@ GDFTYPE_BITS=as.integer(c(
 
 "%gcd%" <- function(u, v) {ifelse(u %% v != 0, v %gcd% (u%%v), v)}
 "%lcm%" <- function(u, v) { abs(u*v)/(u %gcd% v)}
+skipbytes <- function(fid, nbytes) { readBin(fid, "int", size=1, n=nbytes) }
 
 #' Loads biomedical signal data in GDF format
 #'
@@ -112,25 +113,34 @@ GDFTYPE_BITS=as.integer(c(
 #'	HDR@Label contain the channel labels
 #'
 #' Usage:
-#'	HDR=loadgdf(filename)   # loads all channels
+#'	HDR=loadgdf("filename.gdf")   # loads a GDF file
+#'	HDR=loadgdf("biosig2gdf.exe filename.ext")
+#'          uses biosg2gdf to convert and load any other (supported) format)
 #'	HDR@Label        # shows channel names
-#'	HDR=loadgdf(filename, 1)   # loads 1st channel
-#'	HDR=loadgdf(filename, 2)   # loads 2nd channel
-#'	HDR=loadgdf(filename, c(1,2))   # loads 1st and 2nd channel
+#'	HDR=loadgdf(..., 1)   # loads 1st channel
+#'	HDR=loadgdf(..., 2)   # loads 2nd channel
+#'	HDR=loadgdf(..., c(1,2))   # loads 1st and 2nd channel
 #'	HDR@data     contain the data samples
 
 loadgdf <- function(filename, chan=0) {
-	fid <- file(filename, "rb")
+	if (file.exists(filename)) {
+		fid <- file(filename, "rb")
+	} else {
+		fid <- pipe(filename, "rb")
+	}
+	if (!isOpen(fid)) {
+		stop("Cannot open file or pipe")
+	}
 	HDR <- new("HeaderType")
-	### read H1 - fixed header ### 
+	### read H1 - fixed header ###
 	HDR@VersionID <- readBin(fid, "int", size=1, n=8)
 	if (!all(HDR@VersionID[1:4] == c(0x47,0x44,0x46,0x20)))
 		stop("This is not a GDF file - convert first to GDF - e.g. with save2gdf command line tool")
 
-	seek(fid, where=184, origin="start")
+	skipbytes(fid, nbytes=184-8)
 	HeadLen <- readBin(fid, "int", size=2, signed=FALSE, endian="little")*256
 
-	seek(fid, where=236, origin="start")
+	skipbytes(fid, nbytes=236-184-2)
 	HDR@NRec <- readBin(fid, "int", size=8, endian="little")
 	HDR@Dur  <- readBin(fid, "double", n=1, size=8, endian="little")
 	HDR@NS   <- readBin(fid, "int", size=2, signed=FALSE, endian="little")
@@ -138,22 +148,21 @@ loadgdf <- function(filename, chan=0) {
 	if (any(chan==0)) chan <- c(1:HDR@NS)
 
 	### read H2 - variable header, channel information ### 
+	skipbytes(fid, nbytes=256-236-18)
 	for (k in c(1:HDR@NS)) {
-		seek(fid, where=256+16*(k-1), origin="start")
-		HDR@Label[k] <- matrix(readBin(fid, "character", size=1))
+		HDR@Label[k] <- readChar(fid, nchars=16, useBytes=TRUE)
 	}
 	for (k in c(1:HDR@NS)) {
-		seek(fid, where=256+16*HDR@NS+80*(k-1), origin="start")
-		HDR@Transducer[k] <- matrix(readBin(fid, "character", size=1))
+		HDR@Transducer[k] <- readChar(fid, nchars=80, useBytes=TRUE)
 	}
-	seek(fid, where=256+102*HDR@NS, origin="start")
+	skipbytes(fid, nbytes=(102-96)*HDR@NS)
 	HDR@PhysDimCode<- readBin(fid, "int", size=2, n=HDR@NS, endian="little")
 	HDR@PhysMin <- readBin(fid, "double", size=8, n=HDR@NS, endian="little")
 	HDR@PhysMax <- readBin(fid, "double", size=8, n=HDR@NS, endian="little")
 	HDR@DigMin  <- readBin(fid, "double", size=8, n=HDR@NS, endian="little")
 	HDR@DigMax  <- readBin(fid, "double", size=8, n=HDR@NS, endian="little")
 
-	seek(fid, where=256+200*HDR@NS, origin="start")
+	skipbytes(fid, nbytes=(200-102-34)*HDR@NS)
 	HDR@Toffset <- readBin(fid, "double", size=4, n=HDR@NS, endian="little")
 	HDR@LowPass <- readBin(fid, "double", size=4, n=HDR@NS, endian="little")
 	HDR@HighPass<- readBin(fid, "double", size=4, n=HDR@NS, endian="little")
@@ -172,7 +181,7 @@ loadgdf <- function(filename, chan=0) {
 	HDR@EventTablePos <- HeadLen + HDR@BPB * HDR@NRec
 	
 	### optional 
-	seek(fid, where=HeadLen, origin="start")
+	skipbytes(fid, nbytes=HeadLen-256-(200+24)*HDR@NS)
 	if (all(HDR@GDFTYP==0)) {
 	 	data <- readBin(fid, "int", size=1, n=HDR@BPB*HDR@NRec, endian="little")
 	} else if (all(HDR@GDFTYP==1)) {
