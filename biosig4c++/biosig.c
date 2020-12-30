@@ -189,7 +189,7 @@ void sread_atf(HDRTYPE* hdr);
 
 #endif //ONLYGDF
 
-const uint16_t GDFTYP_BITS[] = {
+const uint16_t GDFTYP_BITS[] __attribute__ ((visibility ("default") )) = {
 	8, 8, 8,16,16,32,32,64,64,32,64, 0, 0, 0, 0, 0,   /* 0  */
 	32,64,128,0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   /* 16 */
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   /* 32 */

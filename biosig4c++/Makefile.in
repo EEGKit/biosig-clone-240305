@@ -376,6 +376,7 @@ SOURCES      += biosig.c \
 		mdc_ecg_codes.c \
 		physicalunits.c \
 		save2gdf.c \
+		biosig2gdf.c \
 		biosig_client.c \
 		biosig_server.c
 
@@ -485,7 +486,7 @@ ifeq (,$(findstring mingw,$(TARGET)))
 endif
 
 first: $(IO_H_FILE2) lib tools
-tools: save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT}
+tools: save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT} biosig2gdf${BINEXT}
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
 
 libbiosig lib: $(LIB_OBJECTS)
@@ -957,6 +958,7 @@ install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
 	install save2gdf${BINEXT}	$(DESTDIR)$(bindir)
+	install biosig2gdf${BINEXT}	$(DESTDIR)$(bindir)
 	install heka2itx		$(DESTDIR)$(bindir)
 	install rec2bin			$(DESTDIR)$(bindir)
 	install bin2rec			$(DESTDIR)$(bindir)
@@ -972,6 +974,7 @@ install_tools: tools doc/save2gdf.1
 
 uninstall_tools:
 	${RM} $(DESTDIR)$(bindir)/save2gdf${BINEXT}
+	${RM} $(DESTDIR)$(bindir)/biosig2gdf${BINEXT}
 	${RM} $(DESTDIR)$(bindir)/physicalunits${BINEXT}
 	${RM} $(DESTDIR)$(bindir)/{heka2itx,bin2rec,rec2bin,save2aecg,save2scp}
 	${RM} $(DESTDIR)$(bindir)/biosig_fhir${BINEXT}
@@ -1133,6 +1136,7 @@ test: $(DATA_DIR)t1.scp save2scp save2aecg save2gdf
 	./save2gdf -f=HL7	$(TEMP_DIR)t1.scp.scp.gz $(TEMP_DIR)t1.scp.scp.hl7
 	./save2gdf -f=HL7	$(TEMP_DIR)t1.scp.hl7.gz $(TEMP_DIR)t1.scp.hl7.hl7
 	# python test0/test.py
+	./biosig2gdf  $(DATA_DIR)t1.scp | md5sum
 
 zip: $(DATA_DIR)t1.scp save2gdf
 	# test for on-the-fly compression and decompression
