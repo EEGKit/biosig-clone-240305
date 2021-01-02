@@ -113,9 +113,8 @@ skipbytes <- function(fid, nbytes) { readBin(fid, "int", size=1, n=nbytes) }
 #'	HDR@Label contain the channel labels
 #'
 #' Usage:
-#'	HDR=loadgdf("filename.gdf")   # loads a GDF file
-#'	HDR=loadgdf("biosig2gdf.exe filename.ext")
-#'          uses biosg2gdf to convert and load any other (supported) format)
+#'	HDR=loadgdf(filename)   # loads a biosig file
+#'          uses biosig2gdf to convert and load any (supported) format
 #'	HDR@Label        # shows channel names
 #'	HDR=loadgdf(..., 1)   # loads 1st channel
 #'	HDR=loadgdf(..., 2)   # loads 2nd channel
@@ -123,10 +122,15 @@ skipbytes <- function(fid, nbytes) { readBin(fid, "int", size=1, n=nbytes) }
 #'	HDR@data     contain the data samples
 
 loadgdf <- function(filename, chan=0) {
-	if (file.exists(filename)) {
-		fid <- file(filename, "rb")
+	converter="biosig2gdf"
+	if (.Platform$OS.type=="windows") {
+		converter="biosig2gdf.exe"
+	}
+
+	if (file.exists(converter)) {
+		fid <- pipe(paste("biosig2gdf", filename, sep=" "), "rb")
 	} else {
-		fid <- pipe(filename, "rb")
+		fid <- file(filename, "rb")
 	}
 	if (!isOpen(fid)) {
 		stop("Cannot open file or pipe")
@@ -225,9 +229,9 @@ loadgdf <- function(filename, chan=0) {
 
 	k = 0;
 	if (all(HDR@spr[chan[1]]==HDR@spr[chan])) {
-		SPR  = HDR@spr[chan[1]]
+		SPR <- HDR@spr[chan[1]]
 		d   <- matrix(data, nrow=sum(HDR@spr), byrow=FALSE)
-		data = matrix(c(1:(HDR@NRec * SPR * length(chan))), ncol=length(chan))
+		data <- matrix(c(1:(HDR@NRec * SPR * length(chan))), ncol=length(chan))
 		k    = 0
 		for (ch in chan) {
 			k = k+1;
