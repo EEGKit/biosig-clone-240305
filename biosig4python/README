@@ -1,24 +1,19 @@
     biosig4python supports reading various biosignal dataformats into Python.
-    Currently the following formats are supported: 
-	EDF, BDF, GDF (v1 and v2)
+    The data is converted first into a simplified GDF (same simple data type
+    and same sampling rate for all channels) using biosig2gdf, and
+    the output is than processed and parsed by loadgdf.py().
+    The advantage of this approach over the python extension module is, that
+    it works on any platform (including MS Windows); the disadvantages is
+    it needs twice as much memory and an extra data copying step is needed.
 
-    However, biosig4c++ provides (through) swig a much faster implemenation, 
-    which supports more data formats, too. In other words, biosig4python is 
-    obsolete and it is recommended to use biosig4c++ instead.  
-    
-
-    Copyright (C) 2005,2006 Martin Hieden  <martin.hieden@gmx.at> 
-    Copyright (C) 2005,2006,2009 Alois Schloegl <a.schloegl@ieee.org>
-    This function is part of the "BioSig for Python" repository 
-    (BioSig4Python) at http://biosig.sf.net/ 
+    Copyright (C) 2005,2006,2009,2020 Alois Schloegl <alois.schloegl@gmail.com>
+    This function is part of the "BioSig for Python" repository
+    (BioSig4Python) at http://biosig.sf.net/
 
 
+Requirements:
+    SCIPY or NUMPY needed
 
-
-
-Requirements: 
-    SCIPY or NUMPY needed 
-
-Recommended: 
+Recommended:
     MATPLOTLIB recommended
 
