@@ -2,9 +2,11 @@ Introduction:
 =============
 
 The aim of this repository is providing a software library for biomedical signal processing.
-Biosig consists of two main parts:
+Biosig consists of the following parts:
 (1) "Biosig for Octave and Matlab" and
-(2) "Biosig for C/C++" which contains also a number of bindings to other programming languages
+(2) "Biosig for C/C++" provides libbiosig, and several command line tools
+(3)  binding of libbiosig to the following programming languages:
+      Python, Mathematica, Matlab/Octave, Java, and R.
 
 == Installation ==
 
@@ -21,17 +23,17 @@ for Octave, Matlab, Mathematica, R, and Java.
 	python-numpy python3-numpy \
 	python-setuptools python3-setuptools \
 	libpython-dev libpython3-dev \
-	R openjdk-11-jdk
+	R default-jdk
 
 --- Recommended packages at runtime ---
    apt-get install \
 	libb64 tinyxml libdcmtk14 \
 	python-numpy python3-numpy \
-	R openjdk-11-jre \
+	R default-jre \
 	octave octave-tsa octave-nan
 
 
-Installing biosig is as simple as
+Installing Biosig from source is as simple as
    ./configure
    make
    sudo make install
@@ -87,7 +89,7 @@ text strings are cached for performance reasons, and can be used in a multi-thre
   ** next time just update latest changes
 
 	git pull
-	autoreconf -fim # usually this can be omitted
+	autoreconf -fi  # usually this can be omitted
 	./configure 	# usually this can be omitted
 	make
 	make install
@@ -121,8 +123,8 @@ for details see mex/README.
 (3b) "python" is an interface to python and dynamically linked to libbiosig.
 Requirement: python, python-dev, python-numpy
 for Debian/Ubuntu:
-	sudo apt-get install python python-dev python-numpy python-wheels
-	sudo apt-get install python3 python3-dev python3-numpy python3-wheels
+	sudo apt-get install python python-dev python-numpy python-setuptools
+	sudo apt-get install python3 python3-dev python3-numpy python3-setuptools
 It can be build with any of the following commands:
 	make python
 	make -C biosig4c++/python build
@@ -131,8 +133,8 @@ For installation, you can than do either
 	cd biosig4c++/python && python setup.py install
 	cd biosig4c++/python && python3 setup.py install
 or
-	python  -m pip install python/dist/Biosig-1.9.2.tar.gz
-	python3 -m pip install python/dist/Biosig-1.9.2.tar.gz
+	python  -m pip install python/dist/Biosig-2.1.1.tar.gz
+	python3 -m pip install python/dist/Biosig-2.1.1.tar.gz
 Use of the interface is shown in ./python/demo2.py
 
 
@@ -143,7 +145,7 @@ see also biosig4c++/mma/README, and biosig4c++/mma/biosig, biosig4c++/mma/hdrinf
 
 (3z) other language interfaces
 Basic interfaces for R and Java are also available. For other languages
-(including Java, PHP, Perl and TCL) are considered, but these still need to be implemented and tested.
+(including PHP, Perl and TCL) are considered, but these still need to be implemented and tested.
 
 
 (5) Biosig tools for Matlab and Octave
@@ -157,7 +159,6 @@ and run "install" from within Matlab or Octave. This will set the path to the su
    biosig4c++/win##/libbiosig.{lib,dll}  static and dynamic library (requires zlib and libws2_32)
    biosig4c++/mma/biosig.exe     Mathematica binding through Mathlink interface
    biosig4c++/mex/mexSLOAD.mexw32   Mex-file for Win32/Matlab
-
 
 
 The internal data structure resemble the header structure similar to

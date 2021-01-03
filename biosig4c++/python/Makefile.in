@@ -1,6 +1,6 @@
 ####### Makefile for "BioSig for C/C++" #####################
 ###
-###  Copyright (C) 2006-2020 Alois Schloegl <alois.schloegl@ist.ac.at>
+###  Copyright (C) 2006-2021 Alois Schloegl <alois.schloegl@ist.ac.at>
 ###  This file is part of the "BioSig for C/C++" repository 
 ###  (biosig4c++) at http://biosig.sf.net/ 
 ###
@@ -15,11 +15,10 @@ release build target: dist/Biosig-@PACKAGE_VERSION@.tar.gz
 # https://packaging.python.org/tutorials/packaging-projects/
 dist/Biosig-@PACKAGE_VERSION@.tar.gz: setup.py biosigmodule.c
 	$(PYTHON) setup.py sdist
-	-python2 setup.py bdist_egg
-	-python3 setup.py bdist_egg
 
 install:
-	$(PYTHON) setup.py install
+	-@PYTHON@ setup.py install
+	-@PYTHON3@ setup.py install
 
 test:
 	## get ../data/Newtest17-256.bdf
@@ -27,12 +26,16 @@ test:
 	## need to run from different directory, because
 	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ $(PYTHON) -c 'import biosig; print(biosig.header("data/Newtest17-256.bdf"))')
 	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ $(PYTHON) -c 'import biosig; print(biosig.data("data/Newtest17-256.bdf"))')
-	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ python$(PYVER) < python/demo2.py)
+	(cd .. && PYTHONPATH=/usr/local/lib/python$(PYVER)/dist-packages/ $(PYTHON) < python/demo2.py)
 
 clean:
 	-rm -rf build/*
 	-rm -rf dist/*
 	-rm *.so
+
+wheel: setup.py biosigmodule.c
+	-@PYTHON@ setup.py sdist bdist_wheel
+	-@PYTHON3@ setup.py sdist bdist_wheel
 
 check: release
 	twine check dist/*

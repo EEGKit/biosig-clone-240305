@@ -2,10 +2,25 @@
 = Introduction =
  
 This provides an interface of libbiosig to R. 
-Currently, only the data samples are loaded. 
+There are two ways to access biosig data. One 
+approach is with loadgdf.r and biosig2gdf.exe, 
+the other approach is by using a shared 
+object library sload.so to libbiosig. 
 
 
-= Installation =
+= A) loadgdf and biosig2exe.gdf =
+   loadgdf(filename) will use biosig2exe 
+   to load and convert the data into a GDF data stream,
+   which is then parsed by loadgdf.r 
+   This approach is will work on all platforms
+   for which biosig2exe is available. 
+   Especially, it will also work in MS Windows. 
+ 
+= B) Installation and use of sload.so =
+   This approach will work on all *nix operating 
+   systems (GNU/Linux, BSD, MacOSX, etc), but 
+   does not work on MS Windows.    
+
 # 0) Requirements
 
        apt-get install r-base-dev

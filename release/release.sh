@@ -13,7 +13,7 @@
 ## TODO: add freetb4matlab
 ## Tagging a release
 
-B4OMversion=3.7.3
+B4OMversion=3.7.4
 
 SRCDIR=/home/schloegl/src
 MXEDIR=$SRCDIR"/mxe.github.schloegl"
@@ -128,8 +128,8 @@ cd $CWD;
 	tar acvfz biosig4octmat-$B4OMversion.tar.gz biosig tsa NaN biosig_installer.m ;
 	zip -r biosig4octmat-$B4OMversion.zip biosig tsa NaN biosig_installer.m ;
 
-mkdir -p $BIOSIG4C_DIR/{include,share/man,share/mathematica,share/python}
-mkdir -p $BIOSIG4C_DIR-{Windows-64bit,Windows-32bit,$(uname -s)-$(uname -m)}/{include,share/man,bin,lib/pkgconfig,matlab,mathematica,python}
+mkdir -p $BIOSIG4C_DIR/{include,share/man,share/mathematica,share/python,share/R}
+mkdir -p $BIOSIG4C_DIR-{Windows-64bit,Windows-32bit,$(uname -s)-$(uname -m)}/{include,share/man,bin,lib/pkgconfig,matlab,mathematica,python,R}
 
 ### shared, platform independent files ###
 cp biosig-code/biosig4c++/*.h                    $BIOSIG4C_DIR/include/
@@ -137,21 +137,24 @@ cp biosig-code/biosig4c++/doc/*.1                $BIOSIG4C_DIR/share/man
 cp -r biosig-code/biosig4matlab                  $BIOSIG4C_DIR/share/matlab
 cp -r biosig-code/biosig4c++/mma/{*.nb,*.m}      $BIOSIG4C_DIR/share/mathematica/
 cp -r biosig-code/biosig4c++/python/*.py         $BIOSIG4C_DIR/share/python/
+cp -r biosig-code/biosig4python/loadgdf.py       $BIOSIG4C_DIR/share/python/
+cp -r biosig-code/biosig4c++/R/{loadgdf.r,README}  $BIOSIG4C_DIR/share/R/
 
 
 ### GNU/Linux ###
 PLATFORM=$(uname -s)-$(uname -m)
 cp biosig-code/biosig4c++/*.h                            $BIOSIG4C_DIR-$PLATFORM/include/
 cp $SRCDIR/biosig-code/biosig4c++/lib*                   $BIOSIG4C_DIR-$PLATFORM/lib/
-cp $SRCDIR/biosig-code/biosig4c++/{bin2rec,rec2bin,heka2itx,*.exe} \
+cp $SRCDIR/biosig-code/biosig4c++/{bin2rec,rec2bin,heka2itx,*.exe,R/loadgdf.r} \
 					                 $BIOSIG4C_DIR-$PLATFORM/bin/
+cp $SRCDIR/biosig-code/biosig4python/loadgdf.py          $BIOSIG4C_DIR-$PLATFORM/bin/
 cp $SRCDIR/biosig-code/biosig4c++/mex/{*.cpp,*.mexglx*}  $BIOSIG4C_DIR-$PLATFORM/matlab/
 cp $SRCDIR/biosig-code/biosig4c++/win32/README           $BIOSIG4C_DIR-$PLATFORM/
 rm $BIOSIG4C_DIR/$PLATFORM/matlab/*.mex		         ## remove octave binaries
 cp -r $SRCDIR/biosig-code/biosig4c++/mma/Linux-x86-64/*  $BIOSIG4C_DIR-$PLATFORM/mathematica/
 cp biosig-code/biosig4c++/python/{*.c,*.h,setup.py,README.md}  $BIOSIG4C_DIR-$PLATFORM/python/
 cp -rp $BIOSIG4C_DIR/share				 $BIOSIG4C_DIR-$PLATFORM/
-tar cvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
+tar chvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
 zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 
 
@@ -162,16 +165,21 @@ cp $MXEDIR/usr/x86_64-w64-mingw32.static/lib/lib{b64,z,lapack,blas,iberty,biosig
                                                          $BIOSIG4C_DIR-$PLATFORM/lib
 cp $MXEDIR/usr/x86_64-w64-mingw32.static/lib/pkgconfig/{libbiosig,zlib}.pc \
                                                          $BIOSIG4C_DIR-$PLATFORM/lib/pkgconfig/
-cp $SRCDIR/biosig-code/biosig4c++/win32/{*.exe,*.bat}    $BIOSIG4C_DIR-$PLATFORM/bin/
-cp $SRCDIR/biosig-code/biosig4c++/win32/README           $BIOSIG4C_DIR-$PLATFORM/
+cp $MXEDIR/usr/x86_64-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,biosig2gdf,sigviewer,stimfit}.exe \
+							 $BIOSIG4C_DIR-$PLATFORM/bin
+cp -rp $BIOSIG4C_DIR/share				 $BIOSIG4C_DIR-$PLATFORM/
 cp $SRCDIR/biosig-code/biosig4c++/mex/{*.cpp,*.mexw64}   $BIOSIG4C_DIR-$PLATFORM/matlab/
 rm $BIOSIG4C_DIR-$PLATFORM/matlab/*.mex		 ## remove octave binaries
 cp -r $SRCDIR/biosig-code/biosig4c++/mma/Windows-x86-64/*  $BIOSIG4C_DIR-$PLATFORM/mathematica/
-cp biosig-code/biosig4c++/python/{*.c,*.h,setup.py,README.md}  $BIOSIG4C_DIR-$PLATFORM/python/
-cp $MXEDIR/usr/x86_64-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,sigviewer,stimfit}.exe \
-							 $BIOSIG4C_DIR-$PLATFORM/bin
-cp -rp $BIOSIG4C_DIR/share				 $BIOSIG4C_DIR-$PLATFORM/
-tar cvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
+# loadgdf for Python and R
+cp $SRCDIR/biosig-code/biosig4python/loadgdf.py          $BIOSIG4C_DIR-$PLATFORM/bin/
+cp $SRCDIR/biosig-code/biosig4python/loadgdf.py          $BIOSIG4C_DIR-$PLATFORM/python/
+cp $SRCDIR/biosig-code/biosig4c++/python/{*.c,*.h,setup.py,README.md}  $BIOSIG4C_DIR-$PLATFORM/python/
+(cd $BIOSIG4C_DIR-$PLATFORM/python/ && ln ../bin/biosig2gdf.exe)
+cp $SRCDIR/biosig-code/biosig4c++/R/loadgdf.r            $BIOSIG4C_DIR-$PLATFORM/bin/
+cp $SRCDIR/biosig-code/biosig4c++/R/{loadgdf.r,README}   $BIOSIG4C_DIR-$PLATFORM/R/
+(cd $BIOSIG4C_DIR-$PLATFORM/R/ && ln ../bin/biosig2gdf.exe)
+tar chvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
 zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 
 
@@ -182,16 +190,21 @@ cp $MXEDIR/usr/i686-w64-mingw32.static/lib/lib{b64,z,lapack,blas,iberty,biosig,t
                                                          $BIOSIG4C_DIR-$PLATFORM/lib
 cp $MXEDIR/usr/i686-w64-mingw32.static/lib/pkgconfig/{libbiosig,zlib}.pc \
                                                          $BIOSIG4C_DIR-$PLATFORM/lib/pkgconfig/
-cp $SRCDIR/biosig-code/biosig4c++/win32/{*.exe,*.bat}    $BIOSIG4C_DIR-$PLATFORM/bin/
-cp $SRCDIR/biosig-code/biosig4c++/win32/README           $BIOSIG4C_DIR-$PLATFORM/
+cp $MXEDIR/usr/i686-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,biosig2gdf,sigviewer,stimfit}.exe \
+							 $BIOSIG4C_DIR-$PLATFORM/bin
+cp -rp $BIOSIG4C_DIR/share				 $BIOSIG4C_DIR-$PLATFORM/
 cp $SRCDIR/biosig-code/biosig4c++/mex/{*.cpp,*.mexw32}   $BIOSIG4C_DIR-$PLATFORM/matlab/
 rm $BIOSIG4C_DIR-$PLATFORM/matlab/*.mex		 ## remove octave binaries
 cp -r $SRCDIR/biosig-code/biosig4c++/mma/Windows/*       $BIOSIG4C_DIR-$PLATFORM/mathematica/
+# loadgdf for Python and R
+cp $SRCDIR/biosig-code/biosig4python/loadgdf.py          $BIOSIG4C_DIR-$PLATFORM/bin/
+cp $SRCDIR/biosig-code/biosig4python/loadgdf.py          $BIOSIG4C_DIR-$PLATFORM/python/
 cp $SRCDIR/biosig-code/biosig4c++/python/{*.c,*.h,setup.py,README.md}  $BIOSIG4C_DIR-$PLATFORM/python/
-cp $MXEDIR/usr/i686-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,sigviewer,stimfit}.exe \
-							 $BIOSIG4C_DIR-$PLATFORM/bin
-cp -rp $BIOSIG4C_DIR/share		 		 $BIOSIG4C_DIR-$PLATFORM/
-tar cvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
+(cd $BIOSIG4C_DIR-$PLATFORM/python/ && ln ../bin/biosig2gdf.exe)
+cp $SRCDIR/biosig-code/biosig4c++/R/loadgdf.r            $BIOSIG4C_DIR-$PLATFORM/bin/
+cp $SRCDIR/biosig-code/biosig4c++/R/{loadgdf.r,README}   $BIOSIG4C_DIR-$PLATFORM/R/
+(cd $BIOSIG4C_DIR-$PLATFORM/R/ && ln ../bin/biosig2gdf.exe)
+tar chvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
 zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 
 
