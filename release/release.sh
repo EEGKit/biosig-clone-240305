@@ -13,7 +13,7 @@
 ## TODO: add freetb4matlab
 ## Tagging a release
 
-B4OMversion=3.7.4
+B4OMversion=3.7.5
 
 SRCDIR=/home/schloegl/src
 MXEDIR=$SRCDIR"/mxe.github.schloegl"
