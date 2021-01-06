@@ -128,7 +128,7 @@ loadgdf <- function(filename, chan=0) {
 	}
 
 	if (file.exists(converter)) {
-		fid <- pipe(paste("biosig2gdf", filename, sep=" "), "rb")
+		fid <- pipe(paste(converter, filename, sep=" "), "rb")
 	} else {
 		fid <- file(filename, "rb")
 	}

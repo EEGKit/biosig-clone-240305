@@ -161,12 +161,14 @@ zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 ### Windows 64bit ###
 PLATFORM=Windows-64bit
 cp biosig-code/biosig4c++/*.h                            $BIOSIG4C_DIR-$PLATFORM/include/
+cp $MXEDIR/usr/x86_64-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,biosig2gdf,sigviewer,stimfit}.exe \
+							 $BIOSIG4C_DIR-$PLATFORM/bin
+cp $MXEDIR/usr/x86_64-w64-mingw32.static/bin/lib{b64,z,lapack,blas,iberty,biosig,tinyxml,iconv,physicalunits}.dll \
+                                                         $BIOSIG4C_DIR-$PLATFORM/bin
 cp $MXEDIR/usr/x86_64-w64-mingw32.static/lib/lib{b64,z,lapack,blas,iberty,biosig,tinyxml,iconv,physicalunits}.a \
                                                          $BIOSIG4C_DIR-$PLATFORM/lib
 cp $MXEDIR/usr/x86_64-w64-mingw32.static/lib/pkgconfig/{libbiosig,zlib}.pc \
                                                          $BIOSIG4C_DIR-$PLATFORM/lib/pkgconfig/
-cp $MXEDIR/usr/x86_64-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,biosig2gdf,sigviewer,stimfit}.exe \
-							 $BIOSIG4C_DIR-$PLATFORM/bin
 cp -rp $BIOSIG4C_DIR/share				 $BIOSIG4C_DIR-$PLATFORM/
 cp $SRCDIR/biosig-code/biosig4c++/mex/{*.cpp,*.mexw64}   $BIOSIG4C_DIR-$PLATFORM/matlab/
 rm $BIOSIG4C_DIR-$PLATFORM/matlab/*.mex		 ## remove octave binaries
@@ -186,12 +188,14 @@ zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 ### Windows 32bit ###
 PLATFORM=Windows-32bit
 cp biosig-code/biosig4c++/*.h                            $BIOSIG4C_DIR-$PLATFORM/include/
-cp $MXEDIR/usr/i686-w64-mingw32.static/lib/lib{b64,z,lapack,blas,iberty,biosig,tinyxml,iconv,physicalunits}.a \
+cp $MXEDIR/usr/i686-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,biosig2gdf,sigviewer,stimfit}.exe \
+							 $BIOSIG4C_DIR-$PLATFORM/bin
+cp $MXEDIR/usr/i686-w64-mingw32.static/lib/lib{b64,z,lapack,blas,iberty,biosig,tinyxml,iconv,physicalunits}.dll \
+                                                         $BIOSIG4C_DIR-$PLATFORM/bin
+cp $MXEDIR/usr/i686-w64-mingw32.static/bin/lib{b64,z,lapack,blas,iberty,biosig,tinyxml,iconv,physicalunits}.a \
                                                          $BIOSIG4C_DIR-$PLATFORM/lib
 cp $MXEDIR/usr/i686-w64-mingw32.static/lib/pkgconfig/{libbiosig,zlib}.pc \
                                                          $BIOSIG4C_DIR-$PLATFORM/lib/pkgconfig/
-cp $MXEDIR/usr/i686-w64-mingw32.static/bin/{save2gdf,physicalunits,biosig_fhir,biosig2gdf,sigviewer,stimfit}.exe \
-							 $BIOSIG4C_DIR-$PLATFORM/bin
 cp -rp $BIOSIG4C_DIR/share				 $BIOSIG4C_DIR-$PLATFORM/
 cp $SRCDIR/biosig-code/biosig4c++/mex/{*.cpp,*.mexw32}   $BIOSIG4C_DIR-$PLATFORM/matlab/
 rm $BIOSIG4C_DIR-$PLATFORM/matlab/*.mex		 ## remove octave binaries

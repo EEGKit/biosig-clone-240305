@@ -484,9 +484,10 @@ LIB_OBJECTS  = libbiosig.a libgdf.a libphysicalunits.a libbiosig.pc
 ifeq (,$(findstring mingw,$(TARGET)))
     LIB_OBJECTS += libbiosig.$(DLEXT) libgdf.$(DLEXT) libphysicalunits.$(DLEXT)
 endif
+BIN_OBJECTS = save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT} biosig2gdf${BINEXT}
 
 first: $(IO_H_FILE2) lib tools
-tools: save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT} biosig2gdf${BINEXT}
+tools: $(BIN_OBJECTS)
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
 
 libbiosig lib: $(LIB_OBJECTS)
@@ -957,15 +958,12 @@ install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_
 
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
-	install save2gdf${BINEXT}	$(DESTDIR)$(bindir)
-	install biosig2gdf${BINEXT}	$(DESTDIR)$(bindir)
+	install ${BIN_OBJECTS}		$(DESTDIR)$(bindir)
 	install heka2itx		$(DESTDIR)$(bindir)
 	install rec2bin			$(DESTDIR)$(bindir)
 	install bin2rec			$(DESTDIR)$(bindir)
 	install save2aecg 		$(DESTDIR)$(bindir)
 	install save2scp  		$(DESTDIR)$(bindir)
-	install physicalunits${BINEXT}	$(DESTDIR)$(bindir)
-	install biosig_fhir${BINEXT}	$(DESTDIR)$(bindir)
 	mkdir -p  			$(DESTDIR)$(mandir)/man1
 	install doc/*.1  		$(DESTDIR)$(mandir)/man1
 	#install libbiosig.man 		$(mandir)
@@ -973,13 +971,9 @@ install_tools: tools doc/save2gdf.1
 	#$(MAKE)  install_octave
 
 uninstall_tools:
-	${RM} $(DESTDIR)$(bindir)/save2gdf${BINEXT}
-	${RM} $(DESTDIR)$(bindir)/biosig2gdf${BINEXT}
-	${RM} $(DESTDIR)$(bindir)/physicalunits${BINEXT}
+	${RM} $(addprefix $(DESTDIR)$(bindir)/,$(BIN_OBJECTS))
 	${RM} $(DESTDIR)$(bindir)/{heka2itx,bin2rec,rec2bin,save2aecg,save2scp}
-	${RM} $(DESTDIR)$(bindir)/biosig_fhir${BINEXT}
-	${RM} $(DESTDIR)$(mandir)/man1/physicalunits.1
-	${RM} $(DESTDIR)$(mandir)/man1/{save2gdf,biosig_fhir}.1
+	${RM} $(addprefix $(DESTDIR)$(mandir)/man1/,$(addsuffix .1,$(BIN_OBJECTS)))
 	${RM} $(DESTDIR)$(mandir)/man1/{heka2itx,bin2rec,rec2bin,save2aecg,save2scp}.1
 
 ### Install mexbiosig for Octave

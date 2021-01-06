@@ -116,11 +116,11 @@ ifneq (:,@PYTHON3@)
 first biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz ::
 	-PYTHON=@PYTHON3@ make -C biosig4c++/python dist/Biosig-@PACKAGE_VERSION@.tar.gz
 install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
-	@PYTHON3@ -m pip install $<
+	-@PYTHON3@ -m pip install $<
 	-$(foreach py, $(shell pyversions -i),  $(py) -m pip install $<;)
 	-$(foreach py, $(shell py3versions -i), $(py) -m pip install $<;)
 uninstall ::
-	@PYTHON3@ -m pip uninstall -y $<
+	-@PYTHON3@ -m pip uninstall -y $<
 	-$(foreach py, $(shell pyversions -i),  $(py) -m pip uninstall -y Biosig;)
 	-$(foreach py, $(shell py3versions -i), $(py) -m pip uninstall -y Biosig;)
 clean ::
