@@ -512,23 +512,23 @@ vpath %.cpp ./:./t210:./t230:./XMLParser
 
 
 %.o: t240/%.c biosig-dev.h gdftime.h physicalunits.h
-	$(CC) -c $(DEFINES) $(CFLAGS) -I t240 $(INCPATH) -o "$@" "$<"
+	$(CC) -c $(DEFINES) $(CPPFLAGS) $(CFLAGS) -I t240 $(INCPATH) -o "$@" "$<"
 
 %.c: %.h biosig-dev.h gdftime.h physicalunits.h
 
 %.cpp: %.h biosig-dev.h gdftime.h physicalunits.h
 
 %.o: %.c
-	$(CC) -c $(DEFINES) $(CFLAGS)  $(INCPATH) -o "$@" "$<"
+	$(CC) -c $(DEFINES) $(CPPFLAGS) $(CFLAGS)  $(INCPATH) -o "$@" "$<"
 
 %.o : win32/%.c
-	$(CC) -c $(DEFINES) $(CFLAGS)  $(INCPATH) -o "$@" "$<"
+	$(CC) -c $(DEFINES) $(CPPFLAGS) $(CFLAGS)  $(INCPATH) -o "$@" "$<"
 
 %.o: %.cpp biosig.h biosig-dev.h
-	$(CXX) -c $(DEFINES) $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+	$(CXX) -c $(DEFINES) $(CPPFLAGS) $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
 
 sandbox.o: test0/sandbox.c biosig.h
-	$(CXX) -c $(DEFINES) $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+	$(CXX) -c $(DEFINES) $(CPPFLAGS) $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
 
 
 win32/%.obj: t240/%.c biosig-dev.h
@@ -577,10 +577,10 @@ units.i : ../biosig4matlab/doc/units.csv
 #############################################################
 
 gdf.o: biosig.c biosig-dev.h eventcodes.i units.i 11073-10102-AnnexB.i
-	$(CC) -c -D=ONLYGDF -D=WITHOUT_NETWORK $(DEFINES) $(CFLAGS) $(INCPATH) -o "$@" "$<"
+	$(CC) -c -D=ONLYGDF -D=WITHOUT_NETWORK $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(INCPATH) -o "$@" "$<"
 
 #getlogin_r.o: win32/getlogin_r.c
-#	$(CC) -c $(DEFINES) $(CFLAGS) $(INCPATH) -o "$@" "$<"
+#	$(CC) -c $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(INCPATH) -o "$@" "$<"
 
 ########### WIN32 ##################
 
@@ -691,16 +691,16 @@ ifeq (,$(findstring Darwin, $(shell uname)))   # not on MacOSX
 endif
 
 libbiosig${FULLDLEXT}:$(OBJECTS)
-	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
+	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
 libgdf${FULLDLEXT}: gdf.o gdftime.o physicalunits.o getlogin.o
-	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
+	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
 libgdftime${FULLDLEXT}:gdftime.o
-	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
+	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
 libphysicalunits${FULLDLEXT}:physicalunits.o
-	$(LD) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDFLAGS) $(LDLIBS) -o "$@"
+	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
 
 
@@ -712,25 +712,25 @@ libphysicalunits.a: physicalunits.o
 	-$(DELETE) "$@"
 	$(AR) "$@" "$<"
 libphysicalunits.dll: physicalunits.o
-	$(LD) -o libphysicalunits.dll -s -shared -fPIC "$<" $(LDLIBS) -Wl,-subsystem,windows,--output-def,libphysicalunits.def,--out-implib,libphysicalunits.dll.a
+	$(LD) $(LDFLAGS) -o libphysicalunits.dll -s -shared -fPIC "$<" $(LDLIBS) -Wl,-subsystem,windows,--output-def,libphysicalunits.def,--out-implib,libphysicalunits.dll.a
 
 #libgdftime.a: gdftime.o
 #	-$(DELETE) "$@"
 #	$(AR) "$@" "$<"
 #libgdftime.def: gdftime.o
-#	$(CC) -o libgdftime.dll -s -shared -fPIC "$@" -Wl,--subsystem,windows,--output-def,libgdftime.def,--out-implib,libgdftime.dll.a
+#	$(CC) $(LDFLAGS) -o libgdftime.dll -s -shared -fPIC "$@" -Wl,--subsystem,windows,--output-def,libgdftime.def,--out-implib,libgdftime.dll.a
 
 libgdf.a: gdf.o getlogin.o gdftime.o physicalunits.o
 	-$(DELETE) "$@"
 	$(AR) "$@" gdf.o gdftime.o physicalunits.o
 libgdf.dll: gdf.o getlogin.o gdftime.o physicalunits.o
-	$(LD) -s -shared -fPIC -o libgdf.dll gdf.o getlogin.o gdftime.o physicalunits.o $(LDLIBS) -Wl,-subsystem,windows,--output-def,libgdf.def,--out-implib,libgdf.dll.a
+	$(LD) $(LDFLAGS) -s -shared -fPIC -o libgdf.dll gdf.o getlogin.o gdftime.o physicalunits.o $(LDLIBS) -Wl,-subsystem,windows,--output-def,libgdf.def,--out-implib,libgdf.dll.a
 
 libbiosig.a: $(OBJECTS) libbiosig.pc
 	-$(DELETE) libbiosig.a
 	$(AR) libbiosig.a $(OBJECTS)
 libbiosig.dll: $(OBJECTS) libbiosig.pc
-	$(LD) -o libbiosig.dll -s -shared -fPIC $(OBJECTS) $(LDLIBS) -Wl,-subsystem,windows,--output-def,libbiosig.def,--out-implib,libbiosig.dll.a
+	$(LD) $(LDFLAGS) -o libbiosig.dll -s -shared -fPIC $(OBJECTS) $(LDLIBS) -Wl,-subsystem,windows,--output-def,libbiosig.def,--out-implib,libbiosig.dll.a
 
 libbiosig.pc :
 	mkdir -p pkgconfig
@@ -753,25 +753,25 @@ libbiosig.pc :
 
 ## save2gdf, pdp2gdf
 %${BINEXT}: %.c libbiosig.$(DLEXT)
-	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
+	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) "$<" -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 
 physicalunits${BINEXT} : pu.c physicalunits.o
-	$(CC) $(DEFINES) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o "$@"
+	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o "$@"
 
 ifeq (1,@HAVE_LIBB64@)
 biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.$(DLEXT)
-	$(CC) $(DEFINES) $(CFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
+	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
 else
 biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c libbiosig.$(DLEXT)
-	$(CC) $(DEFINES) $(CFLAGS) -Ilibb64-1.2.1/include/ "$<" libb64-1.2.1/src/cencode.c -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
+	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Ilibb64-1.2.1/include/ "$<" libb64-1.2.1/src/cencode.c -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 endif
 
 bscs: biosig_client${BINEXT} biosig_server${BINEXT} sandbox.o biosig.o
 biosig_client${BINEXT}: biosig_client.c libbiosig.$(LIBEXT) biosig-network.o
-	$(CC) $(CFLAGS) biosig_client.c biosig-network.o libbiosig.$(LIBEXT) $(LDFLAGS) $(LDLIBS) -o "$@"
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) biosig_client.c biosig-network.o libbiosig.$(LIBEXT) $(LDLIBS) -o "$@"
 
 biosig_server${BINEXT}: biosig_server.c libbiosig.$(LIBEXT) biosig-network.o
-	$(CC) $(CFLAGS) biosig_server.c biosig-network.o libbiosig.$(LIBEXT) $(LDFLAGS) $(LDLIBS) -o "$@"
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) biosig_server.c biosig-network.o libbiosig.$(LIBEXT) $(LDLIBS) -o "$@"
 
 
 #############################################################
@@ -877,16 +877,16 @@ save2aecg: save2gdf
 ttltrig: bin/ttltrig
 bin/ttl2trig : src/ttl2trig.c gdf.o gdftime.o physicalunits.o
 	mkdir -p ./bin
-	$(CC) -D=WITH_BIOSIG $(DEFINE) $(CFLAGS) $^ -Wall -Wextra -lasound $(LDLIBS) -o "$@"
+	$(CC) -D=WITH_BIOSIG $(DEFINE) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ -Wall -Wextra -lasound $(LDLIBS) -o "$@"
 
 ###	FLOWMON
 flowmon.o: src/flowmon2.c
-	$(CC) -c $(DEFINES) $(CFLAGS) -o "$@" "$<"
+	$(CC) -c $(DEFINES) $(CPPFLAGS) $(CFLAGS) -o "$@" "$<"
 
 flowmon: bin/flowmon
 bin/flowmon: flowmon.o gdf.o gdftime.o physicalunits.o
 	mkdir -p ./bin
-	$(CC) $^ $(LDLIBS) -o "$@"
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o "$@"
 
 
 #############################################################
