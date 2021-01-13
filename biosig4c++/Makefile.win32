@@ -262,7 +262,7 @@ sopen_fef_read.o: t240/sopen_fef_read.c biosig-dev.h biosig.h
 #	#asn1c -fcompound-names iso11073-10471.asn1
 #	#asn1c -fcompound-names iso11073-20601.asn1
 #	cd ..
-#	make -C t240 -f Makefile.am.sample
+#	$(MAKE) -C t240 -f Makefile.am.sample
 	$(CC) -c $(CFLAGS) -I t240 $(INCPATH) -o "$@" "$<"
 
 sopen_hl7aecg.o: t230/sopen_hl7aecg.c biosig-dev.h biosig.h XMLParser/tinyxml.h XMLParser/tinystr.h
@@ -325,17 +325,17 @@ python/_biosig.so : python/swig_wrap.cxx  libbiosig.$(LIBEXT)
 
 
 java: libbiosig.$(LIBEXT) java/biosig.i
-	make -C java 
+	$(MAKE) -C java
 perl: libbiosig.$(LIBEXT) perl/biosig.i
-	make -C perl 
+	$(MAKE) -C perl
 php: libbiosig.$(LIBEXT) php/biosig.i
-	make -C php 
+	$(MAKE) -C php
 python: libbiosig.$(LIBEXT) python/swig.i
-	make -C python 
+	$(MAKE) -C python
 ruby: libbiosig.$(LIBEXT) ruby/biosig.i
-	make -C ruby 
+	$(MAKE) -C ruby
 tcl: libbiosig.$(LIBEXT) tcl/biosig.i
-	make -C tcl 
+	$(MAKE) -C tcl
 
 
 #############################################################
@@ -370,8 +370,8 @@ win32 exe: win32/save2gdf.exe win32/libbiosig.dll mma #win32/sigviewer.exe
 #############################################################
 
 t240/libcnsfef.a:
-#	make -C t240 regen		#
-	make -C t240 libcnsfef.a	# generate t240/*.o files
+#	$(MAKE) -C t240 regen		#
+	$(MAKE) -C t240 libcnsfef.a	# generate t240/*.o files
 
 libbiosig.a: $(OBJECTS) biosig.h biosig-dev.h #t240/libcnsfef.a
 	-$(DELETE) libbiosig.a
@@ -404,22 +404,22 @@ biosig_server: biosig_server.c libbiosig.$(LIBEXT) biosig-network.o Makefile
 #	MathLink interface to Mathematica 
 #############################################################
 mma: libbiosig.a
-	make -C mma -f Makefile.win32
+	$(MAKE) -C mma -f Makefile.win32
 
 mex mex4m mex4o mexw32 oct:
-	make -C mex $@
+	$(MAKE) -C mex $@
 
 #############################################################
 #	MEX-files for Octave and Matlab
 #############################################################
 mex: 
-	make -C mex mex -k
+	$(MAKE) -C mex mex -k
 
 mex mex4m mex4o mexw32 oct:
-	make -C mex $@
+	$(MAKE) -C mex $@
 
 %.mex %.mex.$(MEX_EXT) %.mexw32:
-	make -C mex $@
+	$(MAKE) -C mex $@
 
 #############################################################
 #	SigViewer
@@ -471,13 +471,13 @@ clean:
 	-$(DELETE) t240/libbiosig.*
 	-$(DELETE) t240/*.obj
 	-$(DELETE) pdp2gdf
-	-make -C java clean
-	-make -C matlab clean
-	-make -C mma clean
-	-make -C php clean
-	-make -C perl clean
-	-make -C ruby clean
-	-make -C tcl clean
+	-$(MAKE) -C java clean
+	-$(MAKE) -C matlab clean
+	-$(MAKE) -C mma clean
+	-$(MAKE) -C php clean
+	-$(MAKE) -C perl clean
+	-$(MAKE) -C ruby clean
+	-$(MAKE) -C tcl clean
 
 install_sigviewer: sigviewer
 	install $(PathToSigViewer)/bin/sigviewer $(BIN)

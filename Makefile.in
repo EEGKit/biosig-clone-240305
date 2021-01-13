@@ -11,42 +11,42 @@ exec_prefix ?= $(prefix)
 first :: lib tools
 
 java: lib
-	make -C biosig4c++/java
+	$(MAKE) -C biosig4c++/java
 
 python: lib
-	make -C biosig4c++/python
+	$(MAKE) -C biosig4c++/python
 
 lib:
-	make -C biosig4c++ lib
+	$(MAKE) -C biosig4c++ lib
 
 tools: lib
-	make -C biosig4c++ tools
+	$(MAKE) -C biosig4c++ tools
 
 mma mathematica: lib
-	make -C biosig4c++/mma
+	$(MAKE) -C biosig4c++/mma
 
 mex4m matlab: lib
-	make -C biosig4c++/mex mex4m
+	$(MAKE) -C biosig4c++/mex mex4m
 
 mex4o octave: lib
-	make -C biosig4c++/mex mex4o
+	$(MAKE) -C biosig4c++/mex mex4o
 
 R: lib
-	make -C biosig4c++/R
+	$(MAKE) -C biosig4c++/R
 
 install ::
-	make -C biosig4c++ install
+	$(MAKE) -C biosig4c++ install
 	install -d $(DESTDIR)@prefix@/share/biosig/matlab
 	cp -r biosig4matlab/* $(DESTDIR)@prefix@/share/biosig/matlab/
 	-rm -rf $(DESTDIR)@prefix@/share/biosig/matlab/maybe-missing
 
 uninstall ::
-	make -C biosig4c++ uninstall
+	$(MAKE) -C biosig4c++ uninstall
 	-rm -rf $(DESTDIR)@prefix@/share/biosig
 
 clean ::
-	make -C biosig4c++/mma clean
-	make -C biosig4c++ clean
+	$(MAKE) -C biosig4c++/mma clean
+	$(MAKE) -C biosig4c++ clean
 
 distclean : clean
         # also configure.ac for list of files
@@ -57,31 +57,31 @@ distclean : clean
 ifneq (:,@JAVA@)
 ifneq (:,@JAVAC@)
 first :: lib
-	-make -C biosig4c++/java
+	-$(MAKE) -C biosig4c++/java
 endif
 clean ::
-	-make -C biosig4c++/java clean
+	-$(MAKE) -C biosig4c++/java clean
 test ::
-	-make -C biosig4c++/java test
+	-$(MAKE) -C biosig4c++/java test
 endif
 
 ifneq (:,@MATHEMATICA@)
 first :: lib
-	make -C biosig4c++/mma
+	$(MAKE) -C biosig4c++/mma
 install ::
-	-make -C biosig4c++/mma install
+	-$(MAKE) -C biosig4c++/mma install
 uninstall ::
-	-make -C biosig4c++/mma uninstall
+	-$(MAKE) -C biosig4c++/mma uninstall
 endif
 
 ifneq (:,@MATLAB@)
 MATLAB_MEX := $(shell dirname @MATLAB@)/mex
 first ::
-	make -C biosig4c++/mex mex4m
+	$(MAKE) -C biosig4c++/mex mex4m
 install ::
-	make -C biosig4c++/mex install
+	$(MAKE) -C biosig4c++/mex install
 uninstall ::
-	make -C biosig4c++/mex uninstall
+	$(MAKE) -C biosig4c++/mex uninstall
 endif
 
 ifneq (:,@OCTAVE@)
@@ -89,8 +89,8 @@ ifneq (:,@MKOCTFILE@)
 BIOSIG_MEX_DIR = $(DESTDIR)$(shell octave-config -p LOCALOCTFILEDIR)/biosig
 BIOSIG_DIR     = $(DESTDIR)$(shell octave-config -p LOCALFCNFILEDIR)/biosig
 first ::
-	make octave
-	make -C biosig4c++ mexbiosig
+	$(MAKE) octave
+	$(MAKE) -C biosig4c++ mexbiosig
 install ::
 	# mexbiosig
 	#-@OCTAVE@ --no-gui --eval "pkg install -global biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz"
@@ -114,7 +114,7 @@ endif
 
 ifneq (:,@PYTHON3@)
 first biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz ::
-	-PYTHON=@PYTHON3@ make -C biosig4c++/python dist/Biosig-@PACKAGE_VERSION@.tar.gz
+	-PYTHON=@PYTHON3@ $(MAKE) -C biosig4c++/python dist/Biosig-@PACKAGE_VERSION@.tar.gz
 install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
 	-@PYTHON3@ -m pip install $<
 	-$(foreach py, $(shell pyversions -i),  $(py) -m pip install $<;)
@@ -124,16 +124,16 @@ uninstall ::
 	-$(foreach py, $(shell pyversions -i),  $(py) -m pip uninstall -y Biosig;)
 	-$(foreach py, $(shell py3versions -i), $(py) -m pip uninstall -y Biosig;)
 clean ::
-	make -C biosig4c++/python clean
+	$(MAKE) -C biosig4c++/python clean
 endif
 
 ifneq (:,@R@)
 first ::
-	-make -C biosig4c++/R build
+	-$(MAKE) -C biosig4c++/R build
 install ::
-	-make -C biosig4c++/R install
+	-$(MAKE) -C biosig4c++/R install
 clean ::
-	-make -C biosig4c++/R clean
+	-$(MAKE) -C biosig4c++/R clean
 endif
 
 all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #biosig_client biosig_server mma java tcl perl php ruby #sigviewer
