@@ -14,7 +14,7 @@ all:
 	$(error support for biosig on ruby is not ready yet)
 	swig -c++ -ruby biosig.i
 	ruby extconf.rb
-	make
+	$(MAKE)
 
 clean:
 	-rm *.cxx

@@ -23,10 +23,10 @@ MPREP     = ${CADDSDIR}/bin/mprep.exe
 all : sload.exe
 
 win win32 :
-	make -f Makefile.win32
+	$(MAKE) -f Makefile.win32
 
 ../libbiosig.a: 
-	make -C .. -f Makefile.win32 libbiosig.a
+	$(MAKE) -C .. -f Makefile.win32 libbiosig.a
 
 .c.o :
 	${CC} -c -I${INCDIR} $<
