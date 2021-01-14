@@ -893,7 +893,7 @@ bin/flowmon: flowmon.o gdf.o gdftime.o physicalunits.o
 #	INSTALL and DE-INSTALL
 #############################################################
 
-.PHONY: clean install install_libbiosig remove install_sigviewer asc bin testscp testhl7 testbin test test6 zip
+.PHONY: clean install install-strip install_libbiosig remove install_sigviewer asc bin testscp testhl7 testbin test test6 zip
 
 clean:
 	-$(DELETE) *~
@@ -941,13 +941,11 @@ install_libbiosig.a: libbiosig.a libphysicalunits.a libbiosig.pc
 	install -d 			$(DESTDIR)$(libdir)/pkgconfig/
 	install libbiosig.a		$(DESTDIR)$(libdir)
 	install libphysicalunits.a 	$(DESTDIR)$(libdir)
-	strip -x $(DESTDIR)$(libdir)/libbiosig.a $(DESTDIR)$(libdir)/libphysicalunits.a
 	install libbiosig.pc		$(DESTDIR)$(libdir)/pkgconfig/
 
 install_libbiosig.$(DLEXT): libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 	install -d 			$(DESTDIR)$(libdir)/pkgconfig/
 	install libbiosig$(FULLDLEXT)  $(DESTDIR)$(libdir)
-	strip -x $(DESTDIR)$(libdir)/libbiosig$(FULLDLEXT)
 	(cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig${SONAMEVERSION}.$(DLEXT))
 ifneq (Darwin,$(shell uname))
 	cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
@@ -955,6 +953,11 @@ endif
 	-ldconfig
 
 install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_tools
+
+install-strip: install
+	-strip -x $(DESTDIR)$(libdir)/libbiosig.a
+	-strip -x $(DESTDIR)$(libdir)/libphysicalunits.a
+	-strip -x $(DESTDIR)$(libdir)/libbiosig$(FULLDLEXT)
 
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
