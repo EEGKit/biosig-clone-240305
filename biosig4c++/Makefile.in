@@ -913,7 +913,7 @@ clean:
 	-$(DELETE) t240/*.o*
 	-$(DELETE) t240/libcnsfef.a
 	-$(DELETE) libbiosig.* libbiosig${SONAMEVERSION}.*
-	-$(DELETE) pdp2gdf save2gdf physicalunits biosig_fhir
+	-$(DELETE) pdp2gdf save2gdf physicalunits biosig_fhir biosig2gdf
 	-$(DELETE) mma/biosig.exe mma/*/biosig.exe
 	-$(MAKE) -C java clean
 	-$(MAKE) -C mex clean
