@@ -53,12 +53,6 @@
 	# requires: brew tap homebrew/dupes
 	#	    brew install libiconv
 
-#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-DPKG_EXPORT_BUILDFLAGS = 1
-ifeq (,$(findstring mingw,$(TARGET)))
-    -include /usr/share/dpkg/buildflags.mk
-endif
-
 ###############################
 # whether dynamic or static linking is used, can be controlled with
 # LIBEXT. Setting it to 'a' links statically, 'so' links dynamically
