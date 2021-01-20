@@ -187,12 +187,12 @@ def loadgdf(FileName, chan=-1):
 	HDR.NRec = struct.unpack('<Q',fid.read(8))[0]
 	HDR.Dur  = struct.unpack('<d',fid.read(8))[0]
 	HDR.NS   = struct.unpack('<H',fid.read(2))[0]
+	HDR.tzmin= struct.unpack('<h',fid.read(2))[0]	# timezone in minutes east of UTC
 	HDR.SPR  = 1
 	if (chan < 0):
 		chan = slice(0,HDR.NS);
 
 	# read H2 - variable header, channel information
-	skipbytes(fid, 256-236-18)
 	HDR.Label=[]
 	for k in range(HDR.NS):
 		HDR.Label.append(struct.unpack('<16s',fid.read(16))[0].strip(b'\0').decode())

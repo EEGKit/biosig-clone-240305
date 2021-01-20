@@ -148,11 +148,11 @@ loadgdf <- function(filename, chan=0) {
 	HDR@NRec <- readBin(fid, "int", size=8, endian="little")
 	HDR@Dur  <- readBin(fid, "double", n=1, size=8, endian="little")
 	HDR@NS   <- readBin(fid, "int", size=2, signed=FALSE, endian="little")
+	HDR@tzmin<- readBin(fid, "int", size=2, endian="little")   	# timezone in minutes east of UTC
 	HDR@SPR  <- 1
 	if (any(chan==0)) chan <- c(1:HDR@NS)
 
 	### read H2 - variable header, channel information ### 
-	skipbytes(fid, nbytes=256-236-18)
 	for (k in c(1:HDR@NS)) {
 		HDR@Label[k] <- readChar(fid, nchars=16, useBytes=TRUE)
 	}
