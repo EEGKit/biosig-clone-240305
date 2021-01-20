@@ -364,6 +364,9 @@ end;
                         end;
                         tmp = fread(HDR.FILE.FID,2,'uint16');     % 4 Byte # of signals
                         HDR.NS = tmp(1);
+                        if (HDR.VERSION > 2.40),
+                                HDR.tzmin = tmp(2);
+                        end
                 else 
                         H1(193:256)= fread(HDR.FILE.FID,[1,256-192],'uint8');     %
                         H1 = char(H1);
@@ -1787,7 +1790,11 @@ end;
                         	[n,d]=rat(HDR.Dur);
                         	fwrite(HDR.FILE.FID,[n d], 'uint32');
                         end; 	
-                        c=fwrite(HDR.FILE.FID,[HDR.NS,0],'uint16');
+                        tzmin=0;
+                        if (HDR.VERSION >= 2.40) && isfield(HDR,'tzmin');
+                                tzmin = HDR.tzmin
+                        end
+                        c=fwrite(HDR.FILE.FID,[HDR.NS,tzmin],'uint16');
                 else
                         H1(168+(1:16))=sprintf('%02i.%02i.%02i%02i.%02i.%02i',floor(rem(HDR.T0([3 2 1 4 5 6]),100)));
                         H1(185:192)=sprintf('%-8i',HDR.HeadLen);
