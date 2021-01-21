@@ -88,7 +88,7 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 
 	ix = find(TYP < 256);
 	if any(ix),
-		[HDR.EVENT.CodeDesc, CodeIndex, TYP(ix)] = unique(Desc(ix)');
+		[HDR.EVENT.CodeDesc, HDR.EVENT.CodeIndex, HDR.EVENT.TYP(ix)] = unique(Desc(ix)');
 	end;
 
         %% TODO: use eventcodes.txt for predefined event types e.g. QRS->0x501
