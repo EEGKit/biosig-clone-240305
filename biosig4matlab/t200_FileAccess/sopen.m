@@ -1792,7 +1792,7 @@ end;
                         end; 	
                         tzmin=0;
                         if (HDR.VERSION >= 2.40) && isfield(HDR,'tzmin');
-                                tzmin = HDR.tzmin
+                                tzmin = HDR.tzmin;
                         end
                         c=fwrite(HDR.FILE.FID,[HDR.NS,tzmin],'uint16');
                 else
