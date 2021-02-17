@@ -22,7 +22,7 @@ function [kap,se,H,z,p0,SA,R]=kappa(d,c,arg3,w)
 % X 	is a struct containing all the fields above
 %       For two classes, a number of additional summary statistics including
 %         TPR, FPR, FDR, PPV, NPF, F1, dprime, Matthews Correlation coefficient (MCC) or
-%	Phi coefficient (PHI=MCC), Specificity and Sensitivity
+%	Phi coefficient (PHI=MCC), Specificity and Sensitivity, Youden index (YI)
 %       are provided. Note, the positive category must the larger label (in d and c), otherwise
 %       the confusion matrix becomes transposed and the summary statistics are messed up.
 %
@@ -37,9 +37,9 @@ function [kap,se,H,z,p0,SA,R]=kappa(d,c,arg3,w)
 % [5] http://ourworld.compuserve.com/homepages/jsuebersax/kappa.htm
 % [6] http://en.wikipedia.org/wiki/Receiver_operating_characteristic
 
-%	Copyright (c) 1997-2006,2008,2009,2011,2019 by Alois Schloegl <alois.schloegl@gmail.com>
-%       This function is part of the NaN-toolbox
-%       http://pub.ist.ac.at/~schloegl/matlab/NaN/
+%    Copyright (c) 1997-2021 by Alois Schloegl <alois.schloegl@gmail.com>
+%    This function is part of the NaN-toolbox
+%    http://pub.ist.ac.at/~schloegl/matlab/NaN/
 %
 %    BioSig is free software: you can redistribute it and/or modify
 %    it under the terms of the GNU General Public License as published by
@@ -65,15 +65,15 @@ if nargin>2
 	else
 		kk = arg3;
 	end
-end; 		
+end;
 if nargin<4
 	w = [];
-end; 	
+end;
 
 if nargin>1,
 	d = d(:);
 	c = c(:);
-	
+
 	tmp    = [d;c];
 	maxtmp = max(tmp);
 	tmp(isnan(tmp)) = maxtmp+1;
@@ -162,9 +162,10 @@ X.datatype = 'confusion';
 
 if length(H)==2,
 	% see http://en.wikipedia.org/wiki/Receiver_operating_characteristic
-        % Note that the confusion matrix used here is has positive values in
-	% the 2nd row and column, moreover the true values are indicated by
-	% rows (transposed). Thus, in summary H(1,1) and H(2,2) are exchanged
+	% Note, the confusion matrix used in here has more positive values in
+	% the 2nd row and column, moreover the true (scored) values
+	% (defined by input c) are indicated by rows.
+	% Thus, H(1,1) and H(2,2) are exchanged
 	% as compared to the wikipedia article.
 	X.TP  = H(2,2);
 	X.TN  = H(1,1);
@@ -183,8 +184,19 @@ if length(H)==2,
 	X.Specificity = 1 - X.FPR;
 	X.Precision   = X.PPV;
 	X.dprime = norminv(X.TPR) - norminv(X.FDR);
+	X.YI = X.Sensitivity + X.Specificity - 1;  % Youden Index
+
+	% statistical significance test of Matthews' correlation coefficient
+	NN = sum(H(:));
+	R = X.MCC;
+	R(isnan(R)) = 0;
+	tmp = 1 - R.*R;
+	tmp(tmp<0) = 0;		% prevent tmp<0 i.e. imag(t)~=0
+	t   = R.*sqrt(max(NN-2,0)./tmp)
+	sig = tcdf(t,NN-2);
+	sig = 2 * min(sig,1 - sig);
+	X.MCC_p_value = sig;
 end;
 
-kap = X; 
+kap = X;
 warning(s);
-
