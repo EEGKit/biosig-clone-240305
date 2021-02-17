@@ -9,8 +9,7 @@ function [argout,s]=sview(s,varargin),
 %
 % See also: SLOAD 
 
-%	$Id$ 
-%	Copyright (c) 2004,2006,2008,2012,2012 by Alois Schloegl <alois.schloegl@gmail.org>	
+%	Copyright (c) 2004-2012,2021 by Alois Schloegl <alois.schloegl@gmail.com>
 %    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
 % This program is free software; you can redistribute it and/or
@@ -213,9 +212,13 @@ end;
 t = detrend(s); t = t(:); 
 t(isnan(t))=median(t);
 dd = max(t)-min(t);
-dd = 1000; s=center(s); 
-dd = max(std(s))*5;
-s = zscore(s); dd = 20; % 
+dd = 1000;
+mu = sum(s)./sum(~isnan(s));
+s  = s - repmat(mu,size(s)./size(mu));
+sd = sqrt(sum(s.*s) ./ sum(~isnan(s)));
+dd = max(sd)*5;
+s  = s*diag(1./sd);
+dd = 20;
 H.AS.TIMECHAN = [strmatch('Time',H.Label);strmatch('Zeit',H.Label)];
 FLAG.tmp = (length(H.FILE)==1) & (prod(size(H.AS.TIMECHAN))==1);
 if FLAG.tmp,
