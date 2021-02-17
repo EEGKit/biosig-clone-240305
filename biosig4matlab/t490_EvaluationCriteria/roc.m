@@ -12,7 +12,7 @@ function [argout1,argout2,argout3] = roc(d, c, varargin);
 % Tratitionally, ROC was defined in the "Biosig for Octave and matlab"
 %   toolbox, later an ROC function became available in Matlab's NNET
 %   (Deep Learning) toolbox with a different usage interface.
-%   Therfore, there different usage-styles.
+%   Therfore, there are different usage-styles.
 %
 % Usage (traditional/biosig style):
 %   RES = roc(d, c);
@@ -25,6 +25,9 @@ function [argout1,argout2,argout3] = roc(d, c, varargin);
 %       In order to speed up the plotting, no more than 10000 data
 %       points are displayed. If you need more, you need to change
 %       the source code).
+%
+%   The ROC curve can be plotted with
+%       plot(RES.FPR*100, RES.TPR*100);
 %
 % Usage style compatible with matlab's roc implementation:
 %   [TPR, FPR, THRESHOLDS] = ROC(targets, outputs)
@@ -63,7 +66,7 @@ function [argout1,argout2,argout3] = roc(d, c, varargin);
 %       return the optimal threshold for the respective measure.
 %   RES.H_kappa: confusion matrix when Threshold of maximum Kappa is applied.
 %   RES.H_{yi,acc,kappa,mcc,mi,f1,phi}: confusion matrix when threshold of
-%       optimum {...} is applied.
+%       optimum {...} is applied. Its structure is [TN, FN; FP; TP].
 %
 % see also: AUC, PLOT, ROC
 %
@@ -78,8 +81,8 @@ function [argout1,argout2,argout3] = roc(d, c, varargin);
 %     (Eds.) G. Dornhege, J.R. Millan, T. Hinterberger, D.J. McFarland, K.-R.Müller;
 %     Towards Brain-Computer Interfacing, MIT Press, 2007, p.327-342
 
-%	Copyright (c) 1997-2003,2005,2007,2010,2011,2016-2019 Alois Schloegl <alois.schloegl@gmail.com>
-%	This is part of the BIOSIG-toolbox http://biosig.sf.net/
+% Copyright (c) 1997-2021 Alois Schloegl <alois.schloegl@gmail.com>
+% This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 % This library is free software; you can redistribute it and/or
 % modify it under the terms of the GNU Library General Public
@@ -107,9 +110,8 @@ else
         error('can not identify input data style')
 end
 
-
 if strcmp(MODE,'matlab_style')
-        warning('matlab style is not fully compatible yet');
+        warning('matlab style is not fully (bug-by-bug) compatible');
         % Matlab's roc functions seems to add (in certain circumstances) some weird
         % 0 and 1 in its 'outputs' data (see thresholds). This seems wrong.
         % We do not aim for bug-compatibility but for correctness.
@@ -118,8 +120,8 @@ if strcmp(MODE,'matlab_style')
         [thresholds,I] = sort(c,2);
         x = d(I);
 
-        tpr = 1-cumsum(x==1,2)./sum(x==1,2);
-        fpr = 1-cumsum(x==0,2)./sum(x==0,2);
+        tpr = 1-[zeros(size(x,1),1),cumsum(x==1,2)]./sum(x==1,2);
+        fpr = 1-[zeros(size(x,1),1),cumsum(x==0,2)]./sum(x==0,2);
         tpr = tpr(:,end:-1:1);
         fpr = fpr(:,end:-1:1);
         thresholds = thresholds(:,end:-1:1);
@@ -152,6 +154,8 @@ end;
 c = c(~isnan(d));
 d = d(~isnan(d));
 
+
+
 plot_args={'-'};
 flag_plot_args = 1;
 thFPR = NaN;
@@ -174,20 +178,20 @@ end;
 [D,I] = sort(d);
 x = c(I);
 
-FNR = cumsum(x==1)./sum(x==1);
-TPR = 1-FNR;
-
-TNR = cumsum(x==0)./sum(x==0);
-FPR = 1-TNR;
-
-FN = cumsum(x==1);
+FN = [0;cumsum(x==1)];
 TP = sum(x==1)-FN;
 
-TN = cumsum(x==0);
+TN = [0;cumsum(x==0)];
 FP = sum(x==0)-TN;
 
-RES.PPV = TP./(TP+FP);
-RES.NPV = TN./(TN+FN);
+FNR = FN/sum(x==1);
+TPR = 1-FNR;
+
+TNR = TN/sum(x==0);
+FPR = 1-TNR;
+
+PPV = TP./(TP+FP);
+NPV = TN./(TN+FN);
 
 SEN = TP./(TP+FN);
 SPEC= TN./(TN+FP);
@@ -198,9 +202,9 @@ ACC = (TP+TN)./(TP+TN+FP+FN);
 %%% compute Cohen's kappa coefficient
 N = size(d,1);
 
-%H = [TP,FN;FP,TN];
-p_i = [TP+FP,FN+TN];%sum(H,1);
-pi_ = [TP+FN,FP+TN];%sum(H,2)';
+% H =[TN, FN; FP, TP]
+p_i = [TP+FP, FN+TN];
+pi_ = [TP+FN, FP+TN];
 pe  = sum(p_i.*pi_,2)/(N*N);  % estimate of change agreement
 kap = (ACC - pe) ./ (1 - pe);
 mcc = (TP .* TN - FN .* FP) ./ sqrt(prod( [p_i, pi_], 2));
@@ -216,61 +220,100 @@ tmp1 = pyj.*log2(pyj);
 tmp2 = log2pji;
 tmp1(isnan(tmp1))=0;
 tmp2(isnan(tmp2))=0;
-RES.MI = -sum(tmp1,2) + sum(tmp2,2);
+MI = -sum(tmp1,2) + sum(tmp2,2);
+
 
 % area under the ROC curve
-RES.AUC = -diff(FPR)' * (TPR(1:end-1)+TPR(2:end))/2;
+if numel(FPR)<2
+	RES.AUC=NaN;
+else
+	RES.AUC = -diff(FPR)' * (TPR(1:end-1)+TPR(2:end))/2;
+end
 
 % Youden index
 YI = SEN + SPEC - 1;
+F1 = 2*PPV.*TPR./(PPV+TPR);
 
-RES.YI    = YI;
-RES.ACC   = ACC;
-RES.KAPPA = kap;
-RES.MCC   = mcc;
-RES.TH    = D;
-RES.F1    = 2*TP./(2*TP+FP+FN);
+LRP = TPR./FPR;
+LRN = FNR./TNR;
 
-RES.SEN = SEN;
-RES.SPEC = SPEC;
-RES.TP = TP;
-RES.FP = FP;
-RES.FN = FN;
-RES.TN = TN;
-RES.TPR = TPR;
-RES.FPR = FPR;
-RES.FNR = FNR;
-RES.TNR = TNR;
-RES.LRP = TPR./FPR;
-RES.LRN = FNR./TNR;
+% reduce size of AUC, to about 2500 to 5000 samples)
+len = length(FPR);
+delta = max(1,ceil(len/5000));
+dix = [1:delta:len-1,len];
 
-% find optimal threshold
-[tmp,ix] = max(SEN+SPEC-1);
+RES.YI    = YI(dix);
+RES.ACC   = ACC(dix);
+RES.KAPPA = kap(dix);
+RES.MCC   = mcc(dix);
+% RES.TH    = D(dix); % broken
+RES.F1    = F1(dix);
+RES.MI    = MI(dix);
+
+RES.SEN = SEN(dix);
+RES.SPEC= SPEC(dix);
+RES.TP  = TP(dix);
+RES.FP  = FP(dix);
+RES.FN  = FN(dix);
+RES.TN  = TN(dix);
+RES.TPR = TPR(dix);
+RES.FPR = FPR(dix);
+RES.FNR = FNR(dix);
+RES.TNR = TNR(dix);
+RES.LRP = LRP(dix);
+RES.LRN = LRN(dix);
+RES.PPV = PPV(dix);
+RES.NPV = NPV(dix);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Find optimal threshold:
+%     there are different threshold based on different criteria
+%     currently, cohen's kappa is usually what you want.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cohen's kappa is best tested for borderline cases, like, few
+% samples only, or when multiple options are possible.
+% others are not that sophisticated.
+[RES.maxYI,ix] = max(SEN+SPEC-1);
+ix = min(ix,length(D));
 RES.THRESHOLD.maxYI   = D(ix);
 RES.THRESHOLD.maxYIix = ix;
 RES.H_yi = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 [RES.maxKAPPA,ix] = max(kap);
-RES.THRESHOLD.maxKAPPA = D(ix);
-RES.THRESHOLD.maxKAPPAix = ix;
-RES.H_kappa = [TN(ix),FN(ix);FP(ix),TP(ix)];
+if (RES.maxKAPPA < 1/length(d))
+	% if there is no positive kappa, look for negative kappas
+	[RES.maxKAPPA,ix] = max(abs(kap));
+end
+if (RES.maxKAPPA>2*eps)
+	ix = find(abs(kap)==RES.maxKAPPA,1);
+	RES.THRESHOLD.maxKAPPA = mean(D(ix+[-1:0]));
+	RES.THRESHOLD.maxKAPPAix = ix;
+	RES.H_kappa = [TN(ix),FN(ix);FP(ix),TP(ix)];
+	if kap(ix)<0,
+		warning('ROC - negative maximum kappa found, data and classlabels are inversely correlated. You might want to switch the classlabels')
+	end;
+end
 
 [RES.maxMCC,ix] = max(mcc);
+ix = min(ix,length(D));
 RES.THRESHOLD.maxMCC = D(ix);
 RES.THRESHOLD.maxMCCix = ix;
 RES.H_mcc = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
-[RES.maxMI,ix] = max(RES.MI);
+[RES.maxMI,ix] = max(MI);
+ix = min(ix,length(D));
 RES.THRESHOLD.maxMI = D(ix);
 RES.THRESHOLD.maxMIix = ix;
 RES.H_mi = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
 [tmp,ix] = max(ACC);
+ix = min(ix,length(D));
 RES.THRESHOLD.maxACC = D(ix);
 RES.THRESHOLD.maxACCix = ix;
 RES.H_acc = [TN(ix),FN(ix);FP(ix),TP(ix)];
 
-[tmp,ix] = max(RES.F1);
+[tmp,ix] = max(F1);
 RES.THRESHOLD.maxF1 = D(ix);
 RES.THRESHOLD.maxF1ix = ix;
 RES.H_f1 = [TN(ix),FN(ix);FP(ix),TP(ix)];
@@ -283,15 +326,10 @@ if ~isnan(thFPR)
 	RES.H_fpr = [TN(ix),FN(ix);FP(ix),TP(ix)];
 end;
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  display only 10000 points at most.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if FLAG_DISPLAY,
-	len = length(FPR);
-	delta = max(1,floor(len/5000));
-	ix = [1:delta:len-1,len];
-
 	ix0 = RES.THRESHOLD.maxKAPPAix;
 	ix1 = RES.THRESHOLD.maxYIix ;
 	ix2 = RES.THRESHOLD.maxMCCix;
@@ -299,7 +337,7 @@ if FLAG_DISPLAY,
 	ix4 = RES.THRESHOLD.maxACCix;
 	ix5 = RES.THRESHOLD.maxF1ix;
 
-	plot(FPR(ix)*100,TPR(ix)*100, FPR(ix0)*100, TPR(ix0)*100,'ok', FPR(ix1)*100, TPR(ix1)*100, 'xb', FPR(ix2)*100, TPR(ix2)*100, 'xg', FPR(ix3)*100, TPR(ix3)*100, 'xr', FPR(ix4)*100, TPR(ix4)*100, 'xc', FPR(ix5)*100, TPR(ix5)*100, 'xm');
+	plot(FPR(dix)*100,TPR(dix)*100, FPR(ix0)*100, TPR(ix0)*100,'ok', FPR(ix1)*100, TPR(ix1)*100, 'xb', FPR(ix2)*100, TPR(ix2)*100, 'xg', FPR(ix3)*100, TPR(ix3)*100, 'xr', FPR(ix4)*100, TPR(ix4)*100, 'xc', FPR(ix5)*100, TPR(ix5)*100, 'xm');
 	ylabel('TPR [%]');xlabel('FPR [%]');
 	legend({'ROC','maxKappa','maxYoudenIndex','maxMCC','maxMI','maxACC','maxF1'},'location','southeast');
 
@@ -308,9 +346,12 @@ if FLAG_DISPLAY,
 end;
 
 argout1=RES;
-argout2=RES.FPR;
+argout2=FPR;
 argout3=D;
 
 %%% here are examples of strange results observed in Matlab's roc version
 %%! [tpr1,fpr1,thresholds1] = roc([0,1,1,1,0,0,0],-[0.5:7]-4);
+%% R=roc([5;1],[0;1])
+%% R=roc([-5;1],[0;1])
+%% R=roc([1:4]',[0;0;1;1;]); R.THRESHOLD.maxKAPPA<3
 
