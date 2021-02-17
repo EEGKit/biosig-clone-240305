@@ -40,7 +40,9 @@ if isempty(BIOSIG_MATLAB_PATH)
 end; 
 
 subdirs={'doc','t200_FileAccess','t210_Events','t250_ArtifactPreProcessingQualityControl','t300_FeatureExtraction','t400_Classification','t330_StimFit','t450_MultipleTestStatistic','t490_EvaluationCriteria','t500_Visualization','t501_VisualizeCoupling'};
-addpath(sprintf(fullfile(BIOSIG_MATLAB_PATH,'%s:'),subdirs{:}))
+for k=1:length(subdirs)
+	addpath(fullfile(BIOSIG_MATLAB_PATH,subdirs{k}))
+end
 
 if exist('OCTAVE_VERSION','builtin'),
 	try
@@ -96,7 +98,7 @@ end
 
 tmp_biosig_helper_directory = pwd;
 try
-	if ~exist('OCTAVE_VERSION','builtin') && ~ispc,
+	if 0, % ~exist('OCTAVE_VERSION','builtin') && ~ispc
 		mex -setup
 	end; 
         if ~ispc && exist([BIOSIG_MATLAB_PATH,'/NaN/src'],'dir');
