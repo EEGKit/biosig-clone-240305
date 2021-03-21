@@ -51,7 +51,9 @@ if nargin<3
         color='-';
 end;
 
-% handle (ignore) NaN's  
+
+d(c~=0 & c~=1)=NaN;
+% handle (ignore) NaN's
 c = c(~isnan(d));
 d = d(~isnan(d));
 if isempty(d)
