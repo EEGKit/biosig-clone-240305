@@ -39,8 +39,8 @@ if isempty(BIOSIG_MATLAB_PATH)
 	end;
 end; 
 
-subdirs={'doc','t200_FileAccess','t210_Events','t250_ArtifactPreProcessingQualityControl','t300_FeatureExtraction','t400_Classification','t330_StimFit','t450_MultipleTestStatistic','t490_EvaluationCriteria','t500_Visualization','t501_VisualizeCoupling'};
-for k=1:length(subdirs)
+subdirs = {'doc', 't200_FileAccess', 't210_Events', 't250_ArtifactPreProcessingQualityControl', 't300_FeatureExtraction', 't330_StimFit', 't340_MachineLearningOptimalDetection', 't400_Classification', 't450_MultipleTestStatistic', 't490_EvaluationCriteria', 't500_Visualization', 't501_VisualizeCoupling'};
+for k = 1:length(subdirs)
 	addpath(fullfile(BIOSIG_MATLAB_PATH,subdirs{k}))
 end
 
