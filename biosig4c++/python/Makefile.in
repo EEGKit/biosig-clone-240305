@@ -9,16 +9,14 @@
 PYTHON ?= python3
 PYVER  := $(shell $(PYTHON) -c "import sys; print(sys.version[:3])")
 
+release target : sdist build
 
-release build target: dist/Biosig-@PACKAGE_VERSION@.tar.gz
+wheel: bdist_wheel
 
-# https://packaging.python.org/tutorials/packaging-projects/
-dist/Biosig-@PACKAGE_VERSION@.tar.gz: setup.py biosigmodule.c
-	$(PYTHON) setup.py sdist
+dist/Biosig-@PACKAGE_VERSION@.tar.gz : sdist
 
-install:
-	-@PYTHON@ setup.py install
-	-@PYTHON3@ setup.py install
+sdist build install bdist_wheel ::
+	$(PYTHON) setup.py $@
 
 test:
 	## get ../data/Newtest17-256.bdf
@@ -32,10 +30,6 @@ clean:
 	-rm -rf build/*
 	-rm -rf dist/*
 	-rm *.so
-
-wheel: setup.py biosigmodule.c
-	-@PYTHON@ setup.py sdist bdist_wheel
-	-@PYTHON3@ setup.py sdist bdist_wheel
 
 check: release
 	twine check dist/*

@@ -13,9 +13,6 @@ first :: lib tools
 java: lib
 	$(MAKE) -C biosig4c++/java
 
-python: lib
-	$(MAKE) -C biosig4c++/python
-
 lib:
 	$(MAKE) -C biosig4c++ lib
 
@@ -113,14 +110,17 @@ endif
 endif
 
 ifneq (:,@PYTHON3@)
-first biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz ::
-	-PYTHON=@PYTHON3@ $(MAKE) -C biosig4c++/python dist/Biosig-@PACKAGE_VERSION@.tar.gz
-install :: biosig4c++/python/dist/Biosig-@PACKAGE_VERSION@.tar.gz
-	-@PYTHON3@ -m pip install $<
-	-$(foreach py, $(shell pyversions -i),  $(py) -m pip install $<;)
-	-$(foreach py, $(shell py3versions -i), $(py) -m pip install $<;)
+first :: python
+python ::
+	-PYTHON=@PYTHON3@ $(MAKE) -C biosig4c++/python sdist
+	-$(foreach py, $(shell pyversions -i),  PYTHON=$(py) $(MAKE) -C biosig4c++/python build; )
+	-$(foreach py, $(shell py3versions -i), PYTHON=$(py) $(MAKE) -C biosig4c++/python build; )
+install ::
+	-PYTHON=@PYTHON3@ $(MAKE) -C biosig4c++/python install
+	-$(foreach py, $(shell pyversions -i),  PYTHON=$(py) $(MAKE) -C biosig4c++/python install; )
+	-$(foreach py, $(shell py3versions -i), PYTHON=$(py) $(MAKE) -C biosig4c++/python install; )
 uninstall ::
-	-@PYTHON3@ -m pip uninstall -y $<
+	-@PYTHON3@ -m pip uninstall -y Biosig
 	-$(foreach py, $(shell pyversions -i),  $(py) -m pip uninstall -y Biosig;)
 	-$(foreach py, $(shell py3versions -i), $(py) -m pip uninstall -y Biosig;)
 clean ::
