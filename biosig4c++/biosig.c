@@ -4275,7 +4275,7 @@ else if (!strncmp(MODE,"r",1)) {
 	    	if (Dur==0.0 && FLAG_BUGGY_NEUROLOGGER_EDF) Dur = hdr->SPR/496.0;
 		hdr->SampleRate = hdr->SPR/Dur;
 
-		if (VERBOSE_LEVEL>8) fprintf(stdout,"[EDF 220] #=%i SPR=%i\n",(int)iftell(hdr),(int)hdr->SPR);
+		if (VERBOSE_LEVEL>8) fprintf(stdout,"[EDF 220] #=%i SPR=%i Dur=%g\n",(int)iftell(hdr),(int)hdr->SPR, Dur);
 
 		if (hdr->NRec <= 0) {
         		struct stat FileBuf;
@@ -14075,7 +14075,8 @@ if (VERBOSE_LEVEL>7) fprintf(stdout, "asprintf_hdr2json: sz=%i\n", (int)sz);
 	c += sprintf(STR, "\t\"NumberOfRecords\"\t: %i,\n",(int)hdr->NRec);
 	c += sprintf(STR, "\t\"SamplesPerRecords\"\t: %i,\n",(int)hdr->SPR);
 	c += sprintf(STR, "\t\"NumberOfSamples\"\t: %i,\n",(int)(hdr->NRec*hdr->SPR));
-	if (!isnan(hdr->SampleRate)) c += sprintf(STR, "\t\"Samplingrate\"\t: %f,\n",hdr->SampleRate);
+	if ((0.0 <= hdr->SampleRate) && (hdr->SampleRate < INFINITY))
+		c += sprintf(STR, "\t\"Samplingrate\"\t: %f,\n",hdr->SampleRate);
 	snprintf_gdfdatetime(tmp, 40, hdr->T0);
 	c += sprintf(STR, "\t\"StartOfRecording\"\t: \"%s\",\n",tmp);
 	c += sprintf(STR, "\t\"TimezoneMinutesEastOfUTC\"\t: %i,\n", hdr->tzmin);
@@ -14143,15 +14144,16 @@ if (VERBOSE_LEVEL>7) fprintf(stdout, "asprintf_hdr2json: count=%i\n", (int)c);
                 c += sprintf(STR,"\n\t\t{\n");
 		c += sprintf(STR,"\t\t\"ChannelNumber\"\t: %i,\n", (int)k+1);
 		c += sprintf(STR,"\t\t\"Label\"\t: \"%s\",\n", hc->Label);
+		double fs = hdr->SampleRate * hc->SPR/hdr->SPR;
+		if ((0.0 <= fs) && (fs < INFINITY)) c += sprintf(STR, "\t\t\"Samplingrate\"\t: %f,\n", fs);
 		if ( hc->Transducer && strlen(hc->Transducer) ) c += sprintf(STR,"\t\t\"Transducer\"\t: \"%s\",\n", hc->Transducer);
-		c += sprintf(STR,"\t\t\"PhysicalUnit\"\t: \"%s\",\n", PhysDim3(hc->PhysDimCode));
 		if (!isnan(hc->PhysMax)) c += sprintf(STR,"\t\t\"PhysicalMaximum\"\t: %g,\n", hc->PhysMax);
 		if (!isnan(hc->PhysMin)) c += sprintf(STR,"\t\t\"PhysicalMinimum\"\t: %g,\n", hc->PhysMin);
 		if (!isnan(hc->DigMax))  c += sprintf(STR,"\t\t\"DigitalMaximum\"\t: %f,\n", hc->DigMax);
 		if (!isnan(hc->DigMin))  c += sprintf(STR,"\t\t\"DigitalMinimum\"\t: %f,\n", hc->DigMin);
 		if (!isnan(hc->Cal))     c += sprintf(STR,"\t\t\"scaling\"\t: %g,\n", hc->Cal);
 		if (!isnan(hc->Off))     c += sprintf(STR,"\t\t\"offset\"\t: %g,\n", hc->Off);
-		if (!isnan(hc->TOffset)) c += sprintf(STR,"\t\t\"TimeDelay\"\t: %g,\n", hc->TOffset);
+		if (!isnan(hc->TOffset)) c += sprintf(STR,"\t\t\"TimeDelay\"\t: %g", hc->TOffset);
 		uint8_t flag = (0 < hc->LowPass && hc->LowPass<INFINITY) | ((0 < hc->HighPass && hc->HighPass<INFINITY)<<1) | ((0 < hc->Notch && hc->Notch<INFINITY)<<2); 
 		if (flag) {
 			c += sprintf(STR, "\t\t\"Filter\" : {\n");
@@ -14168,8 +14170,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout, "asprintf_hdr2json: count=%i\n", (int)c);
 			if (!isnan(hc->fZ)) c += sprintf(STR, "\t\t\"fZ\"\t: %g,\n", hc->fZ);
 			break;
 		}
-                double fs = hdr->SampleRate * hc->SPR/hdr->SPR;
-		if (!isnan(fs)) c += sprintf(STR, "\t\t\"Samplingrate\"\t: %f", fs);
+		c += sprintf(STR,"\t\t\"PhysicalUnit\"\t: \"%s\"", PhysDim3(hc->PhysDimCode));
 		c += sprintf(STR, "\n\t\t}");   // end-of-CHANNEL
 	}
         c += sprintf(STR, "\n\t]");   // end-of-CHANNELS
@@ -14272,7 +14273,8 @@ int fprintf_hdr2json(FILE *fid, HDRTYPE* hdr)
 	fprintf(fid,"\t\"NumberOfRecords\"\t: %i,\n",(int)hdr->NRec);
 	fprintf(fid,"\t\"SamplesPerRecords\"\t: %i,\n",(int)hdr->SPR);
 	fprintf(fid,"\t\"NumberOfSamples\"\t: %i,\n",(int)(hdr->NRec*hdr->SPR));
-	if (!isnan(hdr->SampleRate)) fprintf(fid,"\t\"Samplingrate\"\t: %f,\n",hdr->SampleRate);
+	if ((0.0 <= hdr->SampleRate) && (hdr->SampleRate < INFINITY))
+		fprintf(fid,"\t\"Samplingrate\"\t: %f,\n", hdr->SampleRate);
 
 	snprintf_gdfdatetime(tmp, 40, hdr->T0);
 	fprintf(fid,"\t\"StartOfRecording\"\t: \"%s\",\n",tmp);
@@ -14330,8 +14332,9 @@ int fprintf_hdr2json(FILE *fid, HDRTYPE* hdr)
                 fprintf(fid,"\n\t\t{\n");
 		fprintf(fid,"\t\t\"ChannelNumber\"\t: %i,\n", (int)k+1);
 		fprintf(fid,"\t\t\"Label\"\t: \"%s\",\n", hc->Label);
+		double fs = hdr->SampleRate * hc->SPR/hdr->SPR;
+		if ((0.0 <= fs) && (fs < INFINITY)) fprintf(fid,"\t\t\"Samplingrate\"\t: %f,\n", fs);
 		if ( hc->Transducer && strlen(hc->Transducer) ) fprintf(fid,"\t\t\"Transducer\"\t: \"%s\",\n", hc->Transducer);
-		fprintf(fid,"\t\t\"PhysicalUnit\"\t: \"%s\",\n", PhysDim3(hc->PhysDimCode));
 		if (!isnan(hc->PhysMax)) fprintf(fid,"\t\t\"PhysicalMaximum\"\t: %g,\n", hc->PhysMax);
 		if (!isnan(hc->PhysMin)) fprintf(fid,"\t\t\"PhysicalMinimum\"\t: %g,\n", hc->PhysMin);
 		if (!isnan(hc->DigMax))  fprintf(fid,"\t\t\"DigitalMaximum\"\t: %f,\n", hc->DigMax);
@@ -14355,8 +14358,7 @@ int fprintf_hdr2json(FILE *fid, HDRTYPE* hdr)
 			if (!isnan(hc->fZ)) fprintf(fid,"\t\t\"fZ\"\t: %g,\n", hc->fZ);
 			break;
 		}
-                double fs = hdr->SampleRate * hc->SPR/hdr->SPR;
-		if (!isnan(fs)) fprintf(fid,"\t\t\"Samplingrate\"\t: %f", fs);        // no comma at the end because its the last element
+		fprintf(fid,"\t\t\"PhysicalUnit\"\t: \"%s\"", PhysDim3(hc->PhysDimCode));	// no comma at the end because its the last element
 		fprintf(fid,"\n\t\t}");   // end-of-CHANNEL
 	}
         fprintf(fid,"\n\t]");   // end-of-CHANNELS
