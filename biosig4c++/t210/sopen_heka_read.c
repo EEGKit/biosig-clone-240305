@@ -150,7 +150,8 @@ void sopen_heka(HDRTYPE* hdr, FILE *itx) {
 		struct stat FileBuf;
 		stat(hdr->FileName,&FileBuf);
 		hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, FileBuf.st_size);
-		count += ifread(hdr->AS.Header+count, 1, 1024-count, hdr);
+		if (count < 1024)
+			count += ifread(hdr->AS.Header+count, 1, 1024-count, hdr);
 		hdr->HeadLen = count;
 
 		hdr->FILE.LittleEndian = *(uint8_t*)(hdr->AS.Header+52) > 0;

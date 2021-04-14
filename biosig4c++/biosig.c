@@ -4142,7 +4142,8 @@ else if (!strncmp(MODE,"r",1)) {
 	    	hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL, hdr->NS * sizeof(CHANNEL_TYPE));
 	    	hdr->AS.Header = (uint8_t*) realloc(Header1,hdr->HeadLen);
 	    	char *Header2 = (char*)hdr->AS.Header+256;
-	    	count  += ifread(hdr->AS.Header+count, 1, hdr->HeadLen-count, hdr);
+		if (hdr->HeadLen > count)
+			count  += ifread(hdr->AS.Header+count, 1, hdr->HeadLen-count, hdr);
 
                 if (count < hdr->HeadLen) {
                         biosigERROR(hdr, B4C_INCOMPLETE_FILE, "reading BDF/EDF variable header failed");
@@ -4547,7 +4548,8 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"EDF+ event\n\ts1:\t<%s>\n\ts2:\t<%s>\n\ts3:
 		hdr->HeadLen  += 4;
 		// read header up to nLenght and nID of foreign data section
 		hdr->AS.Header = (uint8_t*) realloc(hdr->AS.Header, hdr->HeadLen);
-		count         += ifread(Header1+count, 1, hdr->HeadLen-count, hdr);
+		if (hdr->HeadLen > count)
+			count += ifread(Header1+count, 1, hdr->HeadLen-count, hdr);
 		uint32_t POS   = hdr->HeadLen;
 		// read "foreign data section" and "per channel data types section"
 		hdr->HeadLen  += leu16p(hdr->AS.Header + hdr->HeadLen-4) - 4;
@@ -4555,7 +4557,8 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"EDF+ event\n\ts1:\t<%s>\n\ts2:\t<%s>\n\ts3:
 		// read "foreign data section" and "per channel data types section"
 		hdr->HeadLen  += 4*hdr->NS;
 		hdr->AS.Header = (uint8_t*)realloc(Header1, hdr->HeadLen+8);
-		count         += ifread(Header1+POS, 1, hdr->HeadLen-POS, hdr);
+		if (hdr->HeadLen > POS)
+			count += ifread(Header1+POS, 1, hdr->HeadLen-POS, hdr);
 
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) %s %i/%i %i/%i %i/%i %i/%i %i/%i \n", \
 			__FILE__, __LINE__, __func__, \
@@ -5596,7 +5599,8 @@ fprintf(stdout,"ACQ EVENT: %i POS: %i\n",k,POS);
 
 	    	hdr->HeadLen 	 = 1024;
 	    	hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, hdr->HeadLen);
-	    	count   += ifread(hdr->AS.Header+count,1,hdr->HeadLen-count,hdr);
+		if (hdr->HeadLen > count)
+			count   += ifread(hdr->AS.Header+count, 1, hdr->HeadLen-count, hdr);
 		hdr->NS  	 = leu16p(hdr->AS.Header+2);
 		hdr->NRec   	 = leu32p(hdr->AS.Header+6);
 		hdr->SPR  	 = leu32p(hdr->AS.Header+10);
@@ -7451,7 +7455,8 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 
 		/* read file */
 		hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header,hdr->HeadLen+1);
-		count  += ifread(hdr->AS.Header+count,1,hdr->HeadLen-count,hdr);
+		if (hdr->HeadLen > count)
+			count += ifread(hdr->AS.Header+count, 1, hdr->HeadLen-count, hdr);
 		hdr->AS.Header[count]=0;
 
 	}
