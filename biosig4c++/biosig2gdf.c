@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 				"\tIf <chanlist> contains any number smaller than 1 or larger than the number \n"
 				"\t  of available channels, all channels are loaded.\n"
 		);
-		fprintf(stderr,"   --free-text-event-limiter=\";\"\n\tfree text of events limited to first occurence of \";\" (only EDF+/BDF+ format)\n");
+		fprintf(stderr,"   --free-text-event-limiter=\";\"\n\tfree text of events limited to first occurrence of \";\" (only EDF+/BDF+ format)\n");
 		fprintf(stderr,"   -s=#\tselect target segment # (in the multisegment file format EEG1100)\n");
 		fprintf(stderr,"   -SWEEP=ne,ng,ns\n\tsweep selection of HEKA/PM files\n\tne,ng, and ns select the number of experiment, the number of group, and the sweep number, resp.\n");
 		fprintf(stderr,"   -VERBOSE=#, verbosity level #\n\t0=silent [default], 9=debugging\n");

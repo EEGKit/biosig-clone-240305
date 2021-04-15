@@ -128,7 +128,7 @@ int main(int argc, char **argv){
 				"\tIt's recommended to pseudonize the data, or to use the patient identifier instead of patient name and birthday.\n"
 		);
 		fprintf(stdout,"   -CSV  \n\texports data into CSV file\n");
-		fprintf(stdout,"   --free-text-event-limiter=\";\"\n\tfree text of events limited to first occurence of \";\" (only EDF+/BDF+ format)\n");
+		fprintf(stdout,"   --free-text-event-limiter=\";\"\n\tfree text of events limited to first occurrence of \";\" (only EDF+/BDF+ format)\n");
 		fprintf(stdout,"   -DYGRAPH, -f=DYGRAPH  \n\tproduces JSON output for presentation with dygraphs\n");
 		fprintf(stdout,"   -JSON  \n\tshows header and events in JSON format\n");
 		fprintf(stdout,"   -z=#, -z#\n\t# indicates the compression level (#=0 no compression; #=9 best compression, default #=1)\n");

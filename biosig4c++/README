@@ -150,7 +150,7 @@ File(s):
     save2gdf.c	converter between various file formats.
     physicalunit.c         en-/decodes physical units according to ISO/DIS 11073-10101:2003
     mexSLOAD.cpp is a MEX-File for loading data in Octave and Matab.
-    t210/*	reading SCP,FAMOS file format
+    t210/*	reading SCP, FAMOS file format
     t220/*      writing SCP file format
     t230/*      support of HL7aECG file format
     t240/*	Support for CNSystems' File Exchange Format (CNS-FEF), note this is different to CENTS14271 in t241/

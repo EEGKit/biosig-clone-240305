@@ -3570,7 +3570,7 @@ int read_header(HDRTYPE *hdr) {
 	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i): %i %i %i %f\n",__func__, __LINE__, (int)hdr->FILE.size, (int)hdr->HeadLen, (int)count, hdr->VERSION);
 
         if (count < hdr->HeadLen) {
-		if (VERBOSE_LEVEL>7) fprintf(stdout,"ambigous GDF header size: %i %i\n",(int)count,hdr->HeadLen);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"ambiguous GDF header size: %i %i\n",(int)count,hdr->HeadLen);
                 biosigERROR(hdr, B4C_INCOMPLETE_FILE, "reading GDF header failed");
                 return(-2);
 	}
@@ -4468,7 +4468,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"EDF+ event\n\ts1:\t<%s>\n\ts2:\t<%s>\n\ts3:
 						hdr->EVENT.TYP[hdr->EVENT.N] = d2;
 						++hdr->EVENT.N;
 						if (d2==0x7ffe)
-							fprintf(stdout,"Warning: BDF file %s uses ambigous code 0x7ffe; For details see file eventcodes.txt. \n",hdr->FileName);
+							fprintf(stdout,"Warning: BDF file %s uses ambiguous code 0x7ffe; For details see file eventcodes.txt. \n",hdr->FileName);
 					}
 				*/
 				}
