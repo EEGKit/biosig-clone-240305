@@ -305,15 +305,6 @@ else
   MEX_EXT    := $(shell $(MATLABDIR)/mexext)
 endif
 
-
-# use environment variable to define OCTAVE_VERSION
-#   e.g. export OCTAVE_VERSION=-3.6.2
-# Octave - global install  (e.g. from debian package)
-#OCTAVE_VERSION =
-# Octave - local install (e.g. compiled from sources)
-#OCTAVE_VERSION = -3.6.1
-
-OCT           := mkoctfile$(OCTAVE_VERSION)
 ##########################################################
 
 ##########################################################
@@ -1014,7 +1005,7 @@ testtms: $(DATA_DIR)t1.scp
 	./save2gdf -f=TMSi $(DATA_DIR)t1.scp $(TEMP_DIR)t2.log
 	cat $(TEMP_DIR)t2.log
 
-fetchdata: $(TEMP_DIR)Osas2002plusQRS.edf $(DATA_DIR)Newtest17-2048.bdf
+fetchdata: $(TEMP_DIR)Osas2002plusQRS.edf $(DATA_DIR)Newtest17-2048.bdf $(TEMP_DIR)SC4001EC-Hypnogram.edf
 
 $(TEMP_DIR)scp/redred/PFE103.scp:
 	# scp example data sets
@@ -1053,6 +1044,9 @@ $(TEMP_DIR)Osas2002plusQRS.edf:
 	wget -q -P$(TEMP_DIR) http://www.edfplus.info/downloads/files/osas.zip
 	unzip -u "$(TEMP_DIR)osas.zip"  -d $(TEMP_DIR)
 
+$(TEMP_DIR)SC4001EC-Hypnogram.edf:
+	wget -q -P$(TEMP_DIR) https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4001EC-Hypnogram.edf
+
 $(DATA_DIR)t1.edf: $(TEMP_DIR)Osas2002plusQRS.edf
 	$(COPY) "$<" "$@"
 	touch "$@"
@@ -1072,8 +1066,10 @@ testbin: save2gdf $(DATA_DIR)t1.edf
 	./save2gdf -f=BIN $(TEMP_DIR)t1.hdr $(TEMP_DIR)t2.hdr
 	./save2gdf -f=GDF $(TEMP_DIR)t2.hdr $(TEMP_DIR)t2.gdf
 
-testedf: save2gdf $(TEMP_DIR)Osas2002plusQRS.edf
+testedf: save2gdf $(TEMP_DIR)Osas2002plusQRS.edf $(TEMP_DIR)SC4001EC-Hypnogram.edf
 	./save2gdf -f=GDF $(TEMP_DIR)Osas2002plusQRS.edf $(TEMP_DIR)Osas2002plusQRS.gdf
+	./save2gdf -JSON $(TEMP_DIR)Osas2002plusQRS.edf | json_pp
+	./save2gdf -JSON $(TEMP_DIR)SC4001EC-Hypnogram.edf | json_pp
 
 testscp: $(DATA_DIR)t1.scp save2gdf
 	# test converting SCP data
