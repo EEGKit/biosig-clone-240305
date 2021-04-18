@@ -789,6 +789,7 @@ mexw32 mexw64:
 	CROSS=$(CROSS) CROSS64=$(CROSS64) $(MAKE) -C mex $@
 
 mexbiosig: mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz
+biosig4octave: mex/biosig4octave-$(BIOSIG_VERSION).src.tar.gz
 
 mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	$(eval $@_TMP := $(shell mktemp -d /tmp/biosig.XXXXXX)/mexbiosig-$(BIOSIG_VERSION))
@@ -806,6 +807,27 @@ mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	$(TAR) cvfz "$@" $($@_TMP)/../mexbiosig-$(BIOSIG_VERSION)
 	-rm -rf $(shell dirname $($@_TMP) )
 	(cd mex && ln -sf mexbiosig-$(BIOSIG_VERSION).src.tar.gz mexbiosig.src.tar.gz)
+	echo "###  In order to publish release, run ### "
+	echo "#    cp "$@" ~/L/public_html/biosig/prereleases/"
+
+mex/biosig4octave-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
+	$(eval $@_TMP := $(shell mktemp -d /tmp/biosig.XXXXXX)/biosig4octave-$(BIOSIG_VERSION))
+	echo "$($@_TMP) generated";
+	$(shell mkdir -p $($@_TMP)/doc/)
+	$(shell mkdir -p $($@_TMP)/inst/)
+	$(shell mkdir -p $($@_TMP)/src/)
+	cp mex/README $($@_TMP)/doc/
+	sed -e 's#^Name.*$$#Name: biosig#g' -e 's#^Version.*$$#Version: $(BIOSIG_VERSION)#g' -e 's#^Date.*$$#Date: '$(shell date +%Y-%m-%d)'#g' mex/DESCRIPTION > $($@_TMP)/DESCRIPTION
+	cp ../COPYING ../CITATION $($@_TMP)/
+	cp mex/*.cpp mex/Makefile $($@_TMP)/src/
+	cp -r ../biosig4matlab/* $($@_TMP)/inst/
+	rm -r $($@_TMP)/inst/maybe-missing
+	### TODO
+	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
+	echo "mexSLOAD mexSOPEN mexSSAVE physicalunits" > $($@_TMP)/INDEX
+	$(TAR) cvfz "$@" $($@_TMP)/../biosig4octave-$(BIOSIG_VERSION)
+	-rm -rf $(shell dirname $($@_TMP) )
+	(cd mex && ln -sf biosig4octave-$(BIOSIG_VERSION).src.tar.gz biosig4octave.src.tar.gz)
 	echo "###  In order to publish release, run ### "
 	echo "#    cp "$@" ~/L/public_html/biosig/prereleases/"
 

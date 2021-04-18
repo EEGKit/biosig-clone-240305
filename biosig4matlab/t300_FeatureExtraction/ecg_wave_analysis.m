@@ -107,8 +107,7 @@ end;
 % If you are interested: Contact http://biosig.sf.net
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-fprintf(1,'ECG_ANALYSIS is currently not implemented. You can help'
-          'implemeting. As a starting point read [1].\n');
+fprintf(1,'ECG_ANALYSIS is currently not implemented. You can help implementing. As a starting point read [1].\n');
 
 
 MDC_ECG_TIME_START_P   = [];

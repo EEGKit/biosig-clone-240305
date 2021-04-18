@@ -268,9 +268,9 @@ Z = griddata(x,y,z,X,Y,'invdist');
   Z(ii) = NaN;
   
   ndot=length(x);
-  for i=1:ndot
-      plot(x(i),y(i),
-surface(X,Y,zeros(size(Z)),Z,'edgecolor','none');shading interp;
+%  for i=1:ndot
+%      plot(x(i),y(i),
+% surface(X,Y,zeros(size(Z)),Z,'edgecolor','none'); shading interp;
 %caxis([ - max(abs(z)) max(abs(z))]);
 %disp([ - max(abs(z)) max(abs(z))]);
 %caxis([ -skal  skal]);

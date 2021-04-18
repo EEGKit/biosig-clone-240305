@@ -41,9 +41,9 @@ elseif (nargin==3) && isnumeric(TYP) && isnumeric(POS)
 	end		
 
 elseif (nargin==5) && isnumeric(TYP) && isnumeric(POS) && isnumeric(CHN) && isnumeric(DUR)
-	assert(numel(TYP)==numel(POS)));
-	assert(numel(DUR)==numel(POS)) || isemppty(DUR));
-	assert(numel(CHN)==numel(POS)) || isemppty(CHN));
+	assert(numel(TYP)==numel(POS));
+	assert(numel(DUR)==numel(POS) || isempty(DUR));
+	assert(numel(CHN)==numel(POS) || isempty(CHN));
 	EVT2.TYP=TYP(:);
 	EVT2.POS=POS(:);
 	EVT2.DUR=DUR(:);
