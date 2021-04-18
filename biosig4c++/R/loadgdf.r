@@ -1,5 +1,5 @@
 #
-#    Copyright (C) 2020 Alois Schloegl <alois.schloegl@gmail.com>
+#    Copyright (C) 2020,2021 Alois Schloegl <alois.schloegl@gmail.com>
 #    This file is part of the "BioSig for C/C++" repository
 #    (biosig4c++/libbiosig) at http://biosig.sf.net/
 #
@@ -36,6 +36,9 @@ setClass(
 		SampleRate  = "numeric",	# sampling rate = SPR/Dur
 		SPR         = "numeric",	# samples per record
 		BPB         = "numeric",	# bytes per block
+		T0          = "numeric",	# Startdate and time
+		Birthday    = "numeric",	# Birthday, date and time
+		tzmin       = "numeric",	# timezone information, number of minutes east of UTC
 		# H2
 		Label       = "character",	# channel label
 		Transducer  = "character",	# transducer
@@ -113,6 +116,7 @@ skipbytes <- function(fid, nbytes) { readBin(fid, "int", size=1, n=nbytes) }
 #'	HDR@Label contain the channel labels
 #'
 #' Usage:
+#'	source('loadgdf.r')
 #'	HDR=loadgdf(filename)   # loads a biosig file
 #'          uses biosig2gdf to convert and load any (supported) format
 #'	HDR@Label        # shows channel names
@@ -122,16 +126,20 @@ skipbytes <- function(fid, nbytes) { readBin(fid, "int", size=1, n=nbytes) }
 #'	HDR@data     contain the data samples
 
 loadgdf <- function(filename, chan=0) {
-	converter="biosig2gdf"
+	TMPFILE <- tempfile("gdf", fileext='.gdf')
+	myDir <- getSrcDirectory(function(x) {x})
 	if (.Platform$OS.type=="windows") {
-		converter="biosig2gdf.exe"
+		converter = file.path(myDir, "biosig2gdf.exe")
+	} else {
+		converter = "biosig2gdf"
+	}
+	status<-system2(converter, args=paste(filename, TMPFILE, sep=" "))
+	if (status) {
+		print(status)
+		print(errmsg)
 	}
 
-	if (file.exists(converter)) {
-		fid <- pipe(paste(converter, filename, sep=" "), "rb")
-	} else {
-		fid <- file(filename, "rb")
-	}
+	fid <- file(TMPFILE, "rb")
 	if (!isOpen(fid)) {
 		stop("Cannot open file or pipe")
 	}
@@ -141,7 +149,11 @@ loadgdf <- function(filename, chan=0) {
 	if (!all(HDR@VersionID[1:4] == c(0x47,0x44,0x46,0x20)))
 		stop("This is not a GDF file - convert first to GDF - e.g. with save2gdf command line tool")
 
-	skipbytes(fid, nbytes=184-8)
+	skipbytes(fid, nbytes=168-8)
+	t <- readBin(fid, "int", size=4, n=2, endian="little")
+	HDR@T0 <- t[2]+t[1]*(2^-32)
+	t <- readBin(fid, "int", size=4, n=2, endian="little")
+	HDR@Birthday <- t[2]+t[1]*(2^-32)
 	HeadLen <- readBin(fid, "int", size=2, signed=FALSE, endian="little")*256
 
 	skipbytes(fid, nbytes=236-184-2)
@@ -245,6 +257,7 @@ loadgdf <- function(filename, chan=0) {
 
 	HDR@data <- data
 	close(fid)
+	file.remove(TMPFILE)
 	return(HDR)
 }
 
