@@ -11,7 +11,7 @@
 	typedef double biosig_data_type;
 	typedef void HDRTYPE;
 
-	HDRTYPE* sopen(const char* FileName, const char* MODE, HDRTYPE* hdr);
+	HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, void* ptr);
 	size_t   sread(biosig_data_type* DATA, size_t START, size_t LEN, HDRTYPE* hdr);
 	int      serror2(HDRTYPE* hdr);
 	int      asprintf_hdr2json(char **str, HDRTYPE* hdr);
@@ -52,7 +52,7 @@ static PyObject *BiosigError;
 
 static int PyBiosig_Header(const char *filename, char **jsonstr) {
 	HDRTYPE *hdr = NULL;
-	hdr = sopen(filename, "r", hdr);
+	hdr = sopen_extended(filename, "r", hdr, NULL);
 	if (serror2(hdr)) {
 	        PyErr_SetString(BiosigError, "could not open file");
 		destructHDR(hdr);
@@ -76,7 +76,7 @@ static PyObject *biosig_json_header(PyObject *self, PyObject *args) {
 }
 
 static int PyBiosig_Data(const char *filename, PyArrayObject **D) {
-	HDRTYPE *hdr = sopen(filename, "r", NULL);
+	HDRTYPE *hdr = sopen_extended(filename, "r", NULL, NULL);
 	if (serror2(hdr)) {
 	        PyErr_SetString(BiosigError, "could not open file");
 		destructHDR(hdr);
@@ -84,7 +84,7 @@ static int PyBiosig_Data(const char *filename, PyArrayObject **D) {
 	}
 
 	const int nd=2;
-	npy_intp dims[nd];
+	npy_intp dims[2];
 	dims[0] = (int)biosig_get_number_of_samples(hdr);
 	dims[1] = (int)biosig_get_number_of_channels(hdr);
 	int type_num;
