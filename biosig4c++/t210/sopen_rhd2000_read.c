@@ -674,7 +674,7 @@ int sopen_rhd2000_read(HDRTYPE* hdr) {
 							hc->Off    = 0;
 							hc->PhysDimCode = 4256; // [V]
 							break;
-						case -1: 	// Temperature Sensor channel
+						case 0xffff: 	// Temperature Sensor channel
 							hc->GDFTYP = 3; // int16
 							hc->SPR    = 1;
 							hc->Cal    = 0.01;
