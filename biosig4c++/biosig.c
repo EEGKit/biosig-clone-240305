@@ -8475,8 +8475,10 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 	}
 
     	else if (hdr->TYPE==MFER) {
+		/*
 		// ISO/TS 11073-92001:2007(E), Table 5, p.9
-    		/* ###  FIXME: some units are not encoded */
+		physicalunits({'V','mmHg','Pa','cm H2O', 'mmHg s-1','dyn','N','%','°C','min-1','s-1','Ohm','A','rpm','W','dB','kg','J','dyne s m-2 cm-5','l','l s-1','l min-1','cd'})
+		*/
     		const uint16_t MFER_PhysDimCodeTable[30] = {
     			4256, 3872, 3840, 3904,65330,	// Volt, mmHg, Pa, mmH2O, mmHg/s
 			3808, 3776,  544, 6048, 2528,	// dyne, N, %, °C, 1/min
@@ -8581,16 +8583,19 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"MFER: TLV %i %i %i \n",tag,len,(int)hdr->SP
 			}
 			else if (tag==5)     //0x05: number of channels
 			{
+				uint16_t oldNS=hdr->NS;
 				if (len>4) fprintf(stderr,"Warning MFER tag5 incorrect length %i>4\n",len);
 				curPos += ifread(buf,1,len,hdr);
 				hdr->NS = *(int64_t*) mfer_swap8b(buf, len, SWAP);
 if (VERBOSE_LEVEL>7) fprintf(stdout,"MFER: TLV %i %i %i \n",tag,len,(int)hdr->NS);
 				hdr->CHANNEL = (CHANNEL_TYPE*)realloc(hdr->CHANNEL, hdr->NS*sizeof(CHANNEL_TYPE));
-				for (k=0; k<hdr->NS; k++) {
+				for (k=oldNS; k<hdr->NS; k++) {
 					CHANNEL_TYPE *hc = hdr->CHANNEL+k;
 					hc->SPR = 0;
-					hc->PhysDimCode = 0;
+					hc->PhysDimCode = 4275;	// uV : default value in Table 5, ISO/FDIS 22077-1(E)ISO/WD 22077-1
 					hc->Cal = 1.0;
+					hc->Off = 0.0;
+					hc->OnOff = 1;
 					hc->LeadIdCode = 0; 
 					hc->GDFTYP = 3;
 					hc->Transducer[0] = 0;
@@ -8832,7 +8837,7 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"MFER: TLV %i %i %i %i %i %i %i %i %i\n",tag
 if (VERBOSE_LEVEL>7) fprintf(stdout,"MFER: TLV %i %i %i %i %i %i %i\n",tag, len, chan, tag2, len2, buf[0], gdftyp);
 
 					}
-					else if (tag2==11) {	// sampling resolution
+					else if (tag2==11) {	// sampling rate
 						if (len2>6) fprintf(stderr,"Warning MFER tag63-11 incorrect length %i>6\n",len2);
 						double  fval;
 						fval = *(int64_t*) mfer_swap8b(buf+2, len2-2, SWAP);
@@ -8846,9 +8851,12 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"MFER: TLV %i %i %i %i %i %i %i\n",tag, len,
 if (VERBOSE_LEVEL>7) fprintf(stdout,"MFER: TLV %i %i %i %i %i %i %i %g %i %g\n",tag,len, chan, tag2,len2, buf[0], buf[1], fval, (int)hdr->SPR, hdr->SampleRate);
 
 					}
-					else if (tag2==12) {	// sensitivity
-						// FIXME
-						fprintf(stdout,"MFER: change f channel specific scaling/sensitivity is not supported"); 
+					else if (tag2==12) {	// MWF_SEN (0Ch): Sampling resolution
+						CHANNEL_TYPE *hc = hdr->CHANNEL+chan;
+						hc->PhysDimCode = 4275;	// uV : default value in Table 5, ISO/FDIS 22077-1(E)ISO/WD 22077-1
+						hc->Cal  = *(int64_t*) mfer_swap8b(buf+2, len2-2, SWAP);
+						hc->Cal *= pow(10.0, (int8_t)(buf[1]));
+						hc->PhysDimCode = MFER_PhysDimCodeTable[buf[0]];
 					}
 
 					else if (tag2==13) {	// Offset
