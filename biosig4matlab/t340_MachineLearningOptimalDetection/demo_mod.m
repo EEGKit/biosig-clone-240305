@@ -75,9 +75,13 @@ filename='data/XM160126-02.dat'; chan=1;
 HDR.SampleRate=round(HDR.SampleRate);
 HDR.EVENT.SampleRate=round(HDR.EVENT.SampleRate);
 % clean up data, everything before this marker can be ignored. 
-typ=find(strcmp(HDR.EVENT.CodeDesc,'IV-1000'));
-START = max(HDR.EVENT.POS(HDR.EVENT.TYP==typ));
-s(1:START) = NaN;
+if isfield(HDR.EVENT,'CodeDesc')
+	typ   = find(strcmp(HDR.EVENT.CodeDesc,'IV-1000'));
+	if length(typ)>0,
+		START = max(HDR.EVENT.POS(HDR.EVENT.TYP==typ));
+		s(1:START) = NaN;
+	end
+end
 
 % load the two segments of the scoring from Export E1 
 [e11,EVT]=mexSLOAD('data/XM160126-02_E1S1.evt');
