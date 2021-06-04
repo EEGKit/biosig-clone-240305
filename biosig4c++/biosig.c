@@ -12778,6 +12778,7 @@ size_t sread(biosig_data_type* data, size_t start, size_t length, HDRTYPE* hdr) 
 
 	switch (hdr->TYPE) {
 	case AXG:
+	case ABF2:
 	case SMR: // data is already cached
 		count = hdr->NRec;
 		break;

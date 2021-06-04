@@ -601,10 +601,6 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 
 		hdr->SPR = 1;
 		uint16_t gdftyp = 3;
-		switch (lei16p(hdr->AS.Header + offsetof(struct ABFFileHeader, nDataFormat))) {
-		case 0: gdftyp = 3; break;
-		case 1: gdftyp = 16; break;
-		}
 
 		if (VERBOSE_LEVEL>7) {
 			fprintf(stdout,"\nuFileInfoSize:\t%i\n",leu32p(hdr->AS.Header + offsetof(struct ABF_FileInfo, uFileInfoSize)));
@@ -699,6 +695,11 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 
 		}
 
+		switch(leu32p(hdr->AS.Header + offsetof(struct ABF_FileInfo, DataSection.uBytes))) {
+		case 2: gdftyp=3; break;
+		case 4: gdftyp=16; break;
+		}
+
 		struct ABF_Section S;
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, ProtocolSection), hdr, &S);
 		float fADCRange = lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCRange));
@@ -746,6 +747,7 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 			hc->LeadIdCode = 0;
 			hc->OnOff = 1;
 			hc->Transducer[0] = 0;
+			hc->Label[0] = 0;
 
 			hc->LowPass  = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalLowpassFilter));
 			hc->HighPass = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalHighpassFilter));
@@ -796,6 +798,13 @@ if (VERBOSE_LEVEL>7) {
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, MathSection), hdr, &S);
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, StringsSection), hdr, &S);
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, DataSection), hdr, &S);
+		hdr->AS.rawdata = hdr->AS.auxBUF;
+		hdr->AS.auxBUF  = NULL;
+		hdr->AS.first   = 0;
+		hdr->AS.length  = S.llNumEntries;
+		hdr->NRec       = S.llNumEntries;
+		hdr->AS.bpb     = S.uBytes;
+
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, TagSection), hdr, &S);
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, ScopeSection), hdr, &S);
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, DeltaSection), hdr, &S);
