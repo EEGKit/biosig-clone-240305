@@ -33,7 +33,12 @@
 
 
 if exist('OCTAVE_VERSION','builtin')
-	pkg load mexbiosig
+	try
+		pkg load biosig
+	end
+	try
+		pkg load mexbiosig
+	end
  	pkg load nan
 	pkg load tsa
 	pkg load signal 
@@ -49,28 +54,29 @@ if isnan(mean([1,3,NaN]))
         addpath(fullfile(pwd,'NaN','inst'));
 	fprintf(2,'Warning: mean() from NaN-toolbox is missing - install NaN-toolbox\n');
 end
+tmp=roc(randn(100,1),[1:100]'<50);
+if ~isfield(tmp,'H_kappa')
+	error('roc() from NaN-toolbox is missing - install NaN-toolbox');
+end
 if sum(isnan(detrend([1,NaN,3])))>1
 	addpath(fullfile(pwd,'NaN','src'));
         addpath(fullfile(pwd,'NaN','inst'));
 	fprintf(2,'Warning: detrend() from NaN-toolbox is missing - install NaN-toolbox\n');
 end
 if ~exist('mexSLOAD','file')
-        fprintf(2,'Error: mexSLOAD is missing - mexBiosig or Biosig need to be installed\n');
+        error('mexSLOAD is missing - mexBiosig or Biosig need to be installed');
 end
 if ~exist('detect_spikes_bursts','file')
         fprintf(2,'Error: detect_spikes_bursts() is missing - Biosig need to be installed\n');
 end
 
-% Here are some standard parameters we have used in [1,2]. 
-Fs=25000; 	
-TemplateLength=0.040*Fs; % filterlength
-Twin=0.004;	% window length in seconds [s]
-WINLEN=round(Twin*Fs);
-
 
 % read channel of raw data, the example data is available from here:
 %    https://pub.ist.ac.at/~schloegl/software/mod/
 filename='data/XM160126-02.dat'; chan=1;
+if ~exist(filename,'file'),
+	error(sprintf('file %s not available - you can download the example file from https://pub.ist.ac.at/~schloegl/software/mod/data/'));
+end
 [s,HDR]=mexSLOAD(filename,chan);
 HDR.SampleRate=round(HDR.SampleRate);
 HDR.EVENT.SampleRate=round(HDR.EVENT.SampleRate);
@@ -89,13 +95,28 @@ event_pos1 = EVT.EVENT.POS(EVT.EVENT.TYP==10);
 [e12,EVT]=mexSLOAD('data/XM160126-02_E1S2.evt');
 event_pos2 = EVT.EVENT.POS(EVT.EVENT.TYP==10); 
 
+
+% Here are some standard parameters we have used in [1,2].
+if HDR.SampleRate < 50000,
+	Fs=HDR.SampleRate;
+else
+	Fs=25000;
+end
+TemplateLength=0.040*Fs; % filterlength
+Twin=0.004;	% window length in seconds [s]
+WINLEN=round(Twin*Fs);
+
+
 % load the two segment of the scoring from Export E2 
 %   we ignore this here for the sake of simplicity 
 % [e2,HDR] =mexSLOAD('data/XM160126-02_E2S12.evt')
 
 
 % identify action potentials 
-AP = detect_spikes_bursts(filename, chan);
+AP = [];
+if exist('detect_spikes_bursts','file')
+	AP = detect_spikes_bursts(filename, chan);
+end
 
 % downsample to 25 kHz 
 if (HDR.SampleRate ~= Fs)
@@ -123,11 +144,12 @@ end;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       remove AP's and spikelets and replace with blanks
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-apix = find(AP.EVENT.TYP==hex2dec('0201'));
-[ix,iy]=meshgrid(apix,[0:TemplateLength]-round(TemplateLength/4));
-ix=ix(:)+iy(:); ix((ix<1) | (ix>length(s)))=[];
-s(ix)=NaN; 
-
+if ~isempty(AP)
+	apix = find(AP.EVENT.TYP==hex2dec('0201'));
+	[ix,iy]=meshgrid(apix,[0:TemplateLength]-round(TemplateLength/4));
+	ix=ix(:)+iy(:); ix((ix<1) | (ix>length(s)))=[];
+	s(ix)=NaN;
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       generate scoring trace 
@@ -202,7 +224,9 @@ end
 
 % w/o XV: scored data is used for training
 ixtrain=find(~isnan(C)); % use the scored data for training 	
-ixtest=[];		
+% avoid edge issues when computing correlation functions
+ixtrain=ixtrain((2*TemplateLength<ixtrain) & (ixtrain < (length(S)-2*TemplateLength)));
+ixtest=[];
 RES=mod_optimal_detection_filter(S, C, TemplateLength, ixtrain, []);
 % the output parameters from the training steps are
 % RES.CLASSIFIER.A ; 			% filter coefficients of the Wiener filter 
@@ -220,6 +244,7 @@ pos  = get_local_maxima_above_threshold(D,TH,4,0.001*Fs);
 
 
 % save results in a GDF file for visualization with SigViewer 
+mkdir('output');
 H0 = [];
 [tmp_p,tmp_f,tmp_e] = fileparts(HDR.FileName);
 H0.FileName = sprintf('output/%s.%s.w%d.e1.h%d.gdf',tmp_f, 'mod',round(Twin*1000),WinHann);

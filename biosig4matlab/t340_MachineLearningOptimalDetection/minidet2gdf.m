@@ -99,18 +99,19 @@ cname = computer;
 HDR.TYPE='GDF';  
 % description of recording device 
 HDR.Manufacturer.Name = 'BioSig';
-HDR.Manufacturer.Model = 'optim_mini_detect_pj018';
-HDR.Manufacturer.Version = '1.0';
+HDR.Manufacturer.Model = 'demo_mod';
+HDR.Manufacturer.Version = '1.1';
 HDR.Manufacturer.SerialNumber = '00000000';
 
 % recording identification, max 80 char.
 HDR.RID = 'TestFile 001'; %StudyID/Investigation [consecutive number];
-HDR.REC.Hospital   = 'Jonas Lab'; 
+HDR.REC.Hospital   = 'Biosig Laboratory';
+HDR.REC.Technician = 'anybody';
 if exist('OCTAVE_VERSION','builtin')
 	t = getpwuid(getuid);
-	HDR.REC.Technician = strtok(t.gecos,',');
-else
-	HDR.REC.Technician = 'Alois';
+	if isfield(t,'gecos')
+		HDR.REC.Technician = strtok(t.gecos,',');
+	end
 end;
 HDR.REC.Equipment  = 'biosig';
 HDR.REC.IPaddr	   = [127,0,0,1];	% IP address of recording system 	

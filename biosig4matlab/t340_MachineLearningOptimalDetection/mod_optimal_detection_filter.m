@@ -100,7 +100,7 @@ end;
 
 if isempty(ixtest)
 	ixtest  = ixtrain; 
-	ixtest0 = [1.5*maxlag:size(data,1)]';
+	ixtest0 = [2*maxlag:size(data,1)]';
 else
 	ixtest0 = ixtest;
 end
@@ -120,7 +120,7 @@ if 1
 	if (any(ixtrain > dl-maxlag) || any(ixtrain <= maxlag))
 		warning('ixtrain should be limited to the range MAXLAG+1:length(data)-MAXLEN')
 	end
-	data((end+1) : (ixtest0(end)+maxlag*1.25)) = NaN;
+	data((end+1) : (ixtest0(end)+maxlag*1.5)) = NaN;
 
 	c = center(C(ixtrain));
 
@@ -128,13 +128,13 @@ if 1
 	TTLabel{2} = 'number-of-lags';
 	TTLabel{3} = 'length-ixtrain';
 	TTLabel{4} = 'sum-ixtrain';
-	TT=[size(data,1), 2.5*maxlag,length(ixtrain),sum(ixtrain)];
+	TT=[size(data,1), 3*maxlag,length(ixtrain),sum(ixtrain)];
  
 	ID1=tic(); cput1=cputime(); 
 
-	for k=-maxlag*1.25:maxlag*1.25,
-		Rdc(k+1+maxlag*1.25)=mean(data(ixtrain-k).*c);
-		Rdd(k+1+maxlag*1.25)=mean(data(ixtrain-k).*data(ixtrain));
+	for k=-maxlag*2:maxlag*2,
+		Rdc(k+1+maxlag*2)=mean(data(ixtrain-k).*c);
+		Rdd(k+1+maxlag*2)=mean(data(ixtrain-k).*data(ixtrain));
 	end; 
 
 	TT=[TT, toc(ID1), cputime()-cput1]; ID1=tic(); cput1=cputime();
@@ -163,8 +163,8 @@ if 1
 		ID2=tic(); cput2=cputime(); 
 
 		delay = DLIST(k);
-                A = toeplitz(Rdd(maxlag*1.25+(0:maxlag))) \ Rdc(maxlag*1.25+1-delay+[0:maxlag]);
-                B = toeplitz(Rdd(maxlag*1.25+(0:maxlag))) \ Rdc(maxlag*1.25+1+delay-[0:maxlag]);
+		A = toeplitz(Rdd(maxlag*2+(0:maxlag))) \ Rdc(maxlag*2+1-delay+[0:maxlag]);
+		B = toeplitz(Rdd(maxlag*2+(0:maxlag))) \ Rdc(maxlag*2+1+delay-[0:maxlag]);
 
 		TT2(k,1:2)=[toc(ID2), cputime()-cput2]; ID2=tic(); cput2=cputime(); 
                  
@@ -174,10 +174,10 @@ if 1
 		TT2(k,3:4)=[toc(ID2), cputime()-cput2]; ID2=tic(); cput2=cputime(); 
 
                 %AUC(k,1:2)=[auc(out1a(ixtest+delay),C(ixtest)), auc(out1b(ixtest+delay),C(ixtest))];
-		tmp=roc(out1a(ixtest+delay),C(ixtest));
-                AUC(k,1)=tmp.AUC;
+		tmp        = roc(out1a(ixtest+delay),C(ixtest));
+		AUC(k,1)   = tmp.AUC;
 
-		TT2(k,5:6)=[toc(ID2), cputime()-cput2]; ID2=tic(); cput2=cputime(); 
+		TT2(k,5:6) = [toc(ID2), cputime()-cput2]; ID2=tic(); cput2=cputime();
 
 		if 0, %try
 	                out2a = filter(A,1,data);
