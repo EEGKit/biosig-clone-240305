@@ -198,11 +198,13 @@ else
 mex: mex4o mexw32 mexw64
 endif
 
+ifneq (:,@MKOCTFILE@)
 %.mex: %.cpp
-	$(MKOCTFILE) $(DEFINES) -I.. -v -g --mex "$<" -L.. -lbiosig -o "$@"
+	@MKOCTFILE@ $(DEFINES) -I.. -v -g --mex "$<" -L.. -lbiosig -o "$@"
 
 %.oct: %.cpp
-	$(MKOCTFILE) $(DEFINES) -I.. "$<" -L.. -lbiosig -o "$@"
+	@MKOCTFILE@ $(DEFINES) -I.. "$<" -L.. -lbiosig -o "$@"
+endif
 
 %.mexw32: %.cpp
 	## $(CROSS)-g++ is used instead of $(CXX), so it can be called from biosig as well as mxe. 
@@ -217,3 +219,4 @@ endif
 
 clean:
 	-$(DELETE) *.o *.obj *.o64 core octave-core *.oct *.mex* mexSOPEN.cpp
+

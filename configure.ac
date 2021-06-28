@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([biosig], [2.2.1])
+AC_INIT([biosig], [2.3.0])
 AC_COPYRIGHT([Copyright (C) 2019-2021 Alois Schlögl])
 AC_CONFIG_SRCDIR([biosig4c++/biosig.c])
 AC_CONFIG_HEADERS([config.h])
@@ -47,6 +47,7 @@ AC_CHECK_LIB([tinyxml] , [main],        AC_SUBST(HAVE_LIBTINYXML, "1")  [TEST_LI
 
 AC_PATH_PROG([JAVA],        [java],        [:])
 AC_PATH_PROG([JAVAC],       [javac],       [:])
+#
 AC_PATH_PROG([MATHEMATICA], [mathematica], [:])
 AC_PATH_PROG([MATHEMATICA_MPREP], [mprep], [:])
 # MATLAB needs to contain full path, because it also used to find mex and mexext
@@ -55,9 +56,15 @@ AC_PATH_PROG([MATHEMATICA_MPREP], [mprep], [:])
 AC_CHECK_PROG([MATLAB],     [matlab],      [$(matlab -n|awk '/^->  r   MATLAB              = / {printf("%s/bin/matlab",$5)}')],      [:])
 AC_PATH_PROG([MKOCTFILE],   [mkoctfile],   [:])
 AC_PATH_PROG([OCTAVE],      [octave],      [:])
+# PHP
+AC_PATH_PROG([PHP],         [php],         [:])
+AC_PATH_PROG([PEAR],        [pear],        [:])
+AC_PATH_PROG([PECL],        [pecl],        [:])
+# PYTHON
 AC_PATH_PROG([PYTHON],      [python],      [:])
 AC_PATH_PROG([PYTHON2],     [python2],     [:])
 AC_PATH_PROG([PYTHON3],     [python3],     [:])
+# R
 AC_PATH_PROG([R],           [R],           [:])
 
 # FIXME: Replace `main' with a function in `-llibmex':

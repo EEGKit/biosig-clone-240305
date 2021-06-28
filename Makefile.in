@@ -47,6 +47,8 @@ clean ::
 
 distclean : clean
         # also configure.ac for list of files
+	-rm config.log
+	-rm config.status
 	rm Makefile biosig4c++/Makefile biosig4c++/*/Makefile \
 		biosig4c++/python/setup.py \
 		biosig4c++/R/DESCRIPTION
@@ -107,6 +109,15 @@ uninstall ::
 	# biosig for octave and matlab
 	-rm -rf $(BIOSIG_DIR)
 endif
+endif
+
+ifneq (:,@PHP@)
+first ::
+	-$(MAKE) -C biosig4c++/php
+install ::
+	-$(MAKE) -C biosig4c++/php install
+clean ::
+	-$(MAKE) -C biosig4c++/php clean
 endif
 
 ifneq (:,@PYTHON3@)
