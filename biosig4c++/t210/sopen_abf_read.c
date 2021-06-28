@@ -1,7 +1,6 @@
 /*
 
-    $Id: sopen_abf_read.c,v 1.2 2009-02-12 16:15:17 schloegl Exp $
-    Copyright (C) 2012,2013,2014,2015 Alois Schloegl <alois.schloegl@gmail.com>
+    Copyright (C) 2012-2019,2021 Alois Schloegl <alois.schloegl@gmail.com>
 
     This file is part of the "BioSig for C/C++" repository 
     (biosig4c++) at http://biosig.sf.net/ 
@@ -329,8 +328,8 @@ EXTERN_C void sopen_abf_read(HDRTYPE* hdr) {
 			fprintf(stdout,"lActualEpisodes:\t%i\n",lei32p(hdr->AS.Header + offsetof(struct ABFFileHeader, lActualEpisodes)));
 			fprintf(stdout,"lRunsPerTrial:\t%i\n",lei32p(hdr->AS.Header + offsetof(struct ABFFileHeader, lRunsPerTrial)));
 			fprintf(stdout,"lNumberOfTrials:\t%i\n",lei32p(hdr->AS.Header + offsetof(struct ABFFileHeader, lNumberOfTrials)));
-			fprintf(stdout,"fADCRange:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fADCRange)));
-			fprintf(stdout,"fDACRange:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fDACRange)));
+			fprintf(stdout,"fADCRange:\t%g\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fADCRange)));
+			fprintf(stdout,"fDACRange:\t%g\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fDACRange)));
 			fprintf(stdout,"lADCResolution:\t%i\n",lei32p(hdr->AS.Header + offsetof(struct ABFFileHeader, lADCResolution)));
 			fprintf(stdout,"lDACResolution:\t%i\n",lei32p(hdr->AS.Header + offsetof(struct ABFFileHeader, lDACResolution)));
 
@@ -354,8 +353,8 @@ EXTERN_C void sopen_abf_read(HDRTYPE* hdr) {
 			fprintf(stdout,"fRunStartToStart:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fRunStartToStart)));
 			fprintf(stdout,"fTrialStartToStart:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fTrialStartToStart)));
 			fprintf(stdout,"fStatisticsPeriod:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fStatisticsPeriod)));
-			fprintf(stdout,"fADCRange:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fADCRange)));
-			fprintf(stdout,"fDACRange:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fTriggerThreshold)));
+			fprintf(stdout,"fADCRange:\t%g\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fADCRange)));
+			fprintf(stdout,"fDACRange:\t%g\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fTriggerThreshold)));
 			fprintf(stdout,"fTriggerThreshold:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fDACRange)));
 			fprintf(stdout,"dFileDuration:\t%g\n",lef64p(hdr->AS.Header + offsetof(struct ABFFileHeader, dFileDuration)));
 			fprintf(stdout,"fTriggerThreshold:\t%f\n",lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fTriggerThreshold)));
@@ -578,7 +577,7 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 
 //	biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "ABF2 format currently not supported"); return;
 
-		fprintf(stdout,"Warning ABF2 v%4.2f: implementation is not complete!\n", hdr->VERSION);
+		fprintf(stdout,"Warning ABF2 v%4.2f: implementation is not complete (e.g. scaling factors may be incorrect) ! \n", hdr->VERSION);
 
 		if (hdr->HeadLen < 512) {
 		    	hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, 512);
@@ -702,17 +701,33 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 
 		struct ABF_Section S;
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, ProtocolSection), hdr, &S);
-		float fADCRange = lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCRange));
-		float fDACRange = lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fDACRange));
+		// TODO: checking why it requires big-endian here
+		float fADCRange = bef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCRange));
+		float fDACRange = bef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fDACRange));
 		int32_t lADCResolution = lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lADCResolution));
 		int32_t lDACResolution = lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lDACResolution));
 		hdr->SampleRate =  1e6 / lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCSequenceInterval));
 
+		int16_t nOperationMode = lei16p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, nOperationMode));
+		switch (nOperationMode) {
+		case 3:		// Gap free
+			break;
+		case 1:		// Variable-Length Event-Driven
+		case 2:		// Fixed-Length Event-Driven
+		case 4:		// High-Speed Oscilloscope Mode
+		case 5:		// Episodic Stimulation Mode
+			fprintf(stdout,"Warning ABF2 v%4.2f: nOperationMode=%d is very experimental - double check the data you get.\n", hdr->VERSION, nOperationMode);
+			break;
+		default:
+			biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "ABF2 nOperationMode=%d unknown and unsupported");
+			break;
+		}
+
 		if (VERBOSE_LEVEL>7) {
-			fprintf(stdout,"nOperationMode:\t%i\n", lei16p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, nOperationMode)));
+			fprintf(stdout,"nOperationMode:\t%i\n", nOperationMode);
 			fprintf(stdout,"fADCSequenceInterval:\t%g\n", lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCSequenceInterval)));
 			fprintf(stdout,"fSecondsPerRun:\t%g\n", lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fSecondsPerRun)));
-			fprintf(stdout,"fSecondsPerRun:\t%g\n", lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fSecondsPerRun)));
+			fprintf(stdout,"fSecondsPerRun:\t%g\n", bef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fSecondsPerRun)));
 			fprintf(stdout,"lNumSamplesPerEpisode:\t%i\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lNumSamplesPerEpisode)));
 			fprintf(stdout,"lPreTriggerSamples:\t%i\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lPreTriggerSamples)));
 			fprintf(stdout,"lEpisodesPerRun:\t%i\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lEpisodesPerRun)));
@@ -731,10 +746,17 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 			fprintf(stdout,"nDigitizerSynchDigitalOuts:\t%i\n", lei16p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, nDigitizerSynchDigitalOuts)));
 			fprintf(stdout,"nDigitizerType:\t%i\n", lei16p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, nDigitizerType)));
 
-			fprintf(stdout,"fADCRange:\t%f\n", lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCRange)));
-			fprintf(stdout,"fDACRange:\t%f\n", lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fDACRange)));
-			fprintf(stdout,"lADCResolution:\t%i\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lADCResolution)));
-			fprintf(stdout,"lDACResolution:\t%i\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lDACResolution)));
+			fprintf(stdout,"fADCRange:\t(l)%g\n", lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCRange)));
+			fprintf(stdout,"fDACRange:\t(l)%g\n", lef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fDACRange)));
+			fprintf(stdout,"fADCRange:\t(b)%g\n", bef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fADCRange)));
+			fprintf(stdout,"fDACRange:\t(b)%g\n", bef32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, fDACRange)));
+
+			fprintf(stdout,"lADCResolution:\t0x%08x\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lADCResolution)));
+			fprintf(stdout,"lDACResolution:\t0x%08x\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lDACResolution)));
+			fprintf(stdout,"lADCResolution:\t(l)%d\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lADCResolution)));
+			fprintf(stdout,"lDACResolution:\t(l)%d\n", lei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lDACResolution)));
+			fprintf(stdout,"lADCResolution:\t(b)%d\n", bei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lADCResolution)));
+			fprintf(stdout,"lDACResolution:\t(b)%d\n", bei32p(hdr->AS.auxBUF + offsetof(struct ABF_ProtocolInfo, lDACResolution)));
 		}
 
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, ADCSection), hdr, &S);
@@ -755,9 +777,9 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 			hc->SPR      = hdr->SPR;
 			hc->bi       = k*GDFTYP_BITS[gdftyp] / 8;
 
-/*
 			strncpy(hc->Label, (char*)hdr->AS.Header + offsetof(struct ABFFileHeader, sADCChannelName) + k*ABF_ADCNAMELEN, min(ABF_ADCNAMELEN,MAX_LENGTH_LABEL));
 			hc->Label[ABF_ADCNAMELEN] = 0;
+/*
 			char units[ABF_ADCUNITLEN+1]; {
 				memcpy(units, (char*)hdr->AS.Header + offsetof(struct ABFFileHeader, sADCUnits) + k*ABF_ADCUNITLEN, ABF_ADCUNITLEN);
 				units[ABF_ADCUNITLEN] = 0;
@@ -768,25 +790,38 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 
 			double PhysMax = fADCRange;
 			double DigMax  = lADCResolution;
-			hc->Cal      = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentScaleFactor)) / lADCResolution;
-			hc->Off      = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset));
-			hc->DigMax   = lADCResolution-1.0;
+
+			// https://swharden.com/pyabf/abf2-file-format/#reading-multi-byte-integers-from-bytestrings
+			// https://support.moleculardevices.com/s/article/Convert-data-file-from-another-program-to-an-ABF-file-so-that-it-can-be-read-by-pCLAMP
+			hc->Cal      = 1.0;
+			hc->Cal     /= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentScaleFactor));
+			hc->Cal     /= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalGain));
+			hc->Cal     /= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fADCProgrammableGain));
+			// TODO: if nTelegraphEnable:
+			if (!lei16p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, nTelegraphEnable)))
+				hc->Cal /= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fTelegraphAdditGain));
+			hc->Cal     *= fADCRange / lADCResolution;
+
+			hc->Off = (lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset)) \
+				 - lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalOffset)) ) * hc->Cal;
+
+			// hc->Off      = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset));
+			hc->DigMax   =  lADCResolution - 1.0;
 			hc->DigMin   = -hc->DigMax;
-			hc->PhysMax  = hc->DigMax * hc->Cal;
-			hc->PhysMin  = hc->DigMin * hc->Cal;
+			hc->PhysMax  =  hc->DigMax * hc->Cal + hc->Off;
+			hc->PhysMin  =  hc->DigMin * hc->Cal + hc->Off;
 
-if (VERBOSE_LEVEL>7) {
-
+			if (VERBOSE_LEVEL>7) {
 				fprintf(stdout,"nADCNum:\t%i\n", lei16p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, nADCNum)));
 				fprintf(stdout,"nADCSamplingSeq:\t%i\n", lei16p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, nADCSamplingSeq)));
 				fprintf(stdout,"nADCPtoLChannelMap:\t%i\n", lei16p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, nADCPtoLChannelMap)));
-				fprintf(stdout,"fADCProgrammableGain:\t%f\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fADCProgrammableGain)));
-				fprintf(stdout,"fInstrumentScaleFactor:\t%f\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentScaleFactor)));
-				fprintf(stdout,"fInstrumentOffset:\t%f\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset)));
-				fprintf(stdout,"fSignalGain:\t%f\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalGain)));
-				fprintf(stdout,"fSignalOffset:\t%f\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalOffset)));
-				fprintf(stdout,"fSignalLowpassFilter:\t%f\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalLowpassFilter)));
-				fprintf(stdout,"fSignalHighpassFilter:\t%f\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalHighpassFilter)));
+				fprintf(stdout,"fADCProgrammableGain:\t%g\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fADCProgrammableGain)));
+				fprintf(stdout,"fInstrumentScaleFactor:\t%g\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentScaleFactor)));
+				fprintf(stdout,"fInstrumentOffset:\t%g\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset)));
+				fprintf(stdout,"fSignalGain:\t%g\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalGain)));
+				fprintf(stdout,"fSignalOffset:\t%g\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalOffset)));
+				fprintf(stdout,"fSignalLowpassFilter:\t%g\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalLowpassFilter)));
+				fprintf(stdout,"fSignalHighpassFilter:\t%g\n", lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fSignalHighpassFilter)));
 			}
 		}
 		readABF2block(hdr->AS.Header + offsetof(struct ABF_FileInfo, DACSection), hdr, &S);

@@ -1614,9 +1614,9 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
 		hdr->TYPE    = ABF;
     		hdr->VERSION = lef32p(hdr->AS.Header+4);
     	}
-	else if (!memcmp(hdr->AS.Header, "ABF2\x00\x00", 6) && ( hdr->AS.Header[7] < 10 ) ) {
+	else if (!memcmp(hdr->AS.Header, "ABF2\x00\x00", 6) && ( hdr->AS.Header[6] < 10 )  && ( hdr->AS.Header[7] < 10 ) ) {
 		hdr->TYPE    = ABF2;
-		hdr->VERSION = hdr->AS.Header[6] + ( hdr->AS.Header[7] / 10.0 );
+		hdr->VERSION = hdr->AS.Header[7] + ( hdr->AS.Header[6] / 10.0 );
     	}
     	else if (!memcmp(Header1+20,"ACR-NEMA",8))
 	    	hdr->TYPE = ACR_NEMA;
