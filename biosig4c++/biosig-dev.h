@@ -227,6 +227,7 @@ enum FileFormat {
 	WAV, WCP, WG1, WinEEG, WMF, XML, XPM,
 	Z, ZIP, ZIP2, RHD2000, RHS2000, IntanCLP,
 	EBNEURO, SigViewerEventsCSV, XDF,
+	EAS,
 	LastPlaceHolder, invalid=0xffff
 };
 

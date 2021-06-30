@@ -1703,6 +1703,11 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
     	else if (!memcmp(Header1+12, MAGIC_NUMBER_DICOM,8))
 	    	hdr->TYPE = DICOM;
 
+	else if (!memcmp(Header1,"SctHdr\0\0Directory\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",32) && (leu32p((hdr->AS.Header+0x3C))==0x68) ) {
+		hdr->TYPE = EAS;
+		hdr->HeadLen = 0x68;
+	}
+
     	else if (!memcmp(Header1,"EBS\x94\x0a\x13\x1a\x0d",8))
 	    	hdr->TYPE = EBS;
 
@@ -2147,6 +2152,7 @@ const struct FileFormatStringTable_t FileFormatStringTable[] = {
 	{ CTF,    	"CTF" },
 	{ DEMG,    	"DEMG" },
 	{ DICOM,    	"DICOM" },
+	{ EAS,    	"EAS(Cadwell)" },
 	{ EBNEURO,	"EBNEURO"},
 	{ EBS,    	"EBS" },
 	{ EDF,    	"EDF" },
@@ -6678,6 +6684,42 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 		hdr->FLAG.OVERFLOWDETECTION = 0; 	// automated overflow and saturation detection not supported
 	    	hdr->HeadLen = 19;
 	    	ifseek(hdr, 19, SEEK_SET);
+	}
+
+	else if (hdr->TYPE==EAS) {
+		if (VERBOSE_LEVEL > 8) fprintf(stdout,"%s (line %d)\n",__FILE__,__LINE__);
+
+		while (!ifeof(hdr)) {
+			size_t bufsiz = max(2*count, PAGESIZE);
+			hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, bufsiz+1);
+			count  += ifread(hdr->AS.Header+count, 1, bufsiz-count, hdr);
+		}
+		hdr->AS.Header[count]=0;
+		hdr->HeadLen = count;
+		ifclose(hdr);
+
+		for (int k=0; k<0x19; k++) {
+			char *sectName =       hdr->AS.Header + 0x6c + k*0x20;
+			size_t sectPos= leu32p(hdr->AS.Header + 0x7c + k*0x20);
+			size_t sectN1 = leu32p(hdr->AS.Header + 0x80 + k*0x20);
+			size_t sectN2 = leu32p(hdr->AS.Header + 0x84 + k*0x20);
+			size_t sectN3 = leu32p(hdr->AS.Header + 0x88 + k*0x20);
+
+			if (!sectPos
+			 || memcmp("SctHdr\0\0", hdr->AS.Header+sectPos, 8)
+			 || memcmp(hdr->AS.Header+sectPos+8, sectName, 16))
+			break;
+
+			uint64_t curSec, nextSec;
+			do {
+				curSec  = leu64p(hdr->AS.Header + sectPos + 24);
+				nextSec = leu64p(hdr->AS.Header + sectPos + 32);
+
+		if (VERBOSE_LEVEL > 8) fprintf(stdout,"%s (line %d): 0x%08x %s  0x%08lx 0x%08lx \n",__FILE__,__LINE__, sectPos, sectName, curSec, nextSec);
+				sectPos = nextSec;
+			} while (nextSec != (size_t)-1L);
+		}
+		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format EAS(Cadwell): unsupported ");
 	}
 
 	else if (hdr->TYPE==EBS) {
