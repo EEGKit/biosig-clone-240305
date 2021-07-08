@@ -179,10 +179,13 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i) %i %i %i\n", __FILE__, __LIN
 				hc->OnOff = 1;
 				switch (datatype) {
 				case 4: // int16
+					hc->GDFTYP=3; break;
 				case 5: // int32
+					hc->GDFTYP=5; break;
 				case 6: // float32
+					hc->GDFTYP=16; break;
 				case 7: // double
-					break;
+					hc->GDFTYP=17; break;
 				case 9: hc->GDFTYP = 17;  // series
 					// double firstval  = bef64p(hc->bufptr);
 					double increment = bef64p(hc->bufptr+8);
@@ -203,8 +206,6 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i) %i %i %i\n", __FILE__, __LIN
 					break;
 				default:
 					hc->OnOff = 0;
-					biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "error reading AXG: unsupported data type");
-					return;
 				}
 
 if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i) %p %i\n", __FILE__, __LINE__, hdr->CHANNEL, k );
@@ -313,6 +314,9 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i) NS=%i nCol=%i\n", __FILE__, 
 				break;
 			case 10: hc->GDFTYP = 3;  // scaled short
 				if (hc->GDFTYP < 16) hc->GDFTYP = 16;
+				break;
+			default:
+				hc->OnOff = 0;
 			}
 
 			if (!flag_traces_of_first_sweep_done) {
@@ -330,16 +334,6 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i) NS=%i nCol=%i\n", __FILE__, 
 
 			if (ns+1 == hdr->NS) {
 				flag_traces_of_first_sweep_done = 1;
-				// if current column corresponds to last channel, ...
-				// check if all traces of the same sweep have the same length, and ...
-				for (ns=0; ns < hdr->NS; ns++) {
-					CHANNEL_TYPE *hc = hdr->CHANNEL + ns;
-					if (hc->OnOff != 1) continue;
-					else if (hdr->SPR != hc->SPR) {
-						biosigERROR(hdr,B4C_FORMAT_UNSUPPORTED,"AXG - SPR differs between channel");
-						return;
-					}
-				}
 
 				// ... add segment break in event table.
 				if ( hdr->EVENT.N + 1 >= EventN ) {
@@ -359,7 +353,6 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i) NS=%i nCol=%i\n", __FILE__, 
 		uint32_t bi8 = 0;
 		for (ns=0; ns < hdr->NS; ns++) {
 			CHANNEL_TYPE *hc = hdr->CHANNEL+ns;
-			hc->SPR = hdr->SPR;
 			hc->bi8 = bi8;
 			hc->bi  = bi8/8;
 			if (hc->OnOff != 1)
