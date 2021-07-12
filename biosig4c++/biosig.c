@@ -4495,7 +4495,6 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"EDF+ event\n\ts1:\t<%s>\n\ts2:\t<%s>\n\ts3:
 		sopen_abf2_read(hdr);
 	}
 
-#if defined(WITH_ATF)
 	else if (hdr->TYPE==ATF) {
 		// READ ATF
 		hdr->HeadLen = count;
@@ -4510,7 +4509,6 @@ if (VERBOSE_LEVEL>7) fprintf(stdout,"EDF+ event\n\ts1:\t<%s>\n\ts2:\t<%s>\n\ts3:
 		sopen_atf_read(hdr);
 
 	}
-#endif // WITH_ATF
 
 	else if (hdr->TYPE==ACQ) {
 
@@ -12807,13 +12805,6 @@ size_t sread(biosig_data_type* data, size_t start, size_t length, HDRTYPE* hdr) 
 	if (VERBOSE_LEVEL>6)
 		fprintf(stdout,"%s( %p, %i, %i, %s ) MODE=%i bpb=%i\n",__func__,data, (int)start, (int)length, hdr->FileName, hdr->FILE.OPEN, (int)hdr->AS.bpb);
 
-#if !defined(ONLYGDF) && defined(WITH_ATF)
-	if (hdr->TYPE == ATF) {
-		sread_atf(hdr);
-		count = hdr->NRec;
-	}
-#endif
-
 	if ((ssize_t)start < 0) start=hdr->FILE.POS;
 
 	if (start >= (size_t)hdr->NRec) return(0);
@@ -12821,6 +12812,7 @@ size_t sread(biosig_data_type* data, size_t start, size_t length, HDRTYPE* hdr) 
 	switch (hdr->TYPE) {
 	case AXG:
 	case ABF2:
+	case ATF:
 	case SMR: // data is already cached
 		count = hdr->NRec;
 		break;
