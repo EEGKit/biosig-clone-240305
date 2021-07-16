@@ -106,13 +106,8 @@ HDR.Manufacturer.SerialNumber = '00000000';
 % recording identification, max 80 char.
 HDR.RID = 'TestFile 001'; %StudyID/Investigation [consecutive number];
 HDR.REC.Hospital   = 'Biosig Laboratory';
-HDR.REC.Technician = 'anybody';
-if exist('OCTAVE_VERSION','builtin')
-	t = getpwuid(getuid);
-	if isfield(t,'gecos')
-		HDR.REC.Technician = strtok(t.gecos,',');
-	end
-end;
+HDR.REC.Technician = get_current_username();
+
 HDR.REC.Equipment  = 'biosig';
 HDR.REC.IPaddr	   = [127,0,0,1];	% IP address of recording system 	
 HDR.Patient.Name   = 'anonymous';  

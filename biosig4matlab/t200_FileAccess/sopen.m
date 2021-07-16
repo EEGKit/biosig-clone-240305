@@ -1605,10 +1605,7 @@ end;
 	                TagLen(tag) = length(TagLenValue{tag}); 
 		end;
 		if ~isfield(HDR,'REC') || ~isfield(HDR.REC,'Technician') || isempty(HDR.REC.Technician)
-			if exist('OCTAVE_VERSION','builtin')
-				tmp = getpwuid(getuid());
-				HDR.REC.Technician = strtok(tmp.gecos,',');
-			end;
+			HDR.REC.Technician = get_current_username();
 		end;
 		if isfield(HDR,'REC') && isfield(HDR.REC,'Technician')
 			tag = 6;
