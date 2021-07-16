@@ -4253,13 +4253,13 @@ else if (!strncmp(MODE,"r",1)) {
 			if (VERBOSE_LEVEL>7)
 				fprintf(stdout,"#%i# HP: %fHz  LP:%fHz NOTCH=%f\n",(int)k,hc->HighPass,hc->LowPass,hc->Notch);
 				
-			if ((hdr->TYPE==EDF) && !strncmp(Header1+192,"EDF+",4) && !strcmp(hc->Label,"EDF Annotations")) {
+			if ((hdr->TYPE==EDF) && !strcmp(hc->Label,"EDF Annotations")) {
 				hc->OnOff = 0;
 				if (annotStartBi < 0) annotStartBi = hc->bi;
 				annotEndBi = hdr->AS.bpb;
 				annotNumBytesPerBlock += nbytes;
 			}
-			else if ((hdr->TYPE==BDF) && !strncmp(Header1+192,"BDF+",4) && !strcmp(hc->Label,"BDF Annotations")) {
+			else if ((hdr->TYPE==BDF) && !strcmp(hc->Label,"BDF Annotations")) {
 				hc->OnOff = 0;
 				if (annotStartBi < 0) annotStartBi = hc->bi;
 				annotEndBi = hdr->AS.bpb;

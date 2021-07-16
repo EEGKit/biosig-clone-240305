@@ -630,10 +630,8 @@ end;
 	                elseif (CHAN==0)
 	                	chan = 1:HDR.NS;
 	                	if strcmp(HDR.TYPE,'EDF')
-                                if strcmp(HDR.reserved1(1:4),'EDF+')
 					tmp = find(strncmp('EDF Annotations',HDR.Label,15));
 		                        chan(tmp)=[];
-		                end;
 		                elseif strcmp(HDR.TYPE,'BDF')
 					tmp = find(strncmp('BDF Annotations',HDR.Label,15));
 		                        chan(tmp)=[];
