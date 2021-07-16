@@ -89,7 +89,7 @@ BIOSIG_MEX_DIR = $(DESTDIR)$(shell octave-config -p LOCALOCTFILEDIR)/biosig
 BIOSIG_DIR     = $(DESTDIR)$(shell octave-config -p LOCALFCNFILEDIR)/biosig
 first ::
 	$(MAKE) octave
-	$(MAKE) -C biosig4c++ mexbiosig
+	$(MAKE) -C biosig4c++ mexbiosig biosig4octave
 install ::
 	# mexbiosig
 	#-@OCTAVE@ --no-gui --eval "pkg install -global biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz"
