@@ -44,23 +44,7 @@ for k = 1:length(subdirs)
 	addpath(fullfile(BIOSIG_MATLAB_PATH,subdirs{k}))
 end
 
-if exist('OCTAVE_VERSION','builtin'),
-	try
-		pkg load general
-	end
-	try
-		pkg load signal
-	end
-	try
-		pkg load statistics
-	end
-	try
-		pkg load tsa
-	end
-	try
-		pkg load nan
-	end
-else
+if ~exist('OCTAVE_VERSION','builtin'),
 	%% Matlab
 	path([BIOSIG_MATLAB_PATH,'/viewer'],path);		% viewer
 	path([BIOSIG_MATLAB_PATH,'/viewer/utils'],path);	% viewer

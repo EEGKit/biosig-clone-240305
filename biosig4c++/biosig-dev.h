@@ -26,7 +26,6 @@
 #ifndef __BIOSIG_INTERNAL_H__
 #define __BIOSIG_INTERNAL_H__
 
-#include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -108,7 +107,7 @@ char *getlogin (void);
 
 #define BIOSIG_VERSION_MAJOR 3
 #define BIOSIG_VERSION_MINOR 0
-#define BIOSIG_PATCHLEVEL    0
+#define BIOSIG_PATCHLEVEL    1
 // for backward compatibility
 #define BIOSIG_VERSION_STEPPING BIOSIG_PATCHLEVEL
 #define BIOSIG_VERSION (BIOSIG_VERSION_MAJOR * 10000 + BIOSIG_VERSION_MINOR * 100 + BIOSIG_PATCHLEVEL)

@@ -13,7 +13,7 @@
 ## TODO: add freetb4matlab
 ## Tagging a release
 
-B4OMversion=3.7.5
+B4OMversion=3.7.9
 
 SRCDIR=/home/schloegl/src
 MXEDIR=$SRCDIR"/mxe.github.schloegl"
@@ -31,7 +31,7 @@ rm  biosig-"$1"*.gz biosig-"$1"*.zip biosig4c++-"$1"*.gz  biosig4c++-"$1"*.zip $
 rm -rf biosig4octmat-$B4OMversion.{tar.gz,zip}
 
 echo "== clone biosig =="
-git clone   --depth 1 $SRCDIR/biosig-code biosig-code
+git clone  $SRCDIR/biosig-code biosig-code
 rm -rf biosig-code/sigviewer
 rm -rf biosig-code/biosig4java
 rm -rf biosig-code/biosig4c++/patches
@@ -75,6 +75,9 @@ rm -rf biosig-code/biosig4c++/todo.txt biosig-code/.git
 # wget -nc $URL -O /tmp/$(basename $URL)
 # unzip   /tmp/$(basename $URL) -d biosig-code/biosig4c++
 
+### build "biosig4octave" package ###
+mv biosig4c++/mex/{mexbiosig,biosig4octave}-$1.src.tar.gz ./
+
 mv biosig-code biosig-$1
 
 #####################################
@@ -97,6 +100,9 @@ if [[ 1 ]] ; then
 
 	echo cp biosig-$1.* *.sum ~/L/tmp/
 	echo cp biosig-$1.src.tar.gz ~/L/public_html/biosig/prereleases/
+	echo cp biosig4octave-$1.src.tar.gz ~/L/tmp/
+	echo cp biosig4octave-$1.src.tar.gz ~/L/public_html/biosig/prereleases/
+
 	#
 	#echo scp biosig4octmat-$B4OMversion.tar.gz schloegl@frs.sourceforge.net:"/home/frs/project/biosig/BioSig\ for\ Octave\ and\ Matlab/"
 	#echo scp biosig4c++-$1.win.zip       schloegl@frs.sourceforge.net:"/home/frs/project/biosig/BioSig\ for\ C_C++/windows/"
@@ -213,16 +219,16 @@ zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 
 
 echo "sha512sum:"
-sha512sum biosig4octmat-$B4OMversion.{tar.gz,zip} biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha512.sum
+sha512sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha512.sum
 echo "sha256sum:"
-sha256sum biosig4octmat-$B4OMversion.{tar.gz,zip} biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha256.sum
+sha256sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha256.sum
 echo "sha1sum:"
-sha1sum biosig4octmat-$B4OMversion.{tar.gz,zip} biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha1.sum
+sha1sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha1.sum
 echo "md5sum:"
-md5sum biosig4octmat-$B4OMversion.{tar.gz,zip} biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee md5.sum
+md5sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee md5.sum
 
-echo cp biosig4octmat-$B4OMversion.{tar.gz,zip} biosig-$1*.{tar.gz,zip} *.sum ~/L/tmp/
-echo cp biosig-$1*.{zip,tar.gz} ~/L/public_html/biosig/prereleases/
+echo cp biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1*.{tar.gz,zip} *.sum ~/L/tmp/
+echo cp {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1*.{zip,tar.gz} ~/L/public_html/biosig/prereleases/
 #
 echo scp biosig4octmat-$B4OMversion.tar.gz schloegl@frs.sourceforge.net:"/home/frs/project/biosig/BioSig\ for\ Octave\ and\ Matlab/"
 echo scp biosig-$1-{win32,win64,$(uname -m)}.zip       schloegl@frs.sourceforge.net:"/home/frs/project/biosig/BioSig\ for\ C_C++/windows/"

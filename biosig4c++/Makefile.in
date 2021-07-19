@@ -823,7 +823,6 @@ mex/biosig4octave-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	-rm -r $($@_TMP)/inst/maybe-missing
 	### TODO
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
-	echo "src/mexSLOAD.mex src/mexSOPEN.mex src/mexSSAVE.mex src/physicalunits.mex" > $($@_TMP)/FILES
 	$(TAR) cvfz "$@" $($@_TMP)/../biosig4octave-$(BIOSIG_VERSION)
 	-rm -rf $(shell dirname $($@_TMP) )
 	(cd mex && ln -sf biosig4octave-$(BIOSIG_VERSION).src.tar.gz biosig4octave.src.tar.gz)

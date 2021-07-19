@@ -44,6 +44,8 @@ uninstall ::
 clean ::
 	$(MAKE) -C biosig4c++/mma clean
 	$(MAKE) -C biosig4c++ clean
+	-rm mexbiosig*.src.tar.gz
+	-rm biosig4octave*.src.tar.gz
 
 distclean : clean
         # also configure.ac for list of files
@@ -90,6 +92,8 @@ BIOSIG_DIR     = $(DESTDIR)$(shell octave-config -p LOCALFCNFILEDIR)/biosig
 first ::
 	$(MAKE) octave
 	$(MAKE) -C biosig4c++ mexbiosig biosig4octave
+	ln -sf biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz
+	ln -sf biosig4c++/mex/biosig4octave-@PACKAGE_VERSION@.src.tar.gz
 install ::
 	# mexbiosig
 	#-@OCTAVE@ --no-gui --eval "pkg install -global biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz"
