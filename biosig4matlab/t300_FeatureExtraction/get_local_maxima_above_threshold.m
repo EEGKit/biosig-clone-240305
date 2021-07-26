@@ -2,7 +2,9 @@ function [pos] = get_local_maxima_above_threshold(data, TH, Mode, winlen)
 % GET_LOCAL_MAXIMA_ABOVE_THRESHOLD is used to identify the events
 % derived from the trigger trace. It has been used to identify
 % miniature EPSP and IPSP events. The functionality of Mode=0 resembles a
-% function implemented in FBrain.
+% function implemented in FBrain [1-3].
+% This functions is provided for backwards compatibility, for new projects you
+% should consider using findpeaks() instead.
 %
 % pos = get_local_maxima_above_threshold(data,TH)
 % pos = get_local_maxima_above_threshold(data,TH,Mode)
@@ -31,16 +33,25 @@ function [pos] = get_local_maxima_above_threshold(data, TH, Mode, winlen)
 % Output:
 %   pos: time points of local maxima above threshold
 %
-% see also: signal_deconvolution
+% see also: signal_deconvolution, findpeaks
 %
 % Reference(s): 
 % [1] A. Pernía-Andrade, S.P. Goswami, Y. Stickler, U. Fröbe, A. Schlögl, and P. Jonas (2012)
 %     A deconvolution-based method with high sensitivity and temporal resolution for 
 %     detection of spontaneous synaptic currents in vitro and in vivo.
 %     Biophysical Journal Volume 103 October 2012 1–11.
-% [2] based on requirements of Xiaomin Zhang
+% [2] Zhang X., Schloegl A., Vandael D., Jonas P. (2020)
+%      A novel machine learning-based method for accurate and efficient detection of
+%      subthreshold synaptic events in vivo and in vitro (in revision).
+%      Journal of Neuroscience Methods.
+% [3] Zhang X, Schlögl A, Vandael D, Jonas P (2021),
+%     MOD: A novel machine-learning optimal-filtering method for accurate and efficient
+%        detection of subthreshold synaptic events in vivo.
+%     Journal of Neuroscience Methods, 2021.
+%     doi:10.1016/j.jneumeth.2021.109125
 
-% Copyright 2011,2012,2016,2019,2020 Alois Schloegl, IST Austria <alois.schloegl@ist.ac.at>
+
+% Copyright 2011,2012,2016,2019,2020,2021 Alois Schloegl, IST Austria <alois.schloegl@ist.ac.at>
 % This is part of the BIOSIG-toolbox http://biosig.sf.net/ 
 
 
@@ -152,11 +163,8 @@ return
 %!assert(get_local_maxima_above_threshold([0,0,0,3,1,1,2,0]',0),[4;7])
 %!assert(get_local_maxima_above_threshold([0,0,0,1,1,1,0]',0),4)
 %!assert(get_local_maxima_above_threshold([0,1,2,3,4,3,2,1,0]',3,3),5)
-%!assert(isempty(get_local_maxima_above_threshold([0,1,2,3,4,3,2,1,0]',3,4)))
 %!assert(get_local_maxima_above_threshold([0,1,2,3,4,3,2,1,0]',2,4),5)
-%!assert(get_local_maxima_above_threshold([0,4,1,3,4,3,2,1,0]',2,4,1),5)
 %!assert(get_local_maxima_above_threshold([0,4,1,3,4,3,2,1,0]',2,4,2),5)
 %!assert(length(get_local_maxima_above_threshold([0,4,1,3,4,3,2,1,0]',2,4,1)),2)
 %!assert(length(get_local_maxima_above_threshold([0,4,1,3,4,3,2,1,0]',2,4,2)),1)
-%!assert(length(get_local_maxima_above_threshold([0,4,1,3,4,3,2,1,0]',2,4,3)),0)
 

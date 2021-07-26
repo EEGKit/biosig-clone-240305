@@ -6,14 +6,13 @@ function HDR = qc_histo(fn,arg2)
 %  plota(R); displays the result as in [1]
 %
 % References: 
-% [1] A. Schlögl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen, A. Värri, G. Dorffner, G. Pfurtscheller.
+% [1] A. SchlÃ¶gl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen, A. VÃ¤rri, G. Dorffner, G. Pfurtscheller.
 %       Quality Control of polysomnographic Sleep Data by Histogram and Entropy Analysis.
 %       Clin. Neurophysiol. 1999, Dec; 110(12): 2165 - 2170.
 %       http://dx.doi.org/10.1016/S1388-2457(99)00172-8
 
 
-%  $Id$ 
-%  Copyright (C) 2006 by Alois Schloegl <alois.schloegl@gmail.com>
+%  Copyright (C) 2006,2021 by Alois Schloegl <alois.schloegl@gmail.com>
 %  This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 

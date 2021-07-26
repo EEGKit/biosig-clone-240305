@@ -9,14 +9,12 @@ function [LIM1,LIM2,LIM3,h0] = hist2limits(H,TH)
 %
 %
 % Reference(s): 
-% [1] A. Schlögl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen,A. Värri, G. Dorffner, G. Pfurtscheller.
+% [1] A. SchlÃ¶gl, B. Kemp, T. Penzel, D. Kunz, S.-L. Himanen,A. VÃ¤rri, G. Dorffner, G. Pfurtscheller.
 %     Quality Control of polysomnographic Sleep Data by Histogram and Entropy Analysis.
 %     Clin. Neurophysiol. 1999, Dec; 110(12): 2165 - 2170.
 
 
-%       $Revision: 1.1 $
-%	$Id$
-%	Copyright (C) 1999-2003 by Alois Schloegl <alois.schloegl@gmail.com>
+%	Copyright (C) 1999-2003,2021 by Alois Schloegl <alois.schloegl@gmail.com>
 
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License

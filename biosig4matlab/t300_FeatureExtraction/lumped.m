@@ -10,14 +10,12 @@ function [B,A]=lumped(K,Fs)
 %	Model of brain rhythmic activity. The alpha-rhythm of the thalamus.
 %       Kybernetik. 1974 May 31;15(1):27-37.
 % [2]   P. Suffcynski, Thesis, 1999.
-% [3]   Alois Schlögl (2000)
+% [3]   Alois SchlÃ¶gl (2000)
 %       The electroencephalogram and the adaptive autoregressive model: theory and applications
 %       Shaker Verlag, Aachen, Germany,(ISBN3-8265-7640-3). 
 
 
-%       $Revision: 1.1 $
-%	$Id$
-%	Copyright (C) 1999-2004 by Alois Schloegl <alois.schloegl@gmail.com>
+%	Copyright (C) 1999-2004,2021 by Alois Schloegl <alois.schloegl@gmail.com>
 %    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
 % This program is free software; you can redistribute it and/or
@@ -55,8 +53,8 @@ Vd =7;   % mV
 P1t_off=312; % pps
 P2t_off=312; % pps
 
-P1t_var=169; % pps²
-P2t_var=169; % pps²
+P1t_var=169; % ppsÂ²
+P2t_var=169; % ppsÂ²
 
 Mt = 8; 
 

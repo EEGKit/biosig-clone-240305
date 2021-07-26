@@ -11,13 +11,13 @@ function [EVENT,cc] = wscore2event(f0,fc)
 % Reference(s):
 % [1] Artifact database of sleep EEG. Available online http://www.dpmi.tu-graz.ac.at/ADB/
 %
-% [2] A. Schlögl, P. Anderer, M.-J. Barbanoj, G. Klösch,G. Gruber, J.L. Lorenzo, O. Filz, M. Koivuluoma, I. Rezek, S.J. Roberts,A. Värri, P. Rappelsberger, G. Pfurtscheller, G. Dorffner
+% [2] A. SchlÃ¶gl, P. Anderer, M.-J. Barbanoj, G. KlÃ¶sch,G. Gruber, J.L. Lorenzo, O. Filz, M. Koivuluoma, I. Rezek, S.J. Roberts,A. VÃ¤rri, P. Rappelsberger, G. Pfurtscheller, G. Dorffner
 %       Artifact processing of the sleep EEG in the "SIESTA"-project,
 %       Proceedings EMBEC'99, Part II, pp.1644-1645, 4-7. Nov. 1999,Vienna, Austria.
-% [3] A. Schlögl, P. Anderer, S.J. Roberts, M. Pregenzer, G.Pfurtscheller.
+% [3] A. SchlÃ¶gl, P. Anderer, S.J. Roberts, M. Pregenzer, G.Pfurtscheller.
 %       Artefact detection in sleep EEG by the use of Kalman filtering.
 %       Proceedings EMBEC'99, Part II, pp.1648-1649, 4-7. Nov. 1999,Vienna, Austria.
-% [4] A. Schlögl, P. Anderer, M.-J. Barbanoj, G. Dorffner, G. Gruber, G. Klösch, J.L. Lorenzo, P. Rappelsberger, G. Pfurtscheller.
+% [4] A. SchlÃ¶gl, P. Anderer, M.-J. Barbanoj, G. Dorffner, G. Gruber, G. KlÃ¶sch, J.L. Lorenzo, P. Rappelsberger, G. Pfurtscheller.
 %       Artifacts in the sleep EEG - A database for the evaluation of automatedprocessing methods.
 %       Proceedings of the Third International Congress of the World Federation of Sleep Research Societies (WFSRS). Editors: H. Schulz. P.L. Parmeggiani, and M. Chase. Sleep Research Online 1999:2 (Supplement 1), p. 586. 
 

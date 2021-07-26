@@ -20,12 +20,12 @@ function [Y,Z] = processing(MODE,X,Z)
 %
 %
 % Reference(s):
-% [1] M.-E. Nygards, L. Sörnmo, Delineation of the QRS complex using the envelope of the e.c.g
+% [1] M.-E. Nygards, L. SÃ¶rnmo, Delineation of the QRS complex using the envelope of the e.c.g
 %         Med. & Biol. Eng. & Comput., 1983, 21, 538-547.
 %
 %
 
-%	Copyright (C) 2000-2003 by Alois Schloegl <alois.schloegl@gmail.com>
+%	Copyright (C) 2000-2003,2021 by Alois Schloegl <alois.schloegl@gmail.com>
 
 % This library is free software; you can redistribute it and/or
 % modify it under the terms of the GNU Library General Public

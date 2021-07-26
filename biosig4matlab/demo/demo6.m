@@ -1,4 +1,4 @@
-%Demo6 - demonstrates the transfer function of the 
+%Demo6 - demonstrates the transfer function of the
 %        lumped circuit model for various feedback gains
 %
 %       see also LUMPED
@@ -8,14 +8,12 @@
 %	Model of brain rhythmic activity. The alpha-rhythm of the thalamus.
 %       Kybernetik. 1974 May 31;15(1):27-37.
 % [2]   P. Suffcynski, Thesis, 1999.
-% [3]   Alois Schlögl (2000)
+% [3]   Alois SchlÃ¶gl (2000)
 %       The electroencephalogram and the adaptive autoregressive model: theory and applications
 %       Shaker Verlag, Aachen, Germany,(ISBN3-8265-7640-3). 
 
 
-%       $Revision: 1.1 $
-%	$Id: demo6.m,v 1.1 2004-02-27 12:31:16 schloegl Exp $
-%	Copyright (C) 1999-2004 by Alois Schloegl <alois.schloegl@gmail.com>
+%	Copyright (C) 1999-2004,2021 by Alois Schloegl <alois.schloegl@gmail.com>
 %    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
 % This program is free software; you can redistribute it and/or
@@ -39,9 +37,10 @@ for K = 10.^[0:.25:9],
         k = k +1;
         LEG{k}=sprintf('%5f',K);
         [B,A]=lumped(K,128);
-        [H,F]=freqz(B,A,0:.1:64,128); 
-        semilogy(F,abs(H)); 
-        hold on; 
+        [H,F]=freqz(B,A,0:.1:64,128);
+        semilogy(F,abs(H));
+        hold on;
 end;
 axis([0,64,1e-4,1])
 %legend(LEG)
+

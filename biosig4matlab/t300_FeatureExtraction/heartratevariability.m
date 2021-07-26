@@ -25,8 +25,8 @@ function [X] = heartratevariability(RRI,arg2)
 %     NN50count2
 %     NN50count
 %	pNN50
-%	SD1		width of Poincaré plot; equivalent to sqrt(2)*RMSSD [2]
-%	SD2		length of Poincaré plot; i.e. 2SDRR²+SDSD²/2 [2]
+%	SD1		width of PoincarÃ© plot; equivalent to sqrt(2)*RMSSD [2]
+%	SD2		length of PoincarÃ© plot; i.e. 2SDRRÂ²+SDSDÂ²/2 [2]
 %	r_RR 		correlation coefficient [2]
 %        AR-based spectral estimation 
 %   X.VLF               power of very low frequency band (< 0.04 Hz) 
@@ -62,13 +62,13 @@ function [X] = heartratevariability(RRI,arg2)
 %       Taskforce of the European Society for Cardiology and the North Americal Society of Pacing and Electrophysiology.         
 %       European Heart Journal (1996) 17, 354-381. 
 % [2] M. Brennan, M.Palaniswami, P. Kamen
-%	Do Existing Measures of Poincaré Plot Geometriy Reflect Nonlinear Features of Heart Rate Variablilty?
+%	Do Existing Measures of PoincarÃ© Plot Geometriy Reflect Nonlinear Features of Heart Rate Variablilty?
 %	IEEE Trans Biomedical Eng. 48(11),2001, 
 % [3] U. Rajendra Acharya, K. Paul Joseph,N. Kannathal, Choo Min Lim, Jasjit S. Suri. 
 %	Heart rate variability: a review.
-%	Med Bio Eng Comput (2006) 44:1031–1051
+%	Med Bio Eng Comput (2006) 44:1031-1051
 
-%	Copyright (C) 2005,2008,2009,2010 by Alois Schloegl <alois.schloegl@gmail.com>
+%	Copyright (C) 2005,2008,2009,2010,2021 by Alois Schloegl <alois.schloegl@gmail.com>
 %    	This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 % This program is free software; you can redistribute it and/or
