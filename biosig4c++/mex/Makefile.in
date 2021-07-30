@@ -200,10 +200,10 @@ endif
 
 ifneq (:,@OCTAVE@)
 %.mex: %.cpp
-	mkoctfile $(DEFINES) -I.. -v -g --mex "$<" -L.. -lbiosig -o "$@"
+	$(MKOCTFILE) $(DEFINES) -I.. -v -g --mex "$<" -L.. -lbiosig -o "$@"
 
 %.oct: %.cpp
-	mkoctfile $(DEFINES) -I.. "$<" -L.. -lbiosig -o "$@"
+	$(MKOCTFILE) $(DEFINES) -I.. "$<" -L.. -lbiosig -o "$@"
 endif
 
 %.mexw32: %.cpp

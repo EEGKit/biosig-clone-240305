@@ -75,8 +75,6 @@ rm -rf biosig-code/biosig4c++/todo.txt biosig-code/.git
 # wget -nc $URL -O /tmp/$(basename $URL)
 # unzip   /tmp/$(basename $URL) -d biosig-code/biosig4c++
 
-### build "biosig4octave" package ###
-mv biosig4c++/mex/{mexbiosig,biosig4octave}-$1.src.tar.gz ./
 
 mv biosig-code biosig-$1
 
@@ -100,6 +98,10 @@ if [[ 1 ]] ; then
 
 	echo cp biosig-$1.* *.sum ~/L/tmp/
 	echo cp biosig-$1.src.tar.gz ~/L/public_html/biosig/prereleases/
+
+	make -C biosig-$1/biosig4c++ mexbiosig biosig4octave
+	### build "biosig4octave" package ###
+	mv biosig-$1/biosig4c++/mex/{mexbiosig,biosig4octave}-$1.src.tar.gz ./
 	echo cp biosig4octave-$1.src.tar.gz ~/L/tmp/
 	echo cp biosig4octave-$1.src.tar.gz ~/L/public_html/biosig/prereleases/
 

@@ -139,6 +139,7 @@ endif
 SONAMEVERSION ?= 3
 
 ### TODO: DLEXT does not work correctly on MXE/MINGW
+DLDIR = $(libdir)
 ifneq (,$(findstring Darwin, $(shell uname)))
 	## Homebrew:
 	##	brew install gawk
@@ -183,11 +184,17 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 	LDLIBS  += -liconv -lws2_32
 	LDFLAGS += -Wl,-subsystem,windows
 	LDFLAGS += -L$(prefix)/lib/
+	DLDIR = $(bindir)
 
 else
 	TAR	       = tar
 	LD	       = $(CXX)
-	FULLDLEXT      = .so.${SONAMEVERSION}
+	ifneq (,$(findstring mingw,$(TARGET)))
+		FULLDLEXT      = ${SONAMEVERSION}.dll
+		DLDIR = $(bindir)
+	else
+		FULLDLEXT      = .so.${SONAMEVERSION}
+	endif
 	SONAME_PREFIX  = -Wl,-soname=
 endif
 
@@ -786,7 +793,7 @@ win64mma: mma/biosig.tm mma/biosig.c
 #############################################################
 
 mex4o mex4m oct mex:
-	$(MAKE) -C mex $@
+	MKOCTFILE="@MKOCTFILE@" $(MAKE) -C mex $@
 
 mexw32 mexw64:
 	CROSS=$(CROSS) CROSS64=$(CROSS64) $(MAKE) -C mex $@
@@ -823,6 +830,7 @@ mex/biosig4octave-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	cp ../COPYING ../CITATION $($@_TMP)/
 	cp mex/*.cpp mex/Makefile $($@_TMP)/src/
 	cp -r ../biosig4matlab/* $($@_TMP)/inst/
+	rm $($@_TMP)/inst/t300_FeatureExtraction/hurst.m	# is part of Octave Signal package
 	-rm -r $($@_TMP)/inst/maybe-missing
 	### TODO
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
@@ -952,12 +960,11 @@ install_libbiosig.a: libbiosig.a libphysicalunits.a libbiosig.pc
 	install libphysicalunits.a 	$(DESTDIR)$(libdir)
 	install libbiosig.pc		$(DESTDIR)$(libdir)/pkgconfig/
 
-install_libbiosig.$(DLEXT): libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
-	install -d 			$(DESTDIR)$(libdir)/pkgconfig/
-	install libbiosig$(FULLDLEXT)  $(DESTDIR)$(libdir)
-	(cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig${SONAMEVERSION}.$(DLEXT))
+install_libbiosig.$(DLEXT): libbiosig.$(DLEXT)
+	install -d 			$(DESTDIR)$(DLDIR)/pkgconfig/
+	install libbiosig.$(DLEXT)  $(DESTDIR)$(DLDIR)/libbiosig$(FULLDLEXT)
 ifneq (Darwin,$(shell uname))
-	cd $(DESTDIR)$(libdir) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
+	cd $(DESTDIR)$(DLDIR) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
 endif
 	-ldconfig
 

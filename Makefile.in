@@ -25,9 +25,6 @@ mma mathematica: lib
 mex4m matlab: lib
 	$(MAKE) -C biosig4c++/mex mex4m
 
-mex4o octave: lib
-	$(MAKE) -C biosig4c++/mex mex4o
-
 R: lib
 	$(MAKE) -C biosig4c++/R
 
@@ -85,15 +82,21 @@ uninstall ::
 	$(MAKE) -C biosig4c++/mex uninstall
 endif
 
+# source package mexbiosig and biosig4octave
+first :: biosig4octave
+mexbiosig ::
+	$(MAKE) -C biosig4c++ mexbiosig
+	ln -sf biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz
+biosig4octave ::
+	$(MAKE) -C biosig4c++ biosig4octave
+	ln -sf biosig4c++/mex/biosig4octave-@PACKAGE_VERSION@.src.tar.gz
+
 ifneq (:,@OCTAVE@)
 ifneq (:,@MKOCTFILE@)
 BIOSIG_MEX_DIR = $(DESTDIR)$(shell octave-config -p LOCALOCTFILEDIR)/biosig
 BIOSIG_DIR     = $(DESTDIR)$(shell octave-config -p LOCALFCNFILEDIR)/biosig
 first ::
-	$(MAKE) octave
-	$(MAKE) -C biosig4c++ mexbiosig biosig4octave
-	ln -sf biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz
-	ln -sf biosig4c++/mex/biosig4octave-@PACKAGE_VERSION@.src.tar.gz
+	MKOCTFILE="@MKOCTFILE@" $(MAKE) -C biosig4c++/mex mex4o
 install ::
 	# mexbiosig
 	#-@OCTAVE@ --no-gui --eval "pkg install -global biosig4c++/mex/mexbiosig-@PACKAGE_VERSION@.src.tar.gz"
