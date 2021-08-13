@@ -598,10 +598,6 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 
 	if (VERBOSE_LEVEL>7) fprintf(stdout,"sopen_abf2_read 101\n");
 
-//	biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "ABF2 format currently not supported"); return;
-
-		fprintf(stdout,"Warning ABF2 v%4.2f: implementation is not complete (e.g. scaling factors may be incorrect) ! \n", hdr->VERSION);
-
 		if (hdr->HeadLen < 512) {
 		    	hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, 512);
 			hdr->HeadLen  += ifread(hdr->AS.Header+hdr->HeadLen, 1, 512-hdr->HeadLen, hdr);
