@@ -147,7 +147,6 @@ ifneq (,$(findstring Darwin, $(shell uname)))
 	##	brew install homebrew/dupes/libiconv
 	##	brew install homebrew/science/suite-sparse
 	##
-	TAR	       = gtar
 	LD	       = $(CXX) -shared
 	CFLAGS        += -I$(prefix)/include
 	CFLAGS        += -mmacosx-version-min=10.13
@@ -161,7 +160,6 @@ ifneq (,$(findstring Darwin, $(shell uname)))
 else ifneq (,$(findstring CYGWIN, $(shell uname)))
 	### TODO: check if this path is useful at all ###
 	DLEXT = dll
-	TAR	       = tar
 	LD	       = $(CXX)
 	LDLIBS        += -liconv -lstdc++
 	FULLDLEXT      = ${SONAMEVERSION}.dll
@@ -176,7 +174,6 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 	CC  = gcc
 	CXX = g++
 	CFLAGS  += -pipe -fPIC -D_REENTRANT -D=BUILD_DLL
-	TAR	 = tar
 	LD	 = $(CXX)
 	FULLDLEXT      = ${SONAMEVERSION}.dll
 	SONAME_PREFIX  = -Wl,-soname=
@@ -187,7 +184,6 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 	DLDIR = $(bindir)
 
 else
-	TAR	       = tar
 	LD	       = $(CXX)
 	ifneq (,$(findstring mingw,$(TARGET)))
 		FULLDLEXT      = ${SONAMEVERSION}.dll
@@ -293,6 +289,7 @@ DATA_DIR      = data/
 DATA_DIR_CFS  = $(HOME)/L/data/test/cfs/
 TEMP_DIR      = test/
 SED           = sed
+TAR           = tar
 VERBOSE	     := -V0
 
 ##########################################################
@@ -808,12 +805,12 @@ mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	$(shell mkdir -p $($@_TMP)/inst/)
 	$(shell mkdir -p $($@_TMP)/src/)
 	cp mex/README $($@_TMP)/doc/
-	sed -e 's#^Version.*$$#Version: $(BIOSIG_VERSION)#g' -e 's#^Date.*$$#Date: '$(shell date +%Y-%m-%d)'#g' mex/DESCRIPTION > $($@_TMP)/DESCRIPTION
+	$(SED) -e 's#^Version.*$$#Version: $(BIOSIG_VERSION)#g' -e 's#^Date.*$$#Date: '$(shell date +%Y-%m-%d)'#g' mex/DESCRIPTION > $($@_TMP)/DESCRIPTION
 	cp ../COPYING $($@_TMP)/
 	cp mex/*.cpp mex/Makefile $($@_TMP)/src/
 	### TODO
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
-	$(TAR) cvfz "$@" $($@_TMP)/../mexbiosig-$(BIOSIG_VERSION)
+	$(TAR) -czf "$@" $($@_TMP)
 	-rm -rf $(shell dirname $($@_TMP) )
 	(cd mex && ln -sf mexbiosig-$(BIOSIG_VERSION).src.tar.gz mexbiosig.src.tar.gz)
 	echo "###  In order to publish release, run ### "
@@ -826,7 +823,7 @@ mex/biosig4octave-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	$(shell mkdir -p $($@_TMP)/inst/)
 	$(shell mkdir -p $($@_TMP)/src/)
 	cp mex/README $($@_TMP)/doc/
-	sed -e 's#^Name.*$$#Name: biosig#g' -e '/^Title/ s#mexBiosig#Biosig#g' -e 's#^Version.*$$#Version: $(BIOSIG_VERSION)#g' -e 's#^Date.*$$#Date: '$(shell date +%Y-%m-%d)'#g' mex/DESCRIPTION > $($@_TMP)/DESCRIPTION
+	$(SED) -e 's#^Name.*$$#Name: biosig#g' -e '/^Title/ s#mexBiosig#Biosig#g' -e 's#^Version.*$$#Version: $(BIOSIG_VERSION)#g' -e 's#^Date.*$$#Date: '$(shell date +%Y-%m-%d)'#g' mex/DESCRIPTION > $($@_TMP)/DESCRIPTION
 	cp ../COPYING ../CITATION $($@_TMP)/
 	cp mex/*.cpp mex/Makefile $($@_TMP)/src/
 	cp -r ../biosig4matlab/* $($@_TMP)/inst/
@@ -834,7 +831,7 @@ mex/biosig4octave-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	-rm -r $($@_TMP)/inst/maybe-missing
 	### TODO
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
-	$(TAR) cvfz "$@" $($@_TMP)/../biosig4octave-$(BIOSIG_VERSION)
+	$(TAR) -czf "$@" $($@_TMP)
 	-rm -rf $(shell dirname $($@_TMP) )
 	(cd mex && ln -sf biosig4octave-$(BIOSIG_VERSION).src.tar.gz biosig4octave.src.tar.gz)
 	echo "###  In order to publish release, run ### "
