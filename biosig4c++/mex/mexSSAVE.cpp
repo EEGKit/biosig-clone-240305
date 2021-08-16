@@ -201,8 +201,11 @@ void mexFunction(
 	if ( (p = mxGetField(prhs[0], 0, "T0") ) != NULL ) 		hdr->T0 	= (gdf_time)getDouble(p, 0);
 	if ( (p = mxGetField(prhs[0], 0, "tzmin") ) != NULL )
 		hdr->tzmin 	= (int16_t)getDouble(p, 0);
-	else
-		hdr->tzmin	= -timezone/60;
+	else {
+		time_t t = gdf_time2t_time(hdr->T0);
+		struct tm *tt = localtime(&t);
+		hdr->tzmin    = tt->tm_gmtoff/60;
+	}
 	if ( (p = mxGetField(prhs[0], 0, "FileName") ) != NULL ) 	FileName 	= mxArrayToString(p);
 	if ( (p = mxGetField(prhs[0], 0, "SampleRate") ) != NULL ) 	hdr->SampleRate = getDouble(p, 0);
 	if ( (p = mxGetField(prhs[0], 0, "NS") ) != NULL )	 	hdr->NS         = getDouble(p, 0);

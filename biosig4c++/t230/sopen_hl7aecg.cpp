@@ -1001,7 +1001,7 @@ EXTERN_C int sclose_HL7aECG_write(HDRTYPE* hdr){
 
 	char timelow[24], timehigh[24];
 	gdf_time t1,t2;
-	t1 = hdr->T0;// + ldexp(timezone/(3600.0*24),32);
+	t1 = hdr->T0;
 	if (VERBOSE_LEVEL>7) fprintf(stdout,"gdftime: hdr->T0: %ld\n", t1);
 
 	t0 = gdf_time2tm_time(t1);
