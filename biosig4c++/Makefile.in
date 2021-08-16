@@ -810,7 +810,7 @@ mex/mexbiosig-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	cp mex/*.cpp mex/Makefile $($@_TMP)/src/
 	### TODO
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
-	$(TAR) -czf "$@" $($@_TMP)
+	$(TAR) -czf "$@" $($@_TMP)/../mexbiosig-$(BIOSIG_VERSION)
 	-rm -rf $(shell dirname $($@_TMP) )
 	(cd mex && ln -sf mexbiosig-$(BIOSIG_VERSION).src.tar.gz mexbiosig.src.tar.gz)
 	echo "###  In order to publish release, run ### "
@@ -831,7 +831,7 @@ mex/biosig4octave-$(BIOSIG_VERSION).src.tar.gz: mex/*.cpp
 	-rm -r $($@_TMP)/inst/maybe-missing
 	### TODO
 	#touch $($@_TMP)/src/mex{SOPEN,SLOAD,SSAVE}.m
-	$(TAR) -czf "$@" $($@_TMP)
+	$(TAR) -czf "$@" $($@_TMP)/../biosig4octave-$(BIOSIG_VERSION)
 	-rm -rf $(shell dirname $($@_TMP) )
 	(cd mex && ln -sf biosig4octave-$(BIOSIG_VERSION).src.tar.gz biosig4octave.src.tar.gz)
 	echo "###  In order to publish release, run ### "
