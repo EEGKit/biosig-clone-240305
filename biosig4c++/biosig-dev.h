@@ -550,6 +550,9 @@ HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, bi
 #  include <endian.h>
 #  include <byteswap.h>
 
+#elif defined(__FreeBSD__)
+#  include <machine/endian.h>
+
 #elif defined(__GLIBC__)	// for Hurd
 #  include <endian.h>
 #  include <byteswap.h>
@@ -659,7 +662,7 @@ HDRTYPE* sopen_extended(const char* FileName, const char* MODE, HDRTYPE* hdr, bi
 #	define bswap_32 __swap32
 #	define bswap_64 __swap64
 
-#elif defined(__NetBSD__) || defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__NetBSD__) || defined(__DragonFly__)
 #	include <sys/endian.h>
 #	define be16toh(x) betoh16(x)
 #	define le16toh(x) letoh16(x)
