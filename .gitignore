@@ -31,9 +31,12 @@ biosig4c++/magic/*.mgc
 #
 # autoconf generated files
 autom4te.cache/
+config.guess
 config.h
+config.h.in
 config.log
 config.status
+config.sub
 configure
 biosig4c++/python/setup.py
 biosig4c++/R/DESCRIPTION

@@ -42,6 +42,7 @@ set (sources
   t210/sopen_abf_read.c
   t210/sopen_alpha_read.c
   t210/sopen_axg_read.c
+  t210/sopen_cadwell_read.c
   t210/sopen_cfs_read.c
   t210/sopen_heka_read.c
   t210/sopen_igor.c
