@@ -219,9 +219,7 @@ DEFINES      += -D=WITH_FEF
 #DEFINES      += -D=WITH_GDCM
 #DEFINES      += -D=WITH_GSL
 #DEFINES      += -D=WITH_EEPROBE
-DEFINES      += -D=WITH_INTAN
 #DEFINES      += -D=WITH_TDMS
-DEFINES      += -D=WITH_ATF
 #DEFINES      += -D=WITH_AVI
 #DEFINES      += -D=WITH_RIFF
 #DEFINES      += -D=WITH_WAV
@@ -249,13 +247,19 @@ ifeq (1,@HAVE_LIBDCMTK@)
 	MinGWOBJECTS += win32/sopen_dcmtk_read.obj
 endif
 ifeq (1,@HAVE_LIBHDF5@)
-	LDLIBS     += -lhdf5
+	DEFINES    += -DWITH_HDF5=1
+	LDLIBS     += -lhdf5 -lhdf5_hl
 endif
 ifeq (1,@HAVE_LIBMATIO@)
+	DEFINES    += -DWITH_MATIO=1
 	LDLIBS     += -lmatio
 endif
 ifeq (1,@HAVE_LIBM@)
 	LDLIBS     += -lm
+endif
+ifeq (1,@HAVE_SQLITE3@)
+	DEFINES    += -DWITH_SQLITE3=1 -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION
+	LDLIBS     += -lsqlite3
 endif
 ifeq (1,@HAVE_LIBTINYXML@)
 	DEFINES    += -D=WITH_LIBTINYXML
@@ -345,8 +349,11 @@ OBJ	      = ./obj
 SOURCES      += biosig.c \
 		biosig2.c \
 		t210/sopen_cfs_read.c \
+		t210/sopen_hdf5.c \
 		t210/sopen_heka_read.c \
 		t210/sopen_igor.c \
+		t210/sopen_matio.c \
+		t210/sopen_sqlite.c \
 		t210/sopen_rhd2000_read.c \
 		t210/sopen_scp_read.c \
 		t210/sopen_tdms_read.c \
@@ -385,11 +392,15 @@ OBJECTS      += \
 		sopen_cfs_read.o \
 		sopen_heka_read.o \
 		sopen_igor.o \
+		sopen_hdf5.o \
+		sopen_matio.o \
+		sopen_sqlite.o \
 		sopen_scp_read.o \
 		sopen_abf_read.o \
 		sopen_alpha_read.o \
 		sopen_axg_read.o \
 		sopen_cadwell_read.o \
+		sopen_rhd2000_read.o \
 		sopen_scp_write.o \
 		sopen_hl7aecg.o \
 		gdftime.o \
@@ -406,11 +417,15 @@ MinGWOBJECTS  = \
 		win32/sopen_cfs_read.obj \
 		win32/sopen_heka_read.obj \
 		win32/sopen_igor.obj \
+		win32/sopen_hdf5.obj \
+		win32/sopen_matio.obj \
+		win32/sopen_sqlite.obj \
 		win32/sopen_scp_read.obj \
 		win32/sopen_abf_read.obj \
 		win32/sopen_alpha_read.obj \
 		win32/sopen_axg_read.obj \
 		win32/sopen_cadwell_read.obj \
+		win32/sopen_rhd2000_read.obj \
 		win32/sopen_scp_write.obj \
 		win32/sopen_hl7aecg.obj \
 		win32/gdftime.obj \
@@ -435,12 +450,6 @@ ifneq (,$(findstring WITH_FEF, $(MinGWDEF)))
   MinGWOBJECTS += win32/sopen_fef_read.obj
 endif
 
-ifneq (,$(findstring WITH_INTAN, $(DEFINES)))
-  OBJECTS      += sopen_rhd2000_read.o
-endif
-ifneq (,$(findstring WITH_INTAN, $(MinGWDEF)))
-  MinGWOBJECTS += sopen_rhd2000_read.obj
-endif
 ifneq (,$(findstring WITH_TDMS, $(DEFINES)))
   OBJECTS      += sopen_tdms_read.o
 endif

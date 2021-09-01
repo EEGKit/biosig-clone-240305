@@ -155,11 +155,9 @@ int sclose_HL7aECG_write(HDRTYPE* hdr);
 void sopen_ibw_read    (HDRTYPE* hdr);
 void sopen_itx_read    (HDRTYPE* hdr);
 void sopen_smr_read    (HDRTYPE* hdr);
-#ifdef WITH_INTAN
 void sopen_rhd2000_read (HDRTYPE* hdr);
 void sopen_rhs2000_read (HDRTYPE* hdr);
 void sopen_intan_clp_read (HDRTYPE* hdr);
-#endif
 #ifdef WITH_TDMS
 void sopen_tdms_read   (HDRTYPE* hdr);
 #endif
@@ -170,12 +168,9 @@ int sopen_fef_read(HDRTYPE* hdr);
 int sclose_fef_read(HDRTYPE* hdr);
 #endif
 void sopen_heka(HDRTYPE* hdr,FILE *fid);
-#ifdef HAVE_HDF
-int sopen_hdf5(HDRTYPE *hdr);
-#endif
-#ifdef HAVE_MATIO
-int sopen_matlab(HDRTYPE *hdr);
-#endif
+int sopen_hdf5        (HDRTYPE *hdr);
+int sopen_matlab      (HDRTYPE *hdr);
+int sopen_sqlite      (HDRTYPE* hdr);
 #if defined(WITH_DICOM) || defined(WITH_DCMTK)
 int sopen_dicom_read(HDRTYPE* hdr);
 #endif
@@ -8349,15 +8344,8 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 	}
 
     	else if (hdr->TYPE==HDF) {
-#ifdef WITH_HDF
-                if (sopen_hdf5(hdr) != 0) {
-        		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Error reading HDF file");
-                }
-#else
-		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format HDF not supported");
-		ifclose(hdr);
-#endif
-		return(hdr);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): %s(...)\n", __FILE__,__LINE__,__func__);
+		if (sopen_hdf5(hdr) != 0) return(hdr);
 	}
 
     	else if (hdr->TYPE==HEKA) {
@@ -8553,15 +8541,8 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 	}
 
     	else if (hdr->TYPE==Matlab) {
-#ifdef HAVE_MATIO
-                if (sopen_matlab(hdr) != 0) {
-        		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Error reading MATLAB file");
-                }
-#else
-		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format MAT not supported");
-		ifclose(hdr);
-#endif
-		return(hdr);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): %s(...)\n", __FILE__,__LINE__,__func__);
+		if (sopen_matlab(hdr) != 0) return(hdr);
 	}
 
     	else if (hdr->TYPE==MFER) {
@@ -10667,7 +10648,6 @@ if (VERBOSE_LEVEL>2)
     		biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Format RDF (UCSD ERPSS) not supported");
 	}
 
-#ifdef WITH_INTAN
 	else if (hdr->TYPE==IntanCLP) {
 		sopen_intan_clp_read(hdr);
 	}
@@ -10677,7 +10657,6 @@ if (VERBOSE_LEVEL>2)
 	else if (hdr->TYPE==RHS2000) {
 		sopen_rhs2000_read(hdr);
 	}
-#endif
 
 	else if (hdr->TYPE==SCP_ECG) {
 		hdr->HeadLen   = leu32p(hdr->AS.Header+2);
@@ -10853,6 +10832,11 @@ if (VERBOSE_LEVEL>2)
 		}
 		free(fs);
 	}	/******* end of Sigma PLpro ********/
+
+	else if (hdr->TYPE==SQLite) {
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): %s(...)\n", __FILE__,__LINE__,__func__);
+		if (sopen_sqlite(hdr)) return(hdr);
+	}
 
 /*
 	else if (hdr->TYPE==SMA) {

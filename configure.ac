@@ -22,8 +22,9 @@ AC_CHECK_LIB([asound],  [snd_pcm_open])
 AC_CHECK_LIB([b64],     [base64_encode_block], AC_SUBST(HAVE_LIBB64,     "1") )
 AC_CHECK_LIB([cholmod], [cholmod_start],       AC_SUBST(HAVE_LIBCHOLMOD, "1") )
 AC_CHECK_LIB([dcmdata], [dcmEnableOtherLongVRGeneration], AC_SUBST(HAVE_LIBDCMTK, "1") )
-# AC_CHECK_LIB([hdf5],    [H5open],              AC_SUBST(HAVE_LIBHDF5,    "1") )
-# AC_CHECK_LIB([matio],   [Mat_Open],            AC_SUBST(HAVE_LIBMATIO,   "1") )
+AC_CHECK_LIB([hdf5],    [H5Fopen],             AC_SUBST(HAVE_LIBHDF5,    "1") )
+AC_CHECK_LIB([matio],   [Mat_Open],            AC_SUBST(HAVE_LIBMATIO,   "1") )
+AC_CHECK_LIB([sqlite3], [sqlite3_open],        AC_SUBST(HAVE_SQLITE3,    "1") )
 AC_CHECK_LIB([z],       [gzopen],              AC_SUBST(HAVE_LIBZ,       "1") )
 
 # FIXME: Replace `main' with a function in `-lgdcmCommon':
