@@ -24,7 +24,7 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	: # Build everything upstream builds by default
-	make $(MAKEOPTS) lib tools mex4o python
+	make $(MAKEOPTS)
 	: # Assure additional interesting to us pieces are built
 	#make $(MAKEOPTS) mex4o python
 	#make libbiosig.a save2gdf save2aecg save2scp pdp2gdf \

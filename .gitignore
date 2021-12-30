@@ -13,13 +13,15 @@
 *.def
 *.png
 *.mex*
-biosig4c++/libbiosig.pc
 # ignore executables
 biosig4c++/save2gdf
-biosig4c++/pu
+biosig4c++/biosig2gdf
+biosig4c++/physicalunits
 biosig4c++/biosig_fhir
 biosig4c++/mma/sload
 biosig4c++/mma/sload.exe
+biosig4c++/R/biosig.Rcheck/
+biosig4c++/python/Biosig.egg-info/
 # ignore mex files
 biosig4c++/mex/mexSOPEN.cpp
 #

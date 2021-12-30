@@ -39,7 +39,7 @@ uninstall ::
 	-rm -rf $(DESTDIR)@prefix@/share/biosig
 
 clean ::
-	$(MAKE) -C biosig4c++/mma clean
+	-$(MAKE) -C biosig4c++/mma clean
 	$(MAKE) -C biosig4c++ clean
 	-rm mexbiosig*.src.tar.gz
 	-rm biosig4octave*.src.tar.gz
