@@ -964,7 +964,7 @@ install_libbiosig.a: libbiosig.a libphysicalunits.a libbiosig.pc
 	install -d 			$(DESTDIR)$(libdir)/pkgconfig/
 	install libbiosig.a		$(DESTDIR)$(libdir)
 	install libphysicalunits.a 	$(DESTDIR)$(libdir)
-	install libbiosig.pc		$(DESTDIR)$(libdir)/pkgconfig/
+	install -m 0644 libbiosig.pc	$(DESTDIR)$(libdir)/pkgconfig/
 
 install_libbiosig.$(DLEXT): libbiosig.$(DLEXT)
 	install -d 			$(DESTDIR)$(DLDIR)/pkgconfig/
