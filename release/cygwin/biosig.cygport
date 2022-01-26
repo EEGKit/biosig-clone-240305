@@ -1,0 +1,142 @@
+# package name
+NAME="biosig"
+VERSION=2.3.3
+RELEASE=1
+
+PYTHON_WHEEL_VERSIONS="3.9"
+inherit python-wheel
+
+# .hint generation
+CATEGORY="Libs Science"
+SUMMARY="Tools for biomedical signal processing."
+DESCRIPTION="BioSig is an open source software library for
+biomedical signal processing, featuring for example the
+analysis of biosignals such as the electroencephalogram (EEG),
+electrocorticogram (ECoG), electrocardiogram (ECG),
+electrooculogram (EOG), electromyogram (EMG), respiration,
+and so on. Major application areas are: Neuroinformatics,
+brain-computer interfaces, neurophysiology, psychology, c
+ardiovascular systems and sleep research. The aim of the
+BioSig project is to foster research in biomedical signal
+processing by providing open source software tools for many
+different applications. Generally, many concerns have to be a
+ddressed in this scientific field. BioSig handles this by providing
+solutions for data acquisition, artifact processing, quality control,
+feature extraction, classification, modeling, data visualization, etc. "
+
+HOMEPAGE=https://biosig.sourceforge.io
+
+# source and patch files
+SRC_URI=https://sourceforge.net/projects/biosig/files/BioSig%20for%20C_C%2B%2B/src/biosig-2.3.3.src.tar.gz
+
+PATCH_URI=" 2.3.3-1.Makefilein.patch"
+
+BUILD_REQUIRES="libiconv-devel libcholmod-devel zlib-devel pkg-config"
+BUILD_REQUIRES+=" gawk python39-numpy python39-devel"
+
+REQUIRES="libcholmod libconv zlib python39-numpy"
+
+PKG_NAMES="libbiosig3 libbiosig-devel biosig-tools python39-biosig"
+
+biosig_tools_CONTENTS="
+  usr/bin/bin2rec
+  usr/bin/heka2itx
+  usr/bin/rec2bin
+  usr/bin/save2aecg
+  usr/bin/save2scp
+  usr/bin/save2gdf.exe
+  usr/bin/physicalunits.exe
+  usr/bin/biosig2gdf.exe
+  usr/bin/biosig_fhir.exe
+
+  usr/share/man/man1/save2gdf.1.gz
+  usr/share/man/man1/physicalunits.1.gz
+  usr/share/man/man1/biosig2gdf.1.gz
+  usr/share/man/man1/biosig_fhir.1.gz
+
+  usr/share/man/man1/sigviewer.1.gz
+  usr/share/man/man1/mexSLOAD.1.gz
+  usr/share/man/man1/bin2rec.1.gz
+  usr/share/man/man1/heka2itx.1.gz
+  usr/share/man/man1/rec2bin.1.gz
+  usr/share/man/man1/save2aecg.1.gz
+  usr/share/man/man1/save2scp.1.gz
+
+  usr/share/doc/biosig/COPYING
+  usr/share/doc/biosig/README
+"
+# not included yet
+# usr/share/man/sigviewer.1
+# usr/share/man/man1/mexSLOAD.1.gz
+
+
+libbiosig3_CONTENTS="
+  usr/bin/cygbiosig-3.dll
+  usr/bin/cygphysicalunits-3.dll
+"
+
+libbiosig_devel_CONTENTS="
+  usr/include/biosig-dev.h
+  usr/include/biosig.h
+  usr/include/biosig2.h
+  usr/include/gdftime.h
+  usr/include/physicalunits.h
+  usr/include/biosig-network.h
+  usr/include/mdc_ecg_codes.h
+  usr/lib/libbiosig.a
+  usr/lib/libbiosig.dll.a
+  usr/lib/libphysicalunits.a
+  usr/lib/libphysicalunits.dll.a
+  usr/lib/pkgconfig/libbiosig.pc
+"
+
+python39_biosig_CONTENTS="
+	usr/lib/python3.9
+"
+
+DIFF_EXCLUDES="depend
+  Makefile
+  biosig4c++/Makefile
+  biosig4c++/java/Makefile
+  biosig4c++/mex/Makefile
+  biosig4c++/mma/Makefile
+"
+
+# use not standard src_compile, src_install and src_test
+
+src_compile() {
+	cd ${S}
+	lndirs
+	cd ${B}
+	cygautoreconf
+	export DESTDIR="${D}"
+	cygconf
+	# libbiosig and biosig-tools
+	# cygmake -C biosig4c++ lib tools
+	cygmake lib tools
+	# python3-biosig
+	cygmake -C biosig4c++/python wheel
+}
+
+src_install() {
+	cd ${S}
+
+	doinclude ${S}/biosig4c++/*.h
+
+	cd ${B}/biosig4c++
+	export DESTDIR="${D}"
+	cygmake install
+
+	cd ${B}/biosig4c++/python
+	python_wheel_install
+}
+
+src_test() {
+    cd ${B}
+    biosig4c++/physicalunits.exe
+    biosig4c++/save2gdf.exe    --help
+    biosig4c++/biosig2gdf.exe  --help
+    biosig4c++/biosig_fhir.exe --help
+    # python -c "import biosig"
+}
+
