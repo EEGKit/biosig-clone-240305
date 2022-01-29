@@ -1214,12 +1214,15 @@ HDRTYPE* constructHDR(const unsigned NS, const unsigned N_EVENT)
 	hdr->data.size[0] = 0; 	// rows
 	hdr->data.size[1] = 0;  // columns
 	hdr->data.block = NULL;
-
+#if __FreeBSD__ || __APPLE__ || __NetBSD__
 	time_t t=time(NULL);
 	struct tm *tt = localtime(&t);
-	hdr->tzmin    = tt->tm_gmtoff/60;
-	hdr->T0       = t_time2gdf_time(time(NULL)-tt->tm_gmtoff); // localtime
-
+	hdr->tzmin    = tt->__tm_gmtoff/60;
+	hdr->T0       = t_time2gdf_time(time(NULL)-tt->__tm_gmtoff); // localtime
+#else
+	hdr->T0    = t_time2gdf_time(time(NULL)-timezone); // localtime
+	hdr->tzmin = -timezone/60;      // convert from seconds west of UTC to minutes east;
+#endif
 	{
 	uint8_t Equipment[8] = "b4c_1.5 ";
 	Equipment[4] = BIOSIG_VERSION_MAJOR+'0';

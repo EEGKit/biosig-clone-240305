@@ -202,9 +202,13 @@ void mexFunction(
 	if ( (p = mxGetField(prhs[0], 0, "tzmin") ) != NULL )
 		hdr->tzmin 	= (int16_t)getDouble(p, 0);
 	else {
+#if __FreeBSD__ || __APPLE__ || __NetBSD__
 		time_t t = gdf_time2t_time(hdr->T0);
 		struct tm *tt = localtime(&t);
 		hdr->tzmin    = tt->tm_gmtoff/60;
+#else
+		hdr->tzmin    = -timezone/60;
+#endif
 	}
 	if ( (p = mxGetField(prhs[0], 0, "FileName") ) != NULL ) 	FileName 	= mxArrayToString(p);
 	if ( (p = mxGetField(prhs[0], 0, "SampleRate") ) != NULL ) 	hdr->SampleRate = getDouble(p, 0);
