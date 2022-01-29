@@ -124,6 +124,7 @@ else
 	LD      := $(TARGET)-ld
 	AR      := $(TARGET)-ar rcs
 	PKGCONF := $(TARGET)-pkg-config
+	TARGETPLATFORM = windows
 	ifneq (,$(findstring mingw,$(TARGET)))
 		## add gnulib's getlogin
 		SOURCES += win32/getlogin.c win32/getline.c win32/getdelim.c
@@ -137,6 +138,7 @@ else
 endif
 
 SONAMEVERSION ?= 3
+DLPRE = lib
 
 ### TODO: DLEXT does not work correctly on MXE/MINGW
 DLDIR = $(libdir)
@@ -158,12 +160,16 @@ ifneq (,$(findstring Darwin, $(shell uname)))
 	SONAME_PREFIX  = -install_name # the last space character is crucial
 
 else ifneq (,$(findstring CYGWIN, $(shell uname)))
-	### TODO: check if this path is useful at all ###
 	DLEXT = dll
+	DLPRE = cyg
+	DLDIR = $(bindir)
+	LIBEXT = dll.a
+	BINEXT = .exe
 	LD	       = $(CXX)
 	LDLIBS        += -liconv -lstdc++
-	FULLDLEXT      = ${SONAMEVERSION}.dll
+	FULLDLEXT      = -${SONAMEVERSION}.dll
 	SONAME_PREFIX  = -Wl,-soname=
+	TARGETPLATFORM = windows
 
 else ifneq (,$(findstring MINGW, $(shell uname)))
 	### TODO: check if this path is useful at all ###
@@ -182,15 +188,19 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 	LDFLAGS += -Wl,-subsystem,windows
 	LDFLAGS += -L$(prefix)/lib/
 	DLDIR = $(bindir)
+	TARGETPLATFORM = windows
+
+else ifneq (,$(findstring mingw,$(TARGET)))
+	## mingw, MXE
+	LD	       = $(CXX)
+	FULLDLEXT      = .dll
+	DLDIR = $(bindir)
+	TARGETPLATFORM = windows
+	SONAME_PREFIX  = -Wl,-soname=
 
 else
 	LD	       = $(CXX)
-	ifneq (,$(findstring mingw,$(TARGET)))
-		FULLDLEXT      = ${SONAMEVERSION}.dll
-		DLDIR = $(bindir)
-	else
-		FULLDLEXT      = .so.${SONAMEVERSION}
-	endif
+	FULLDLEXT      = .so.${SONAMEVERSION}
 	SONAME_PREFIX  = -Wl,-soname=
 endif
 
@@ -374,6 +384,7 @@ SOURCES      += biosig.c \
 		physicalunits.c \
 		save2gdf.c \
 		biosig2gdf.c \
+		biosig-network.c \
 		biosig_client.c \
 		biosig_server.c
 
@@ -480,11 +491,11 @@ endif
 
 MinGW64OBJECTS  = $(patsubst win32/%.obj, win64/%.obj, $(MinGWOBJECTS))
 
-TARGET = save2gdf libbiosig.a
+TARGET = save2gdf${BINEXT} libbiosig.a
+
 LIB_OBJECTS  = libbiosig.a libgdf.a libphysicalunits.a libbiosig.pc
-ifeq (,$(findstring mingw,$(TARGET)))
-    LIB_OBJECTS += libbiosig.$(DLEXT) libgdf.$(DLEXT) libphysicalunits.$(DLEXT)
-endif
+LIB_OBJECTS += $(DLPRE)biosig$(FULLDLEXT) $(DLPRE)gdf$(FULLDLEXT) $(DLPRE)physicalunits$(FULLDLEXT)
+
 BIN_OBJECTS = save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT} biosig2gdf${BINEXT}
 
 first: $(IO_H_FILE2) lib tools
@@ -499,10 +510,9 @@ libbiosig lib: $(LIB_OBJECTS)
 CHKSUM_LIBB64 = 20106f0ba95cfd9c35a13c71206643e3fb3e46512df3e2efb2fdbf87116314b2
 libb64-1.2.1.zip:
 	curl -SLO https://downloads.sourceforge.net/project/libb64/libb64/libb64/libb64-1.2.1.zip
-	test $(shell sha256sum libb64-1.2.1.zip | cut -d " " -f 1) = $(CHKSUM_LIBB64) || rm libb64-1.2.1.zip
 
 libb64-1.2.1/src/cencode.c: libb64-1.2.1.zip
-	test $(shell sha256sum libb64-1.2.1.zip | cut -d " " -f 1) = $(CHKSUM_LIBB64) && unzip -o libb64-1.2.1.zip -d .
+	unzip -o libb64-1.2.1.zip -d .
 	touch $@
 
 vpath %.c ./:./t210:./t220:./t240:./test0:./src:./mma
@@ -691,19 +701,37 @@ ifeq (,$(findstring Darwin, $(shell uname)))   # not on MacOSX
 	ln -sf "$<" "$@"
 endif
 
-libbiosig${FULLDLEXT}:$(OBJECTS)
+ifneq ($(TARGETPLATFORM),windows)
+$(DLPRE)biosig${FULLDLEXT}:$(OBJECTS)
 	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
-libgdf${FULLDLEXT}: gdf.o gdftime.o physicalunits.o getlogin.o
+$(DLPRE)gdf${FULLDLEXT}: gdf.o gdftime.o physicalunits.o getlogin.o
 	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
-libgdftime${FULLDLEXT}:gdftime.o
+$(DLPRE)gdftime${FULLDLEXT}:gdftime.o
 	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
-libphysicalunits${FULLDLEXT}:physicalunits.o
+$(DLPRE)physicalunits${FULLDLEXT}:physicalunits.o
 	$(LD) $(LDFLAGS) ${SONAME_PREFIX}"$@" $^ $(SHAREDLIB) $(LDLIBS) -o "$@"
 
+else
+#############################################################
+#	Windows DLL (mingw, cygwin
+#############################################################
 
+$(DLPRE)physicalunits${FULLDLEXT}: physicalunits.o
+	$(LD) $(LDFLAGS) -o "$@" -s -shared -fPIC $^ $(LDLIBS) -Wl,-subsystem,windows,--output-def,libphysicalunits.def,--out-implib,libphysicalunits.dll.a
+
+$(DLPRE)gdf${FULLDLEXT}: gdf.o getlogin.o gdftime.o physicalunits.o
+	$(LD) $(LDFLAGS) -o "$@" -s -shared -fPIC $^ $(LDLIBS) -Wl,-subsystem,windows,--output-def,libgdf.def,--out-implib,libgdf.dll.a
+
+$(DLPRE)gdftime${FULLDLEXT}: gdftime.o
+	$(CC) $(LDFLAGS) -o "$@" -s -shared -fPIC $^ $(LDLIBS) -Wl,--subsystem,windows,--output-def,libgdftime.def,--out-implib,libgdftime.dll.a
+
+$(DLPRE)biosig${FULLDLEXT}: $(OBJECTS) libbiosig.pc
+	$(LD) $(LDFLAGS) -o "$@" -s -shared -fPIC $(OBJECTS) $(LDLIBS) -Wl,-subsystem,windows,--output-def,libbiosig.def,--out-implib,libbiosig.dll.a
+
+endif
 
 #############################################################
 #	Static Libaries
@@ -712,26 +740,18 @@ libphysicalunits${FULLDLEXT}:physicalunits.o
 libphysicalunits.a: physicalunits.o
 	-$(DELETE) "$@"
 	$(AR) "$@" "$<"
-libphysicalunits.dll: physicalunits.o
-	$(LD) $(LDFLAGS) -o libphysicalunits.dll -s -shared -fPIC "$<" $(LDLIBS) -Wl,-subsystem,windows,--output-def,libphysicalunits.def,--out-implib,libphysicalunits.dll.a
 
 #libgdftime.a: gdftime.o
 #	-$(DELETE) "$@"
 #	$(AR) "$@" "$<"
-#libgdftime.def: gdftime.o
-#	$(CC) $(LDFLAGS) -o libgdftime.dll -s -shared -fPIC "$@" -Wl,--subsystem,windows,--output-def,libgdftime.def,--out-implib,libgdftime.dll.a
 
 libgdf.a: gdf.o getlogin.o gdftime.o physicalunits.o
 	-$(DELETE) "$@"
 	$(AR) "$@" gdf.o gdftime.o physicalunits.o
-libgdf.dll: gdf.o getlogin.o gdftime.o physicalunits.o
-	$(LD) $(LDFLAGS) -s -shared -fPIC -o libgdf.dll gdf.o getlogin.o gdftime.o physicalunits.o $(LDLIBS) -Wl,-subsystem,windows,--output-def,libgdf.def,--out-implib,libgdf.dll.a
 
 libbiosig.a: $(OBJECTS) libbiosig.pc
 	-$(DELETE) libbiosig.a
 	$(AR) libbiosig.a $(OBJECTS)
-libbiosig.dll: $(OBJECTS) libbiosig.pc
-	$(LD) $(LDFLAGS) -o libbiosig.dll -s -shared -fPIC $(OBJECTS) $(LDLIBS) -Wl,-subsystem,windows,--output-def,libbiosig.def,--out-implib,libbiosig.dll.a
 
 libbiosig.pc :
 	mkdir -p pkgconfig
@@ -753,17 +773,17 @@ libbiosig.pc :
 	echo "Libs.private: $(LDLIBS)"      >> "$@"
 
 ## save2gdf, pdp2gdf
-%${BINEXT}: %.c libbiosig.$(DLEXT)
+%${BINEXT}: %.c $(DLPRE)biosig$(FULLDLEXT)
 	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) "$<" -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 
 physicalunits${BINEXT} : pu.c physicalunits.o
 	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o "$@"
 
 ifeq (1,@HAVE_LIBB64@)
-biosig_fhir${BINEXT}: biosig_fhir.c libbiosig.$(DLEXT)
+biosig_fhir${BINEXT}: biosig_fhir.c $(DLPRE)biosig$(FULLDLEXT)
 	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) "$<" -L. -lbiosig -lstdc++ -lb64 $(LDLIBS) -o "$@"
 else
-biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c libbiosig.$(DLEXT)
+biosig_fhir${BINEXT}: biosig_fhir.c libb64-1.2.1/src/cencode.c $(DLPRE)biosig$(FULLDLEXT)
 	$(CC) $(DEFINES) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Ilibb64-1.2.1/include/ "$<" libb64-1.2.1/src/cencode.c -L. -lbiosig -lstdc++ $(LDLIBS) -o "$@"
 endif
 
@@ -887,8 +907,8 @@ docs: 	docs/save2gdf.txt  docs/mexSLOAD.txt
 
 
 # for backward compatibility
-save2scp: save2gdf
-save2aecg: save2gdf
+save2scp: save2gdf${BINEXT}
+save2aecg: save2gdf${BINEXT}
 
 
 #############################################################
@@ -966,11 +986,11 @@ install_libbiosig.a: libbiosig.a libphysicalunits.a libbiosig.pc
 	install libphysicalunits.a 	$(DESTDIR)$(libdir)
 	install -m 0644 libbiosig.pc	$(DESTDIR)$(libdir)/pkgconfig/
 
-install_libbiosig.$(DLEXT): libbiosig.$(DLEXT)
+install_libbiosig.$(DLEXT): $(DLPRE)biosig$(FULLDLEXT)
 	install -d 			$(DESTDIR)$(DLDIR)/pkgconfig/
-	install libbiosig.$(DLEXT)  $(DESTDIR)$(DLDIR)/libbiosig$(FULLDLEXT)
+	install $(DLPRE)biosig$(FULLDLEXT)  $(DESTDIR)$(DLDIR)/$(DLPRE)biosig$(FULLDLEXT)
 ifneq (Darwin,$(shell uname))
-	cd $(DESTDIR)$(DLDIR) && ln -sf libbiosig$(FULLDLEXT) libbiosig.$(DLEXT)
+	cd $(DESTDIR)$(DLDIR) && ln -sf $(DLPRE)biosig$(FULLDLEXT) $(DLPRE)biosig.$(DLEXT)
 endif
 	-ldconfig
 
@@ -979,7 +999,7 @@ install: install_libbiosig.$(DLEXT) install_libbiosig.a install_headers install_
 install-strip: install
 	-strip -x $(DESTDIR)$(libdir)/libbiosig.a
 	-strip -x $(DESTDIR)$(libdir)/libphysicalunits.a
-	-strip -x $(DESTDIR)$(libdir)/libbiosig$(FULLDLEXT)
+	-strip -x $(DESTDIR)$(libdir)/$(DLPRE)biosig$(FULLDLEXT)
 
 install_tools: tools doc/save2gdf.1
 	install -d 			$(DESTDIR)$(bindir)
