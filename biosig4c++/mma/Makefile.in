@@ -22,7 +22,7 @@ MATHEMATICA_EXE ?= $(shell which mathematica)
 ifeq (,$(MATHEMATICA_EXE))
         $(error "mathematica not found in $$PATH - cannot compile biosig for Mathematica")
 endif
-MLINKDIR ?= $(shell dirname $(shell dirname $(shell readlink -f $(MATHEMATICA_EXE) ) ) )
+MLINKDIR ?= $(realpath $(addsuffix ..,$(dir $(realpath $(MATHEMATICA_EXE) ) ) ) )
 
 ifneq (,$(findstring Darwin,$(shell uname)))
 MLINKDIR := /Applications/Mathematica.app/Contents/
@@ -36,12 +36,7 @@ SYS       = Linux-x86-64# Set this value with the result of evaluating $SystemID
 endif
 endif
 
-# automated detection of most recent MLINTERFACE, without starting mathematica
-# 10.0 supports 3 and 4, 9.0 and earlier supports only 3,
-MLIVER := $(shell ${CC} mliver.c -I${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYS}/CompilerAdditions/ -E -o - | tail -1)
-
-#
-# Windows
+### Windows ###
 SYSwin       = Windows# Set this value with the result of evaluating $SystemID
 MLLIBwin     = ml32i4m# Set this to ML64i3 if using a 64-bit system
 SYSwin64     = Windows-x86-64# Set this value with the result of evaluating $SystemID
@@ -51,6 +46,10 @@ MLLIBwin64   = ml64i4# Set this to ML64i3 if using a 64-bit system
 CADDSDIR  = ${MLINKDIR}/SystemFiles/Links/MathLink/DeveloperKit/${SYS}/CompilerAdditions
 INCDIR    = -I${CADDSDIR} -I${MLINKDIR}/SystemFiles/IncludeFiles/C/
 LIBDIR   += -L${CADDSDIR}
+
+# automated detection of most recent MLINTERFACE, without starting mathematica
+# 10.0 supports 3 and 4, 9.0 and earlier supports only 3,
+MLIVER := $(shell ${CC} mliver.c -I${CADDSDIR} -E -o - | tail -1)
 
 EXTRALIBS += -lm -ldl -luuid -lstdc++ # Set these with appropriate libs for your system.
 
@@ -90,7 +89,6 @@ ${SYS}/%.exe: %.o %tm.o
 	${LD} ${LDFLAGS} $? ${LIBDIR} -l${MLLIB} ${EXTRALIBS} -L.. -lbiosig  -o "$@"
 	ln -sf "$@"
 
-
 ### Install Biosig for Mathematica
 install : biosig.exe
 	mkdir -p $(DESTDIR)$(exec_prefix)/libexec/biosig/mathematica
@@ -119,18 +117,21 @@ EXTRALIBSwin = -lgdi32 -lm -lstdc++ -lws2_32 $(LDLIBS) # Set these with appropri
 
 MPREPwin     = ${CADDSDIRwin}/mprep.exe
 
-%tm.win32.c : %.tm
+${SYSwin}/%tm.c : %.tm
+	mkdir -p ${SYSwin}
 	WINEPREFIX=${HOME}/.wine32.mma wine ${MPREPwin} "$<" -o "$@"
 	${SED} -i 's# __DATE__# ",__DATE__," ",__TIME__,"#g' "$@"
 
-${SYSwin}/%.obj : %.c
+${SYSwin}/biosigtm.obj : ${SYSwin}/biosigtm.c
 	${CCw32} -o "$@" -c "$<" $(shell $(CROSS)-pkg-config --cflags libbiosig) ${INCDIRwin}
+${SYSwin}/biosig.obj : biosig.c
+	mkdir -p ${SYSwin}
+	${CCw32} -o "$@" -c "$<" $(shell $(CROSS)-pkg-config --cflags libbiosig) ${INCDIRwin}
+	# ${CCw32} -o "$@" -c "$<" $(shell $(CROSS)-pkg-config --cflags libbiosig) -DWINDOWS_MATHLINK=1 -D__int64="long" ${INCDIR}
 
 win32mma : $(patsubst %, ${SYSwin}/%.exe, $(TARGET))
 
-#${SYSwin}/%.exe : ${SYSwin}/%.obj ${SYSwin}/%tm.obj		# uses MPREP
-${SYSwin}/%.exe : ${SYSwin}/%.obj ${SYSwin}/%tm.win32.obj	# uses MPREPwin
-	mkdir -p ${SYSwin}
+${SYSwin}/%.exe : ${SYSwin}/%.obj ${SYSwin}/%tm.obj
 	${CCw32} $? -mwindows -static-libgcc -static-libstdc++ $(shell $(CROSS)-pkg-config --libs libbiosig) -lssp -L${LIBDIRwin} -l${MLLIBwin} ${EXTRALIBSwin} -o "$@"
 
 
@@ -151,13 +152,12 @@ LIBDIRwin64   = ${CADDSDIRwin64}
 #	${SED}  -i 's# __DATE__# ",__DATE__," ",__TIME__,"#' "$@"
 
 ${SYSwin64}/%.obj : %.c
-	${CCw64} -o "$@" -c "$<" $(shell $(CROSS64)-pkg-config --cflags libbiosig) ${INCDIRwin64}
+	mkdir -p ${SYSwin64}
+	${CCw64} -o "$@" -c "$<" $(shell $(CROSS64)-pkg-config --cflags libbiosig) -DWINDOWS_MATHLINK=1 -D__int64="long long" ${INCDIR}
 
 win64mma : $(patsubst %, ${SYSwin64}/%.exe, $(TARGET))
 
-#${SYSwin64}/%.exe : ${SYSwin64}/%.obj ${SYSwin64}/%tm.win64.obj	# uses MPREPwin64
-${SYSwin64}/%.exe : ${SYSwin64}/%.obj ${SYSwin64}/%tm.obj		# uses MPREP
-	mkdir -p ${SYSwin64}
+${SYSwin64}/%.exe : ${SYSwin64}/%.obj ${SYSwin64}/%tm.obj
 	${CCw64} $? -static-libgcc -static-libstdc++ $(shell $(CROSS64)-pkg-config --libs libbiosig) -lssp -L${LIBDIRwin64} -l${MLLIBwin64} ${EXTRALIBSwin} -o "$@"
 
 

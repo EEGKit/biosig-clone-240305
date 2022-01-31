@@ -193,7 +193,8 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 else ifneq (,$(findstring mingw,$(TARGET)))
 	## mingw, MXE
 	LD	       = $(CXX)
-	FULLDLEXT      = .dll
+	FULLDLEXT      = -${SONAMEVERSION}.dll
+	DLEXT          = dll
 	DLDIR = $(bindir)
 	TARGETPLATFORM = windows
 	SONAME_PREFIX  = -Wl,-soname=
@@ -494,7 +495,7 @@ MinGW64OBJECTS  = $(patsubst win32/%.obj, win64/%.obj, $(MinGWOBJECTS))
 TARGET = save2gdf${BINEXT} libbiosig.a
 
 LIB_OBJECTS  = libbiosig.a libgdf.a libphysicalunits.a libbiosig.pc
-LIB_OBJECTS += $(DLPRE)biosig$(FULLDLEXT) $(DLPRE)gdf$(FULLDLEXT) $(DLPRE)physicalunits$(FULLDLEXT)
+LIB_OBJECTS += $(DLPRE)biosig.$(DLEXT) $(DLPRE)gdf.$(DLEXT) $(DLPRE)physicalunits.$(DLEXT)
 
 BIN_OBJECTS = save2gdf${BINEXT} physicalunits${BINEXT} biosig_fhir${BINEXT} biosig2gdf${BINEXT}
 
