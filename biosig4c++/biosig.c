@@ -1217,8 +1217,8 @@ HDRTYPE* constructHDR(const unsigned NS, const unsigned N_EVENT)
 #if __FreeBSD__ || __APPLE__ || __NetBSD__
 	time_t t=time(NULL);
 	struct tm *tt = localtime(&t);
-	hdr->tzmin    = tt->__tm_gmtoff/60;
-	hdr->T0       = t_time2gdf_time(time(NULL)-tt->__tm_gmtoff); // localtime
+	hdr->tzmin    = tt->tm_gmtoff/60;
+	hdr->T0       = t_time2gdf_time(time(NULL)-tt->tm_gmtoff); // localtime
 #else
 	hdr->T0    = t_time2gdf_time(time(NULL)-timezone); // localtime
 	hdr->tzmin = -timezone/60;      // convert from seconds west of UTC to minutes east;
