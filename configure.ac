@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([biosig], [2.3.3])
+AC_INIT([biosig], [2.3.4])
 AC_COPYRIGHT([Copyright (C) 2019-2021 Alois Schlögl])
 AC_CONFIG_SRCDIR([biosig4c++/biosig.c])
 AC_CONFIG_HEADERS([config.h])
@@ -52,8 +52,8 @@ AC_PATH_PROG([MATHEMATICA], [mathematica], [:])
 #
 # MATLAB needs to contain full path, because it also used to find mex and mexext
 #   readlink -f does not work on MacOSX, use "matlab -n" to extract the path
-# AC_CHECK_PROG([MATLAB],     [matlab],      [$(readlink -f $(which matlab))],      [:])
-AC_CHECK_PROG([MATLAB],     [matlab],      [$(matlab -n|awk '/^->  r   MATLAB              = / {printf("%s/bin/matlab",$5)}')],      [:])
+AC_CHECK_PROG([MATLAB],     [matlab],      [$(readlink -f $(which matlab))],      [:])
+# AC_CHECK_PROG([MATLAB],     [matlab],      [$(matlab -n|awk '/^->  r   MATLAB              = / {printf("%s/bin/matlab",$5)}')],      [:])
 AC_PATH_PROG([MKOCTFILE],   [mkoctfile],   [:])
 AC_PATH_PROG([OCTAVE],      [octave],      [:])
 # PHP

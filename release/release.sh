@@ -38,8 +38,12 @@ rm -rf biosig-code/biosig4c++/patches
 rm -rf biosig-code/biosig4python
 rm -rf biosig-code/bioprofeed
 rm -rf biosig-code/release
-### generate ./configure ###
-sed -i '/^AC_INIT/ s/^.*$/AC_INIT([biosig], ['$1'])/g' biosig-code/configure.ac
+### generate ./configure - set version number, disable non-productive libraries ###
+sed -i '/^AC_INIT/ s/^.*$/AC_INIT([biosig], ['$1'])/g' configure.ac
+sed -i '/^AC_CHECK_LIB.*hdf/   s/^/# /g'      configure.ac
+sed -i '/^AC_CHECK_LIB.*matio/   s/^/# /g'      configure.ac
+sed -i '/^AC_CHECK_LIB.*sqlite/   s/^/# /g'      configure.ac
+
 (cd biosig-code && autoreconf -fi && ./configure)
 ### precompute all *.i and avoid need for gawk at build time
 (cd biosig-code/biosig4c++ && \
@@ -65,7 +69,7 @@ echo 'Author: Alois Schloegl <alois.schloegl@gmail.com>' >> $DESCRIPTION
 echo 'Maintainer: Alois Schloegl' >> $DESCRIPTION
 echo 'Title: BioSig' >> $DESCRIPTION
 echo 'Description: A software library for biomedical signal processing.' >> $DESCRIPTION
-echo 'Depends: octave (> 2.9.0),' >> $DESCRIPTION
+echo 'Depends: octave (> 4.0.0),' >> $DESCRIPTION
 echo 'License: GPL version 3 or later' >> $DESCRIPTION
 echo 'Url: http://biosig.sf.net' >> $DESCRIPTION
 
