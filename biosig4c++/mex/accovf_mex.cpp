@@ -86,9 +86,8 @@ void mexFunction(int POutputCount,  mxArray* POutput[], int PInputCount, const m
 	        // mexPrintf("\t[Sxx,Nxx] = accovf_mex(X,lag,tix)\n");
 	        return;
 	}
-	if (POutputCount > 4)
-	        mexErrMsgTxt("accovf_mex.max has 1 to 2 output arguments.");
-
+	if (POutputCount > 5)
+	        mexErrMsgTxt("accovf_mex.mex has no more then 5 output arguments.");
 
 	// get 1st argument
 	if(mxIsDouble(PInputs[0]) && !mxIsComplex(PInputs[0]) && !mxIsSparse(PInputs[0]) )

@@ -132,10 +132,10 @@ if 1
  
 	ID1=tic(); cput1=cputime(); 
 
-	if exist(accovf_mex,'file')
+	if exist('accovf_mex','file')
 		[Sxx,Nxx,Sxy,Nxy,lag]=accovf_mex(data,c,2*maxlag,ixtrain);
-		Rdc = (Sxy./Nxy)';
-		Rdc = (Sxx./Nxx)';
+		Rdc = (Sxy./Nxy);
+		Rdd = (Sxx./Nxx);
 	else
 		for k = -maxlag*2:maxlag*2,
 			Rdc(k+1+maxlag*2) = mean(data(ixtrain-k).*c(ixtrain));
