@@ -66,7 +66,7 @@ function RES=mod_optimal_detection_filter(data, C, maxlag, ixtrain, ixtest, meth
 %      subthreshold synaptic events in vivo and in vitro (in revision).
 %      Journal of Neuroscience Methods. 
 
-%    Copyright (C) 2016-2021 by Alois Schloegl <alois.schloegl@ist.ac.at>
+%    Copyright (C) 2016-2022 by Alois Schloegl <alois.schloegl@ist.ac.at>
 %    This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 %    BioSig is free software: you can redistribute it and/or modify
@@ -122,7 +122,7 @@ if 1
 	end
 	data((end+1) : (ixtest0(end)+maxlag*1.5)) = NaN;
 
-	c = center(C(ixtrain));
+	c = C-mean(C(ixtrain));
 
 	TTLabel{1} = 'length-of-data';
 	TTLabel{2} = 'number-of-lags';
@@ -132,10 +132,16 @@ if 1
  
 	ID1=tic(); cput1=cputime(); 
 
-	for k=-maxlag*2:maxlag*2,
-		Rdc(k+1+maxlag*2)=mean(data(ixtrain-k).*c);
-		Rdd(k+1+maxlag*2)=mean(data(ixtrain-k).*data(ixtrain));
-	end; 
+	if exist(accovf_mex,'file')
+		[Sxx,Nxx,Sxy,Nxy,lag]=accovf_mex(data,c,2*maxlag,ixtrain);
+		Rdc = (Sxy./Nxy)';
+		Rdc = (Sxx./Nxx)';
+	else
+		for k = -maxlag*2:maxlag*2,
+			Rdc(k+1+maxlag*2) = mean(data(ixtrain-k).*c(ixtrain));
+			Rdd(k+1+maxlag*2) = mean(data(ixtrain-k).*data(ixtrain));
+		end;
+	end
 
 	TT=[TT, toc(ID1), cputime()-cput1]; ID1=tic(); cput1=cputime();
 

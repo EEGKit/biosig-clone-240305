@@ -157,7 +157,7 @@ uninstall:
 	-${RM} $(DESTDIR)@datadir@/biosig/mex/*
 	-cd $(DESTDIR)@datadir@ && rmdir -p biosig
 	# from later than 2.0.6 installations
-	-${RM} $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab/{mexSLOAD,mexSOPEN,mexSSAVE,physicalunits}.mex*
+	-${RM} $(DESTDIR)$(exec_prefix)/libexec/biosig/matlab/{mexSLOAD,mexSOPEN,mexSSAVE,physicalunits,accovf_mex}.mex*
 	-cd $(DESTDIR)$(exec_prefix)/libexec && rmdir -p biosig/matlab
 
 #############################################################
@@ -180,7 +180,7 @@ mexSOPEN.cpp : mexSLOAD.cpp
 	echo "#define mexSOPEN" > mexSOPEN.cpp
 	cat mexSLOAD.cpp >> mexSOPEN.cpp
 
-MEX_OBJECTS = mexSLOAD.cpp mexSOPEN.cpp mexSSAVE.cpp physicalunits.cpp
+MEX_OBJECTS = mexSLOAD.cpp mexSOPEN.cpp mexSSAVE.cpp physicalunits.cpp accovf_mex.cpp
 
 mex4o:  $(patsubst %.cpp, %.mex, $(MEX_OBJECTS))
 oct:    $(patsubst %.cpp, %.oct, $(MEX_OBJECTS))

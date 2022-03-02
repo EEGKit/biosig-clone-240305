@@ -1,10 +1,11 @@
 This provides a language binding of libbiosig to Matlab and Octave. 
+and some speedier c-mex implementation for some matlab code. 
 Basically, mex-files for loading biosig data are provided.
 - mexSLOAD.mex* loads the whole file (header and data). 
 - mexSOPEN.mex* reads only the header information. 
 - mexSSAVE.mex* saves data into various biosig format 
    the list of supported formats is shown here: http://pub.ist.ac.at/~schloegl/biosig/TESTED
-
+- accovf_mex.mex compute auto- and cross-correlation function for MOD method 
 
 COMPILATION: 
 
@@ -75,10 +76,7 @@ Adapt the Makefile and run
 	make mexw32 mexw64
 
 
-    Copyright (C) 2011,2015 Alois Schloegl <alois.schloegl@ist.ac.at>
+    Copyright (C) 2011,2015,2022 Alois Schloegl <alois.schloegl@gmail.com>
     This function is part of the "BioSig for C/C++" repository 
     (BioSig4C++) at http://biosig.sf.net/ 
-
- 
-
 
