@@ -120,7 +120,6 @@ if 1
 	if (any(ixtrain > dl-maxlag) || any(ixtrain <= maxlag))
 		warning('ixtrain should be limited to the range MAXLAG+1:length(data)-MAXLEN')
 	end
-	data((end+1) : (ixtest0(end)+maxlag*1.5)) = NaN;
 
 	c = C-mean(C(ixtrain));
 
@@ -137,6 +136,7 @@ if 1
 		Rdc = (Sxy./Nxy);
 		Rdd = (Sxx./Nxx);
 	else
+		data((end+1) : (ixtest0(end)+maxlag*1.5)) = NaN;
 		for k = -maxlag*2:maxlag*2,
 			Rdc(k+1+maxlag*2) = mean(data(ixtrain-k).*c(ixtrain));
 			Rdd(k+1+maxlag*2) = mean(data(ixtrain-k).*data(ixtrain));
@@ -228,6 +228,7 @@ if 1
 	TTLabel{end+1}='wallclock-filtering-all-data';
 	TTLabel{end+1}='cputime-filtering-all-data';
 
+	ixtest0 = ixtest0((ixtest0+RES.CLASSIFIER.delay)<=length(out));
 	ROC.train = roc(out(ixtrain+RES.CLASSIFIER.delay), C(ixtrain));
 	ROC.test  = roc(out(ixtest0+RES.CLASSIFIER.delay), C(ixtest0));
 	RES.CLASSIFIER.CM        = ROC.test.H_kappa;
