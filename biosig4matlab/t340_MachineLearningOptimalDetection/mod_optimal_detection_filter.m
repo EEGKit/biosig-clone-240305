@@ -132,7 +132,7 @@ if 1
 	ID1=tic(); cput1=cputime(); 
 
 	if exist('accovf_mex','file')
-		[Sxx,Nxx,Sxy,Nxy,lag]=accovf_mex(data,c,2*maxlag,ixtrain);
+		[Sxx,Nxx,Sxy,Nxy]=accovf_mex(data, c, 2*maxlag, ixtrain);
 		Rdc = (Sxy./Nxy);
 		Rdd = (Sxx./Nxx);
 	else
@@ -180,7 +180,9 @@ if 1
 		TT2(k,3:4)=[toc(ID2), cputime()-cput2]; ID2=tic(); cput2=cputime(); 
 
                 %AUC(k,1:2)=[auc(out1a(ixtest+delay),C(ixtest)), auc(out1b(ixtest+delay),C(ixtest))];
-		tmp        = roc(out1a(ixtest+delay),C(ixtest));
+
+		ixtmp      = ixtest( 0<(ixtest+delay) & (ixtest+delay)<=length(C) );
+		tmp        = roc(out1a(ixtmp+delay),C(ixtmp));
 		AUC(k,1)   = tmp.AUC;
 
 		TT2(k,5:6) = [toc(ID2), cputime()-cput2]; ID2=tic(); cput2=cputime();
@@ -228,7 +230,10 @@ if 1
 	TTLabel{end+1}='wallclock-filtering-all-data';
 	TTLabel{end+1}='cputime-filtering-all-data';
 
-	ixtest0 = ixtest0((ixtest0+RES.CLASSIFIER.delay)<=length(out));
+	ixtrain   = ixtrain(0 < (ixtrain+RES.CLASSIFIER.delay));
+	ixtrain   = ixtrain((ixtrain+RES.CLASSIFIER.delay)<=length(out));
+	ixtest0   = ixtest0(0 < (ixtest0+RES.CLASSIFIER.delay));
+	ixtest0   = ixtest0((ixtest0+RES.CLASSIFIER.delay)<=length(out));
 	ROC.train = roc(out(ixtrain+RES.CLASSIFIER.delay), C(ixtrain));
 	ROC.test  = roc(out(ixtest0+RES.CLASSIFIER.delay), C(ixtest0));
 	RES.CLASSIFIER.CM        = ROC.test.H_kappa;
