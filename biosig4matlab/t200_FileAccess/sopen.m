@@ -8466,7 +8466,7 @@ elseif strncmp(HDR.TYPE,'SIGIF',5),
                         end;
                         
                         if HDR.FLAG.SegmentLength,
-                                HDR.Block.Length(k) = fread(HDR.FILE.FID,1,'uint16');  %#26
+                                HDR.Block.Length(k) = fread(HDR.FILE.FID,1,'uint16');  %   #26
                                 fseek(HDR.FILE.FID,HDR.Block.Length(k)*H1.Bytes_per_Sample,'cof');
                         else
                                 tmp = HDR.Segment_separator-1;
