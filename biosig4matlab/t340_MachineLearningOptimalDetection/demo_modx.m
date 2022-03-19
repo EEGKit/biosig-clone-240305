@@ -535,7 +535,8 @@ end
         if 0
                 ; %noop
 
-        elseif 1, % trigger and store to GDF
+        elseif 1, %  store clean data to GDF so that we can avoid doing the
+		  %  cleanup again when applying the classifier to the whole data set
 		[HDR.FILE.Path,HDR.FILE.Name,HDR.FILE.Ext]=fileparts(HDR.FileName);
                 H1.FileName=fullfile('data',[HDR.FILE.Name,'.gdf']); 
                 H1.TYPE='GDF';
@@ -768,8 +769,11 @@ RES = RES_C{E};
 for k1 = 1:length(DATAFILES);
         datafile = fullfile(datapath, DATAFILES{k1});
 	[HDR.FILE.Path,HDR.FILE.Name,HDR.FILE.Ext]=fileparts(datafile);
-        [data,HDR]  = mexSLOAD(fullfile('data',[HDR.FILE.Name,'.gdf']),0);
-        HDR.SampleRate = round(HDR.SampleRate);
+	% we use here the previously cleaned and stored GDF data
+	% alternatively, the original data can be loaded, and the clean up procedure
+	% (i.e. artifact remove, AP blanking, downsampling, etc) need to be applied here, too
+	[data,HDR]  = mexSLOAD(fullfile('data',[HDR.FILE.Name,'.gdf']),0);
+	HDR.SampleRate = round(HDR.SampleRate);
 	AP = detect_spikes_bursts(HDR,data,'chan',chan);
 	%% make sure data is clean, no AP, no other artifact that could influence the trend
         S = detrend(data);
