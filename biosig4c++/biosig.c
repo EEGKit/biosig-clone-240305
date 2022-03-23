@@ -11798,18 +11798,19 @@ else if (!strncmp(MODE,"w",1))	 /* --- WRITE --- */
 		for (k = 0; k < hdr->NS; k++) {
 			NS += (hdr->CHANNEL[k].OnOff > 0);
 		}
-		hdr->HeadLen += fprintf(hdr->FILE.FID, "ATF\t1.0\n%"PRIu64"u\t%u", max(0,hdr->NRec * hdr->SPR), NS + 1);
 
-		char *sep = "\n";
+		hdr->HeadLen += fprintf(hdr->FILE.FID, "ATF\t1.0\n0\t%d", NS);
+
+		char sep = '\n';
 		if (getTimeChannelNumber(hdr) == 0) {
-			hdr->HeadLen += fprintf(hdr->FILE.FID, "%s\"Time (s)\"",sep);
-			sep = "\t";
+			hdr->HeadLen += fprintf(hdr->FILE.FID, "%c\"Time (ms)\"", sep);
+			sep = '\t';
 		}
 
 		for (k = 0; k < hdr->NS; k++) {
 			if (hdr->CHANNEL[k].OnOff) {
-				hdr->HeadLen += fprintf(hdr->FILE.FID, "%s\"%s (%s)\"", sep, hdr->CHANNEL[k].Label, PhysDim3(hdr->CHANNEL[k].PhysDimCode));
-				sep = "\t";
+				hdr->HeadLen += fprintf(hdr->FILE.FID, "%c\"%s (%s)\"", sep, hdr->CHANNEL[k].Label, PhysDim3(hdr->CHANNEL[k].PhysDimCode));
+				sep = '\t';
 			}
 		}
 	}
@@ -13432,18 +13433,15 @@ size_t swrite(const biosig_data_type *data, size_t nelem, HDRTYPE* hdr) {
 		nrec_t c = 0;
 
 		unsigned timeChan = getTimeChannelNumber(hdr);
-		// char tabflag = 0;
-		if ( timeChan == 0) {
-			hdr->HeadLen += fprintf(hdr->FILE.FID, "\"Time (s)\"");
-		//	tabflag = 1;
-		}
 
 		if (hdr->data.size[1-hdr->FLAG.ROW_BASED_CHANNELS] < hdr->NS) {
 			// if collapsed data, use k2, otherwise use k1
 			for (c = 0; c < nr; c++) {
 				char *sep = "\n";
-				if (timeChan == 0)
-					fprintf(hdr->FILE.FID,"%s%.16g",sep,(++hdr->FILE.POS)/hdr->SampleRate);
+				if (timeChan == 0) {
+					fprintf(hdr->FILE.FID,"%s%.16g",sep,(++hdr->FILE.POS)*1000.0/hdr->SampleRate);
+					sep = "\t";
+				}
 				for (k = 0, k2=0; k < hdr->NS; k++) {
 					if (hdr->CHANNEL[k].OnOff) {
 						size_t idx;
@@ -13462,8 +13460,10 @@ size_t swrite(const biosig_data_type *data, size_t nelem, HDRTYPE* hdr) {
 		else {	// if not collapsed data, use k1
 			for (c = 0; c < nr; c++) {
 				char *sep = "\n";
-				if (timeChan == 0)
-					fprintf(hdr->FILE.FID,"%s%.16g",sep,(++hdr->FILE.POS)/hdr->SampleRate);
+				if (timeChan == 0) {
+					fprintf(hdr->FILE.FID,"%s%.16g",sep,(++hdr->FILE.POS)*1000.0/hdr->SampleRate);
+					sep = "\t";
+				}
 				for (k = 0; k < hdr->NS; k++) {
 					if (hdr->CHANNEL[k].OnOff) {
 						size_t idx;
