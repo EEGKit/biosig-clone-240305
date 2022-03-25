@@ -5,6 +5,7 @@
 %    SIMUL001		generate simulated data (file: test01.gdf)
 %    SIMUL002		generate simulated data (file: test02.gdf)
 %    MICROSTIMFIT  	stimfit event analysis 
+%    MINIDET 		miniature EPSP detection based on template matching		
 %    DEMO
 %
 % REFERENCES: 
@@ -16,6 +17,10 @@
 % [2] http://pub.ist.ac.at/~schloegl/biosig/
 % [3] http://biosig.sf.net/
 % [4] https://github.com/neurodroid/stimfit
+% [5] Jonas P, Major G, Sakmann B. Quantal components of unitary EPSCs at the mossy
+%     fibre synapse on CA3 pyramidal cells of rat hippocampus. J Physiol. 1993
+%     Dec;472:615-63.
+
 
 %    Copyright (C) 2013, 2019 by Alois Schloegl <alois.schloegl@ist.ac.at>
 %    This is part of the BIOSIG project http://biosig.sf.net/
