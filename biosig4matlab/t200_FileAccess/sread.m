@@ -761,8 +761,10 @@ elseif strcmp(HDR.TYPE,'native') || strcmp(HDR.TYPE,'SCP'),
 
         nr = min(round(HDR.SampleRate * NoS), size(HDR.data,1) - HDR.FILE.POS);
 	S = HDR.data(HDR.FILE.POS+1:HDR.FILE.POS+nr,:);
-        HDR.FILE.POS = HDR.FILE.POS + nr;
-%	FLAG_CALIB_DONE = 1; 
+	HDR.FILE.POS = HDR.FILE.POS + nr;
+	if isfield(HDR, 'FLAG') && isfield(HDR.FLAG, 'UCAL')
+		FLAG_CALIB_DONE = ~HDR.FLAG.UCAL;
+	end
         
 elseif strcmp(HDR.TYPE,'NEX'),
         %% hack: read NEX data once, and transform into "native"
@@ -1552,7 +1554,7 @@ if ~HDR.FLAG.UCAL,
         %if ~issparse(HDR.Calib); %
         if FLAG_CALIB_DONE, 
 
-        elseif strcmpi(HDR.FLAG.OUTPUT,'single')
+        elseif isfield(HDR,'FLAG') && isfield(HDR.FLAG,'OUTPUT') && strcmpi(HDR.FLAG.OUTPUT,'single')
         	tmp = single(zeros(size(S,1),size(HDR.Calib,2)));
                 for k = 1:size(S,1),
                         tmp(k,:) = [1,S(k,:)] * HDR.Calib;

@@ -2,9 +2,8 @@ function varargout = sviewer(varargin)
 % SVIEWER
 % Select HELP in the Info menu 
 %
-% $Id: sviewer.m,v 1.16 2008-09-02 10:10:31 schloegl Exp $
 % Copyright by (C) 2004 Franz Einspieler <znarfi5@hotmail.com> and
-%              (C) 2004,2008,2010 Alois Schloegl <alois.schloegl@gmail.com>
+%              (C) 2004,2008,2010,2022 Alois Schloegl <alois.schloegl@gmail.com>
 % University of Technology Graz, Austria
 % This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
@@ -69,7 +68,7 @@ function sviewer_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for sviewer
 handles.output = hObject;
 set(gcf,'Color',[0.949,0.949,1]);
-set(gcf,'Name','SViewer (C) 2004,2008 V1.52, University of Technology Graz, Austria');
+set(gcf,'Name','SViewer (C) 2004,2008,2022');
 set(findobj('Tag','ChannelsMenu'),'Enable','off');
 
 % Update handles structure
@@ -218,7 +217,16 @@ Data.detcolor = load('detcolor.mat');
 set(findobj('Tag', 'Slider1'), 'Value',0);
 
 newfile = fullfile(path,file);
-Data.HDR = sopen(newfile,'r',0,'OVERFLOWDETECTION:OFF');
+if exist('mexSOPEN','file')
+	[data, Data.HDR] = mexSLOAD(newfile,0,'OVERFLOWDETECTION:OFF');
+	Data.HDR.data = data;
+	clear data;
+	Data.HDR.TYPE = 'native';
+	[Data.HDR.FILE.Path, Data.HDR.FILE.Name, Data.HDR.FILE.Ext] = fileparts(Data.HDR.FileName);
+	Data.HDR.FILE.stderr=2;
+else
+	Data.HDR = sopen(newfile,'r',0,'OVERFLOWDETECTION:OFF');
+end
 Data.Total_length_samples = Data.HDR.NRec * Data.HDR.SPR;
 Data.Total_length_sec = Data.Total_length_samples / Data.HDR.SampleRate;
 Data.ShowSamples = min(1000,Data.Total_length_samples);
@@ -1639,7 +1647,7 @@ if isequal(get(findobj('Tag','Startdetection'),'Label'),'Start                  
         typ = hex2dec('0101');    
     end
     s = Data.Eventcodes_txt;
-    select = find(s.GroupValue == bitand(s.GroupMask,typ));
+    select = find(s.GroupValue == bitand(s.GroupMask,typ),1,'last');
     pos_eventdetail = find(bitand(s.CodeIndex,s.GroupMask(select))==s.GroupValue(select));        % decoding of eventtable 
 
     Eventdetail_string = sprintf('%s |',Data.Eventcodes_txt.CodeDesc{pos_eventdetail});
@@ -2138,8 +2146,7 @@ function About_Callback(hObject, eventdata, handles)
 helpdlg(sprintf([ 'SViewer \n', ...
       'Version 1.52\n\n' ...
       'Copyright (C) 2004 Franz Einspieler <znarfi5@hotmail.com> and\n', ...
-      'Copyright (C) 2004, 2008 Alois Schloegl   <alois.schloegl@gmail.com>\n\n' ...
-      '        University of Technology Graz, Austria\n\n' ...
+      'Copyright (C) 2004,2008,2022 Alois Schloegl <alois.schloegl@gmail.com>\n\n' ...
       'Comments or suggestions may be sent to the author.\n', ...
       'This Software is subject to the GNU General Public License.']), ...
     'About SViewer');
