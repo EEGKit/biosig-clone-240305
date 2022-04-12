@@ -38,9 +38,15 @@
     #include <inttypes.h>
 #endif
 #include <stdio.h>
-#include <math.h>
 #include <string.h>
 #include <time.h>
+/* ensure that definition of "byte" does not conflict between
+    rpcndr.h (Windows/mingw only) and bits/cpp_type_traits.h under g++
+    see also https://github.com/mxe/mxe/issues/2759
+ */
+#define _GLIBCXX_INCLUDE_NEXT_C_HEADERS
+#include <math.h>
+#undef _GLIBCXX_INCLUDE_NEXT_C_HEADERS
 
 #ifdef __cplusplus
 #define EXTERN_C extern "C"
