@@ -446,6 +446,8 @@ void sopen_ibw_read (HDRTYPE* hdr) {
 					for (n = 0; n < hdr->EVENT.N; n++) {
 						hdr->EVENT.TYP[n] = 0x7ffe;
 						hdr->EVENT.POS[n] = (n+1)*w5->nDim[0];
+						hdr->EVENT.DUR[n] = 0;
+						hdr->EVENT.CHN[n] = 0;
 					}
 				}
 
@@ -919,6 +921,8 @@ void sopen_itx_read (HDRTYPE* hdr) {
 		hdr->EVENT.SampleRate = hdr->SampleRate;
 		hdr->EVENT.POS = (uint32_t*) realloc(hdr->EVENT.POS, hdr->EVENT.N * sizeof(*hdr->EVENT.POS));
 		hdr->EVENT.TYP = (uint16_t*) realloc(hdr->EVENT.TYP, hdr->EVENT.N * sizeof(*hdr->EVENT.TYP));
+		hdr->EVENT.CHN = (uint16_t*) realloc(hdr->EVENT.TYP, hdr->EVENT.N * sizeof(*hdr->EVENT.TYP));
+		hdr->EVENT.DUR = (uint32_t*) realloc(hdr->EVENT.POS, hdr->EVENT.N * sizeof(*hdr->EVENT.POS));
 #if (BIOSIG_VERSION >= 10500)
 		hdr->EVENT.TimeStamp = (gdf_time*)realloc(hdr->EVENT.TimeStamp, hdr->EVENT.N*sizeof(gdf_time));
 #endif
@@ -982,6 +986,8 @@ void sopen_itx_read (HDRTYPE* hdr) {
 				if (sweepNo > 0 && chanNo==0) {
 					hdr->EVENT.POS[sweepNo-1] = SPR;
 					hdr->EVENT.TYP[sweepNo-1] = 0x7ffe;
+					hdr->EVENT.DUR[sweepNo-1] = 0;
+					hdr->EVENT.CHN[sweepNo-1] = 0;
 #if (BIOSIG_VERSION >= 10500)
 					hdr->EVENT.TimeStamp[sweepNo-1] = 0;
 #endif
