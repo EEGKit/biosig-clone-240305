@@ -190,6 +190,12 @@ else ifneq (,$(findstring MINGW, $(shell uname)))
 	DLDIR = $(bindir)
 	TARGETPLATFORM = windows
 
+else ifneq (,$(findstring MSYS_NT,$(shell uname)))
+	LD             = $(CXX)
+	LDLIBS        += -liconv
+	FULLDLEXT      = .so.${SONAMEVERSION}
+	SONAME_PREFIX  = -Wl,-soname=
+
 else ifneq (,$(findstring mingw,$(TARGET)))
 	## mingw, MXE
 	LD	       = $(CXX)
