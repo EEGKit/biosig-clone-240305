@@ -231,7 +231,7 @@ EXTERN_C void sopen_atf_read(HDRTYPE* hdr) {
 		data[idx] = val;
 	}
 	free(hdr->AS.rawdata);
-	hdr->AS.rawdata = data;
+	hdr->AS.rawdata = (void*)data;
 	hdr->NRec *= hdr->SPR;
 	hdr->SPR   = 1;
 

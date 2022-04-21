@@ -86,33 +86,31 @@ mv biosig-code biosig-$1
 # SOURCE RELEASE
 #####################################
 if [[ 1 ]] ; then
-	tar acvfz biosig-$1.src.tar.gz biosig-$1
+	tar cvfJ biosig-$1.src.tar.xz biosig-$1
 	zip -r biosig-$1.src.zip biosig-$1
-	#cp biosig-$1.src.tar.gz ~/L/deb/biosig_$1.orig.tar.gz
-	#(cd ~/L/deb/ && tar xvf biosig$1.orig.tar.gz)
 
 	echo "sha512sum:"
-	sha512sum  biosig-$1.src.tar.gz | tee sha512.sum
+	sha512sum  biosig-$1.src.tar.xz | tee sha512.sum
 	echo "sha256sum:"
-	sha256sum  biosig-$1.src.tar.gz | tee sha256.sum
+	sha256sum  biosig-$1.src.tar.xz | tee sha256.sum
 	echo "sha1sum:"
-	sha1sum    biosig-$1.src.tar.gz | tee sha1.sum
+	sha1sum    biosig-$1.src.tar.xz | tee sha1.sum
 	echo "md5sum:"
-	md5sum  biosig-$1.src.tar.gz | tee md5.sum
+	md5sum  biosig-$1.src.tar.xz | tee md5.sum
 
 	echo cp biosig-$1.* *.sum ~/L/tmp/
-	echo cp biosig-$1.src.tar.gz ~/L/public_html/biosig/prereleases/
+	echo cp biosig-$1.src.tar.xz ~/L/public_html/biosig/prereleases/
 
 	make -C biosig-$1/biosig4c++ mexbiosig biosig4octave
 	### build "biosig4octave" package ###
-	mv biosig-$1/biosig4c++/mex/{mexbiosig,biosig4octave}-$1.src.tar.gz ./
-	echo cp biosig4octave-$1.src.tar.gz ~/L/tmp/
-	echo cp biosig4octave-$1.src.tar.gz ~/L/public_html/biosig/prereleases/
+	mv biosig-$1/biosig4c++/mex/{mexbiosig,biosig4octave}-$1.src.tar.xz ./
+	echo cp biosig4octave-$1.src.tar.xz ~/L/tmp/
+	echo cp biosig4octave-$1.src.tar.xz ~/L/public_html/biosig/prereleases/
 
 	#
 	#echo scp biosig4octmat-$B4OMversion.tar.gz schloegl@frs.sourceforge.net:"/home/frs/project/biosig/BioSig\ for\ Octave\ and\ Matlab/"
 	#echo scp biosig4c++-$1.win.zip       schloegl@frs.sourceforge.net:"/home/frs/project/biosig/BioSig\ for\ C_C++/windows/"
-	echo scp biosig-$1.src.tar.gz    schloegl@frs.sourceforge.net:"/home/frs/project/biosig"
+	echo scp biosig-$1.src.tar.xz    schloegl@frs.sourceforge.net:"/home/frs/project/biosig"
 fi
 
 echo "== clone biosig =="
@@ -137,7 +135,7 @@ cp $SRCDIR/octave-tsa/src/*.mex* $BIOSIG4M_DIR/../tsa/src/
 rm $BIOSIG4M_DIR/../NaN/src/*.mex $BIOSIG4M_DIR/../tsa/src/*.mex $BIOSIG4M_DIR/../biosig/t200_FileAccess/*.mex
 cd $CWD;
 	mv biosig4matlab-$B4OMversion biosig
-	tar acvfz biosig4octmat-$B4OMversion.tar.gz biosig tsa NaN biosig_installer.m ;
+	tar cvfJ biosig4octmat-$B4OMversion.tar.xz biosig tsa NaN biosig_installer.m ;
 	zip -r biosig4octmat-$B4OMversion.zip biosig tsa NaN biosig_installer.m ;
 
 mkdir -p $BIOSIG4C_DIR/{include,share/man,share/mathematica,share/python,share/R}
@@ -166,7 +164,7 @@ rm $BIOSIG4C_DIR/$PLATFORM/matlab/*.mex		         ## remove octave binaries
 cp -r $SRCDIR/biosig-code/biosig4c++/mma/Linux-x86-64/*  $BIOSIG4C_DIR-$PLATFORM/mathematica/
 cp biosig-code/biosig4c++/python/{*.c,*.h,setup.py,README.md}  $BIOSIG4C_DIR-$PLATFORM/python/
 cp -rp $BIOSIG4C_DIR/share				 $BIOSIG4C_DIR-$PLATFORM/
-tar chvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
+tar chvfJ biosig-$1-$PLATFORM.tar.xz ./$BIOSIG4C_DIR-$PLATFORM
 zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 
 
@@ -193,7 +191,7 @@ cp $SRCDIR/biosig-code/biosig4c++/python/{*.c,*.h,setup.py,README.md}  $BIOSIG4C
 cp $SRCDIR/biosig-code/biosig4c++/R/loadgdf.r            $BIOSIG4C_DIR-$PLATFORM/bin/
 cp $SRCDIR/biosig-code/biosig4c++/R/{loadgdf.r,README}   $BIOSIG4C_DIR-$PLATFORM/R/
 (cd $BIOSIG4C_DIR-$PLATFORM/R/ && ln ../bin/biosig2gdf.exe)
-tar chvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
+tar chvfJ biosig-$1-$PLATFORM.tar.xz ./$BIOSIG4C_DIR-$PLATFORM
 zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 
 
@@ -220,18 +218,18 @@ cp $SRCDIR/biosig-code/biosig4c++/python/{*.c,*.h,setup.py,README.md}  $BIOSIG4C
 cp $SRCDIR/biosig-code/biosig4c++/R/loadgdf.r            $BIOSIG4C_DIR-$PLATFORM/bin/
 cp $SRCDIR/biosig-code/biosig4c++/R/{loadgdf.r,README}   $BIOSIG4C_DIR-$PLATFORM/R/
 (cd $BIOSIG4C_DIR-$PLATFORM/R/ && ln ../bin/biosig2gdf.exe)
-tar chvfz biosig-$1-$PLATFORM.tar.gz ./$BIOSIG4C_DIR-$PLATFORM
+tar chvfJ biosig-$1-$PLATFORM.tar.xz ./$BIOSIG4C_DIR-$PLATFORM
 zip -r biosig-$1-$PLATFORM.zip ./$BIOSIG4C_DIR-$PLATFORM
 
 
 echo "sha512sum:"
-sha512sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha512.sum
+sha512sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.xz,zip} | tee sha512.sum
 echo "sha256sum:"
-sha256sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha256.sum
+sha256sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.xz,zip} | tee sha256.sum
 echo "sha1sum:"
-sha1sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee sha1.sum
+sha1sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.xz,zip} | tee sha1.sum
 echo "md5sum:"
-md5sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.gz,zip} | tee md5.sum
+md5sum biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1{.src,-Windows*,-$(uname -s)-$(uname -m)}.{tar.xz,zip} | tee md5.sum
 
 echo cp biosig4octmat-$B4OMversion.{tar.gz,zip} {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1*.{tar.gz,zip} *.sum ~/L/tmp/
 echo cp {mexbiosig,biosig4octave}-$1.src.tar.gz biosig-$1*.{zip,tar.gz} ~/L/public_html/biosig/prereleases/
