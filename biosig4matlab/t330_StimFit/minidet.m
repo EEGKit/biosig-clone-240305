@@ -7,7 +7,7 @@ function [results, traceTab, average] = minidet(trace,template,rCrit,aCrit,refra
 %    [results, traceTab, average] = minidet(trace,template,rCrit,aCrit,refract)
 %
 %  Input: 
-%    trace :   raw sampling data
+%    dtrace :   raw sampling data
 %    template: default is a bi-exponential template with tauRise=0.5ms, 
 %              tauDecay=5ms, a 10ms baseline, for data sampled with 20kHz
 %          template = F([0:0.05:49.9]', 10, .5, 5);

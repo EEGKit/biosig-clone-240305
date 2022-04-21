@@ -179,7 +179,7 @@ X.S  = NAN_BLOCK;        % data
 X.isnan = NAN_BLOCK;     % data
 
 RES.lag=repmat(NaN,length(DATAFILES),1);
-RES.CM=repmat(nan,[length(DATAFILES),2,2]);
+RES.CM=repmat(NaN,[length(DATAFILES),2,2]);
 RES.kappa=repmat(NaN,length(DATAFILES),1);
 RES.kappa1=repmat(NaN,length(DATAFILES),1);
 RES.kappa_sd=repmat(NaN,length(DATAFILES),1);
@@ -315,15 +315,6 @@ for k1=1:length(DATAFILES);
         fprintf(fid2,'%i\t%.1f\t%d\t%.2f\t%.3f\t%.3f\t %.1f\t%d\t%.2f\t%.3f\t%.3f\t %.1f\t%d\t%.2f\t%.3f\t%.3f\t %.1f\t%d\t%.2f\t%.3f\t%.3f\n',k1, [ [tix11(end)-tix11(1), tix21(end)-tix21(1), tix12(end)-tix12(1), tix22(end)-tix22(1)]; [length(tix11), length(tix21), length(tix12), length(tix22)]; [length(tix11)/(tix11(end)-tix11(1)), length(tix21)/(tix21(end)-tix21(1)), length(tix12)/(tix12(end)-tix12(1)), length(tix22)/(tix22(end)-tix22(1))]; exp([mean(log(iei11)), mean(log(iei21)), mean(log(iei12)), mean(log(iei22)) ]); [std(log(iei11)), std(log(iei21)), std(log(iei12)), std(log(iei22)) ] ] );
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %       load artifacts
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        afile = fullfile(p,[f,'_ma.evt']);
-        AFT=[];
-        if ~isempty(dir(afile));
-                AVT = mexSLOAD(afile);
-        end
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %         load data
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -391,27 +382,13 @@ for k1=1:length(DATAFILES);
                 Stmp(EVT.POS(aix):EVT.POS(aix)+EVT.DUR(aix),:)=NaN;
         end;
 
-       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-       %       remove AP's and spikelets
-       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-       apix = find(AP.EVENT.TYP==hex2dec('201'));
-       Stmp(AP.EVENT.POS(apix),:)=NaN;       % trough the template (40ms, 1000samples) the NaN will be expanded to [-10:+30] ms 
-       for k=1:length(apix)
-       %        Stmp(AP.EVENT.POS(aix)+[-round(TemplateLength/4):round(TemplateLength*3/4)],:)=NaN;
-       end;
-
-        %Stmp(EVT.POS(EVT.TYP==hex2dec('7ffe')))=NaN;
-        if isfield(AFT,'POS') && isfield(AFT,'TYP') && isfield(AFT,'DUR')
-                for k=1:length(AFT.POS)
-                        typ = AFT.TYP(k);
-                        if ((AFT.CHN(k)==0) || (AFT.TYP(k)==chan))        % check channel         
-                        if any(typ==[hex2dec('100'):hex2dec('10a')])         % check artifact type 
-                                Stmp(AFT.POS(k)+[0:AFT.DUR(k)])=NaN
-                        end
-                        end
-                end
-        end
-
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%       remove AP's and spikelets
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	apix = find(AP.EVENT.TYP==hex2dec('201'));
+	Stmp(AP.EVENT.POS(apix),:) = NaN;       % trough the template (40ms, 1000samples) the NaN will be expanded to [-10:+30] ms
+	[ix,iy] = meshgrid(AP.EVENT.POS(apix),[-round(TemplateLength/4):round(TemplateLength*3/4)]);
+	Stmp(ix(:)+iy(:)) = NaN;
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%  50 Hertz Notch and Lowpass %%%%%
@@ -479,7 +456,9 @@ end
         S(1:tt(1)-1)=NaN; S(tt(end)+1:end)=NaN;  
         s = detrend(s);
 
-        tix = [t2(1):t2(end),t3(1):t3(end)]';
+        tix  = [t2(1):t2(end),t3(1):t3(end)]';
+        tix1 = [t2(1):t2(end)]';
+        tix2 = [t3(1):t3(end)]';
         % s(tix(isnan(s(tix)))) = mean(s(tix));
 
         if 0, G1(k1)==1, %~isempty(FLAG_DAVID.BLANK) 
@@ -660,32 +639,21 @@ end
         set(gca,'box','off')
 
         fprintf(fid0,'# Add delay of %.2f ms to scoring of E1 (%.2f, %d)\n', toff1*1000/Fs, toff*1000/Fs, toff1==toff);
-        %fflush(fid0);
 
         % generate data with labels for further analysis
-        X.C1 = [X.C1; NAN_BLOCK; c1(tix+toff)];                                                           % scoring Expert 1, compensate for offset  
-        %X.C1 = [X.C1; NAN_BLOCK; c1(tix)];                                                           % scoring Expert 1, compensate for offset  
-        X.C2 = [X.C2; NAN_BLOCK; c2(tix)];                                                                % scoring Expert 2
-        X.G0 = [X.G0; NAN_BLOCK; repmat(k1,length(tix),1)];                                               % cell number 
-        X.G1 = [X.G1; NAN_BLOCK; repmat(G1(k1),length(tix),1)];                                           % 1: david's data 2: dentate 3: ca1
-        X.G2 = [X.G2; NAN_BLOCK; repmat(1,length(t2),1); repmat(2,length(t3),1)];                         % S1 - S2
-        m2   = floor(length(t2)/2);m3=floor(length(t3)/2);
-        X.G3 = [X.G3; NAN_BLOCK; repmat(1,m2,1); repmat(2,length(t3),1); repmat(2,length(t2)-m2,1)];      % A1B2 - A2B1
-        X.S  = [X.S;  NAN_BLOCK; s(tix)];
-        X.isnan = [X.isnan; NAN_BLOCK; isnan(Stmp(tix))];
+        X.C1    = [X.C1;    c1(tix1+toff);                 NAN_BLOCK; c1(tix2+toff);                 NAN_BLOCK]; % scoring Expert 1, compensate for offset
+        X.C2    = [X.C2;    c2(tix1);                      NAN_BLOCK; c2(tix2);                      NAN_BLOCK]; % scoring Expert 2
+        X.G0    = [X.G0;    repmat(k1,length(tix1),1);     NAN_BLOCK; repmat(k1,length(tix2),1);     NAN_BLOCK]; % cell number
+        X.G1    = [X.G1;    repmat(G1(k1),length(tix1),1); NAN_BLOCK; repmat(G1(k1),length(tix2),1); NAN_BLOCK]; % 1: david's data 2: dentate 3: ca1
+        X.G2    = [X.G2;    repmat(1,length(tix1),1);      NAN_BLOCK; repmat(2,length(tix2),1);      NAN_BLOCK]; % S1 - S2
 
+        A1B2    = [1:length(tix1)]'*2 < length(tix1);
+        A2B1    = [1:length(tix2)]'*2 > length(tix2);
+        X.G3    = [X.G3;    A1B2;                          NAN_BLOCK; A2B1;                          NAN_BLOCK]; % A1B2 - A2B1
+
+        X.S     = [X.S;     s(tix1);                       NAN_BLOCK; s(tix2);                       NAN_BLOCK];
+        X.isnan = [X.isnan; isnan(Stmp(tix1));             NAN_BLOCK; isnan(Stmp(tix2));             NAN_BLOCK];
 end
-
-X.C1 = [X.C1; NAN_BLOCK];	% scoring trace from Expert 1, compensate for offset  
-X.C2 = [X.C2; NAN_BLOCK];	% scoring trace from Expert 2
-X.G0 = [X.G0; NAN_BLOCK];	% cell number, groups for XV:LOOM
-X.G1 = [X.G1; NAN_BLOCK];	% 1: david's data 2: dentate 3: ca1
-X.G2 = [X.G2; NAN_BLOCK];	% Groups for XV:S1-S2
-X.G3 = [X.G3; NAN_BLOCK];     	% Groups for XV:A1B2-A2B1
-X.S  = [X.S;  NAN_BLOCK];	% raw data, detrended, artifacts and AP's are blanked (i.e. NaN) 
-X.isnan = [X.isnan; NAN_BLOCK];
-
-
 
 if 0, 	% disable or enable XV
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -760,7 +728,6 @@ RES_C{1}.output=[];
 RES_C{2}.output=[];
 save('output/GeneralClassifier.mat','RES_C','-mat');
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       Apply MOD to whole (including unscored) data 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -796,6 +763,22 @@ for k1 = 1:length(DATAFILES);
 	[tmp_p,tmp_f,tmp_e] = fileparts(HDR.FileName);
 	H0.FileName = sprintf('output/%s.%s.w%d.e%d.h%d.gdf',tmp_f, 'mod',round(WINLEN*1000),E,WinHann);
 	H2 = minidet2gdf([data, D, D>TH], [], pos, WINLEN, Fs, H0, AP);
+
+	% apply a smoothing filter as discribed in [1] - this might not be needed
+	D     = filter(RES.CLASSIFIER.A,1,S);
+	WinHann = 13;
+	A    = hann(WinHann); A=A/sum(A);
+	nix  = isnan(D); D(nix) = mean(D);
+	D    = filtfilt(A,1,D);
+	D(nix)=NaN;
+	D    = [D(delay+1:end);repmat(NaN,delay,1)];
+	pos  = get_local_maxima_above_threshold(D,TH,4,0.001*Fs);
+
+	% save results in a GDF file for visualization with SigViewer
+	H0 = [];
+	[tmp_p,tmp_f,tmp_e] = fileparts(HDR.FileName);
+	H0.FileName = sprintf('output/%s.%s.w%d.e1.h%d.gdf', tmp_f, 'mod', round(Twin*1000), WinHann);
+	H2 = minidet2gdf([s, D, D>TH], [], pos, WINLEN, Fs, H0, AP);
 end
 end
 

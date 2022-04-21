@@ -134,11 +134,13 @@ if (HDR.SampleRate ~= Fs)
 	event_pos1 = round(event_pos1/DIV);
 	event_pos2 = round(event_pos2/DIV);
 
-	AP.EVENT.POS = round((AP.EVENT.POS-1)*Fs/AP.EVENT.SampleRate)+1;
-	if isfield(HDR.EVENT,'DUR');
-        	AP.EVENT.DUR = round(AP.EVENT.DUR*Fs/AP.EVENT.SampleRate);
+	if isfield(AP,'EVENT')
+		AP.EVENT.POS = round((AP.EVENT.POS-1)*Fs/AP.EVENT.SampleRate)+1;
+		if isfield(HDR.EVENT,'DUR');
+			AP.EVENT.DUR = round(AP.EVENT.DUR*Fs/AP.EVENT.SampleRate);
+		end
+		AP.EVENT.SampleRate = Fs;
 	end
-	AP.EVENT.SampleRate = Fs;
 end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
