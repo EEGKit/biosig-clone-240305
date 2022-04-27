@@ -655,7 +655,7 @@ end
         X.isnan = [X.isnan; isnan(Stmp(tix1));             NAN_BLOCK; isnan(Stmp(tix2));             NAN_BLOCK];
 end
 
-if 0, 	% disable or enable XV
+if 1, 	% disable or enable XV
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%       within-cell cross-validation (XV)
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -692,14 +692,18 @@ if 0, 	% disable or enable XV
 	fprintf(fid0,'\n#####\nResults from export scoring 1\n');
 	fprintf(fid0,'AUC: (XV:S1->S2):\t %g\n', RES12S_C1.test.AUC);
 	fprintf(fid0,'AUC: (XV:S2->S1):\t %g\n', RES21S_C1.test.AUC);
+	fprintf(fid0,'Kappa (XV:S1-S2)    : %.3g/%.3g\n',kappa(RES12S_C1.test.CM).kappa,kappa(RES21S_C1.test.CM).kappa);
 	fprintf(fid0,'AUC: (XV:A1B2->A2B1):\t %g\n', RES1A2B_C1.test.AUC);
 	fprintf(fid0,'AUC: (XV:A2B1->A1B2):\t %g\n', RES2A1B_C1.test.AUC);
+	fprintf(fid0,'Kappa (XV:A1B2-A2B1): %.3g/%.3g\n',kappa(RES1A2B_C1.test.CM).kappa,kappa(RES2A1B_C1.test.CM).kappa);
 
 	fprintf(fid0,'\n#####\nResults from export scoring 2\n');
 	fprintf(fid0,'AUC: (XV:S1->S2):\t %g\n', RES12S_C2.test.AUC);
 	fprintf(fid0,'AUC: (XV:S2->S1):\t %g\n', RES21S_C2.test.AUC);
+	fprintf(fid0,'Kappa (XV:S1-S2)    : %.3g/%.3g\n',kappa(RES12S_C2.test.CM).kappa,kappa(RES21S_C2.test.CM).kappa);
 	fprintf(fid0,'AUC: (XV:A1B2->A2B1):\t %g\n', RES1A2B_C2.test.AUC);
 	fprintf(fid0,'AUC: (XV:A2B1->A1B2):\t %g\n', RES2A1B_C2.test.AUC);
+	fprintf(fid0,'Kappa (XV:A1B2-A2B1): %.3g/%.3g\n',kappa(RES1A2B_C2.test.CM).kappa,kappa(RES2A1B_C2.test.CM).kappa);
 end
 
 for k=1:length(DATAFILES),

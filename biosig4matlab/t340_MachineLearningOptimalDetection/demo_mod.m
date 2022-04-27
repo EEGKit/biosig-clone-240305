@@ -172,7 +172,7 @@ S = detrend(s);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       cross-validation (XV)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if 0, 	% disable or enable XV
+if 1, 	% disable or enable XV
 	% Grouping for S1-S2 cross-validation (XV)
 	G1 = zeros(size(s)); 
 	G1(TiS1(1):TiS1(2))=1;
@@ -198,6 +198,9 @@ if 0, 	% disable or enable XV
 	% In [1,2], we combined the output from the two testing sets, and 
 	% and applied the ROC analysis to this trace. 
 	% for the sake of simplicity, this is omitted here. 
+	fprintf(1,'AUC: (XV:S1->S2):\t %g\n', RES12S.test.AUC);
+	fprintf(1,'AUC: (XV:S2->S1):\t %g\n', RES21S.test.AUC);
+	fprintf(1,'Kappa (XV:S1-S2)    : %.3g/%.3g\n',kappa(RES12S.test.CM).kappa,kappa(RES21S.test.CM).kappa);
 
 	% XV: A1B2->A2B1 cross-validiation
 	ixtrain=find(G2==1);
@@ -211,11 +214,9 @@ if 0, 	% disable or enable XV
 	% In [1,2], we combined the output from the two testing sets, and 
 	% and applied the ROC analysis to this trace. 
 	% for the sake of simplicity, this is omitted here. 
-
-	fprintf(1,'AUC: (XV:S1->S2):\t %g\n', RES12S.test.AUC);
-	fprintf(1,'AUC: (XV:S2->S1):\t %g\n', RES21S.test.AUC);
 	fprintf(1,'AUC: (XV:A1B2->A2B1):\t %g\n', RES1A2B.test.AUC);
 	fprintf(1,'AUC: (XV:A2B1->A1B2):\t %g\n', RES2A1B.test.AUC);
+	fprintf(1,'Kappa (XV:A1B2-A2B1): %.3g/%.3g\n',kappa(RES1A2B.test.CM).kappa,kappa(RES2A1B.test.CM).kappa);
 
 	% XV: LOOM
 	% this is not implemented here, essentially the idea is to 
@@ -229,7 +230,7 @@ ixtrain=find(~isnan(C)); % use the scored data for training
 % avoid edge issues when computing correlation functions
 ixtrain=ixtrain((2*TemplateLength<ixtrain) & (ixtrain < (length(S)-2*TemplateLength)));
 ixtest=[];
-RES=mod_optimal_detection_filter(S, C, TemplateLength, ixtrain, []);
+RES=mod_optimal_detection_filter(S, C, TemplateLength, ixtrain, ixtest);
 % the output parameters from the training steps are
 % RES.CLASSIFIER.A ; 			% filter coefficients of the Wiener filter 
 TH    = RES.CLASSIFIER.THRESHOLD;	% detection threshold - based on maxKappa
@@ -237,7 +238,6 @@ delay = RES.CLASSIFIER.delay;		% time shift of the filter
 
 % the classifier is applied to the whole data set. 
 D     = filter(RES.CLASSIFIER.A,1,S);
-
 
 % without smoothing 
 WinHann = 1; 
@@ -261,7 +261,7 @@ nix  = isnan(D); D(nix) = mean(D);
 D    = filtfilt(A,1,D);
 D(nix)=NaN;
 D    = [D(delay+1:end);repmat(NaN,delay,1)];
-pos  = get_local_maxima_above_threshold(D,TH,4,0.001*Fs);    
+pos  = get_local_maxima_above_threshold(D,TH,4,0.001*Fs);
 
 % save results in a GDF file for visualization with SigViewer 
 H0 = [];
