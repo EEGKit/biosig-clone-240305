@@ -41,8 +41,6 @@
 //-------------------------------------------------------------------
 */
 
-#pragma GCC target("avx2")
-
 #ifdef __GNUC__ 
         #include <stdint.h>
 #endif
