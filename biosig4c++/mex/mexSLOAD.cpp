@@ -1,6 +1,6 @@
 /*
 
-    Copyright (C) 2007-2019 Alois Schloegl <alois.schloegl@ist.ac.at>
+    Copyright (C) 2007-2019,2022 Alois Schloegl <alois.schloegl@ist.ac.at>
     This file is part of the "BioSig for C/C++" repository 
     (biosig4c++) at http://biosig.sf.net/ 
 
@@ -340,9 +340,8 @@ void mexFunction(
 	unsigned flags = (!!FlagOverflowDetection)*BIOSIG_FLAG_OVERFLOWDETECTION + (!!FlagUCAL)*BIOSIG_FLAG_UCAL;
 #ifdef CHOLMOD_H
 	flags += (rr!=NULL)*BIOSIG_FLAG_ROW_BASED_CHANNELS;
-#else
-	biosig_reset_flag(hdr, BIOSIG_FLAG_ROW_BASED_CHANNELS);
 #endif
+	biosig_reset_flag(hdr, BIOSIG_FLAG_ROW_BASED_CHANNELS | BIOSIG_FLAG_OVERFLOWDETECTION | BIOSIG_FLAG_UCAL);
 	biosig_set_flag(hdr, flags);
 
 	biosig_set_targetsegment(hdr, TARGETSEGMENT);
