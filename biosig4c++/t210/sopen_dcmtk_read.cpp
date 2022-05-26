@@ -1,10 +1,5 @@
 /*
-    sandbox is used for development and under constraction work
-    The functions here are either under construction or experimental.
-    The functions will be either fixed, then they are moved to another place;
-    or the functions are discarded. Do not rely on the interface in this function
-
-    Copyright (C) 2018-2019 Alois Schloegl <alois.schloegl@gmail.com>
+    Copyright (C) 2018-2022 Alois Schloegl <alois.schloegl@gmail.com>
     This file is part of the "BioSig for C/C++" repository
     (biosig4c++) at https://biosig.sourceforge.io
 
@@ -44,9 +39,15 @@
 	#include "dcmtk/dcmdata/dctk.h"
 	#include "dcmtk/dcmdata/dcistrmf.h"
 
-#define INCLUDE_CSTRING
-#define INCLUDE_CSTDLIB
-#define INCLUDE_CSTDIO
+#if (PACKAGE_VERSION_NUMBER >= 367)	// seems to work for some earlier versions like e.g. 3.6.5, too
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstring>
+#else
+	#define INCLUDE_CSTRING
+	#define INCLUDE_CSTDLIB
+	#define INCLUDE_CSTDIO
+#endif
 
 	#include "dcmtk/ofstd/ofstdinc.h"
 
@@ -63,7 +64,6 @@
 	#ifdef DCMTK_ENABLE_CHARSET_CONVERSION
 	#include "dcmtk/ofstd/ofchrenc.h"      /* for OFCharacterEncoding */
 	#endif
-
 
 EXTERN_C int sopen_dcmtk_read(HDRTYPE* hdr) {
 
