@@ -89,7 +89,7 @@ if isstruct(arg1),
         end;
 
         % THRESHOLD, GDFTYP -> Phys/Dig/Min/Max
-	if isa(data,'single') & strncmp(version,'6',1)
+	if isa(data,'single') && strncmp(version,'6',1)
 		data = double(data);
 	end;
         if HDR.NS,

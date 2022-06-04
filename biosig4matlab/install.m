@@ -33,6 +33,8 @@ if isempty(BIOSIG_MATLAB_PATH)
 		BIOSIG_MATLAB_PATH = pwd;
 	elseif exist('./biosig/t200_FileAccess','dir')
 		BIOSIG_MATLAB_PATH = fullfile(pwd,'biosig');
+	elseif exist('./biosig4matlab/t200_FileAccess','dir')
+		BIOSIG_MATLAB_PATH = fullfile(pwd,'biosig');
 	else
 		fprintf(2,'Error: biosig subdirectories not found\n');
 	        return;
