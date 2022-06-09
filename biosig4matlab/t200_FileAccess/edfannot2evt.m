@@ -34,6 +34,11 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 	DUR  = [];
 	CHN  = [];
 	TimeStamp = [];
+	HDR_T0 = NaN;
+	try
+		HDR_T0 = datenum(HDR.T0);
+	end
+
 	for k = 1:sz(2);
 		t     = HDR.EDFplus.ANNONS(:,k)';
 
@@ -49,7 +54,7 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 				POS(N,1) = HDR.SPR * (k-1) + 1;
 				DUR(N,1) = 0;
 				TYP(N,1) = hex2dec('7ffe');
-				TimeStamp(N,1) = datenum(HDR.T0) + t0/(24*60);
+				TimeStamp(N,1) = HDR_T0 + t0/(24*60);
 				continue;
 			end
 			s1 = t1(1:ix(1)-1);
@@ -63,7 +68,7 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 				POS(N,1) = HDR.SPR * (k-1) + 1;
 				DUR(N,1) = 0;
 				TYP(N,1) = hex2dec('7ffe'); 
-				TimeStamp(N,1) = datenum(HDR.T0) + t0/(24*60); 	
+				TimeStamp(N,1) = HDR_T0 + t0/(24*60);
 			elseif (length(ix)==2 && ix(1)+1 < ix(2))
 				N        = N + 1;
 				TYP(N,1) = 1; 
@@ -75,7 +80,7 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 					DUR(N,1)  = 0;
 				end;
 				POS(N,1)  = 1 + round((t0(1)-tt0) * HDR.EVENT.SampleRate);
-				TimeStamp(N,1) = datenum(HDR.T0) + (t0(1)-tt0)/(24*60*60);
+				TimeStamp(N,1) = HDR_T0 + (t0(1)-tt0)/(24*60*60);
 			end;
 		end; 
 	end; 
