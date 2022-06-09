@@ -365,8 +365,8 @@ const struct event_groups_t EventCodeGroups [] = {
 /****************************************************************************/
 
 // greatest common divisor
-uint32_t gcd(uint32_t A, uint32_t B)
-{	uint32_t t;
+uint32_t gcd(uint32_t A, uint32_t B) {
+	uint32_t t;
 	if (A<B) {t=B; B=A; A=t;};
 	while (B>0) {
 		t = B;
@@ -377,8 +377,11 @@ uint32_t gcd(uint32_t A, uint32_t B)
 };
 
 // least common multiple - used for obtaining the common HDR.SPR
-uint32_t lcm(uint32_t A, uint32_t B)
-{
+uint32_t lcm(uint32_t A, uint32_t B) {
+	if (A==0 || B==0) {
+		fprintf(stderr,"%s (line %d) %s(%d,%d)\n",__FILE__,__LINE__,__func__,A,B);
+		return 0;
+	}
 	// return(A*(B/gcd(A,B)) with overflow detection
 	uint64_t A64 = A;
 	A64 *= B/gcd(A,B);
@@ -13490,8 +13493,7 @@ size_t swrite(const biosig_data_type *data, size_t nelem, HDRTYPE* hdr) {
 			biosigERROR(hdr, B4C_INSUFFICIENT_MEMORY, "SWRITE: memory allocation failed.");
 			return(0);
 		}
-		else
-			hdr->AS.rawdata = (uint8_t*)ptr;
+		hdr->AS.rawdata = (uint8_t*)ptr;
 	}
 
 
@@ -14006,7 +14008,12 @@ int sclose(HDRTYPE* hdr) {
 			uint16_t crc = CRCEvaluate(hdr->AS.Header + aECG->Section6.StartPtr+2,aECG->Section6.Length-2); // compute CRC
 			leu16a(crc, hdr->AS.Header + aECG->Section6.StartPtr);
 		}
-		if ((aECG->Section12.Length>0) && (hdr->VERSION >2.5)){
+		if (aECG->Section7.Length>0) {
+			// compute CRC for Section 7
+			uint16_t crc = CRCEvaluate(hdr->AS.Header + aECG->Section7.StartPtr+2,aECG->Section7.Length-2); // compute CRC
+			leu16a(crc, hdr->AS.Header + aECG->Section7.StartPtr);
+		}
+		if ((aECG->Section12.Length>0) && (hdr->VERSION > 2.5)) {
 			// compute CRC for Section 12
 			uint16_t crc = CRCEvaluate(hdr->AS.Header + aECG->Section12.StartPtr+2,aECG->Section12.Length-2); // compute CRC
 			leu16a(crc, hdr->AS.Header + aECG->Section12.StartPtr);

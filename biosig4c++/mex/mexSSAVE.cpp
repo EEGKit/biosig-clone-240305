@@ -96,6 +96,7 @@ void mexFunction(
 	char		FlagOverflowDetection = 1, FlagUCAL = 0;
 	void 		*data = NULL;
 	mxArray *p = NULL, *p1 = NULL, *p2 = NULL;
+	uint16_t gdftyp = 0;
 
 #ifdef CHOLMOD_H
 	cholmod_sparse RR,*rr=NULL;
@@ -104,7 +105,6 @@ void mexFunction(
 
 // ToDO: output single data
 //	mxClassId	FlagMXclass=mxDOUBLE_CLASS;
-
 
 	if (nrhs<1) {
 		mexPrintf("   Usage of mexSSAVE:\n");
@@ -117,6 +117,8 @@ void mexFunction(
 		return;
 	}
 
+	VERBOSE_LEVEL=0;	// set debug level to minimum
+
 /*
  	improve checks for input arguments
 */
@@ -125,7 +127,8 @@ void mexFunction(
 	    mxIsStruct( prhs[0])) {
 		data      = (void*) mxGetData(prhs[1]);
 		// get number of channels
-		size_t NS = mxGetN (prhs[1]);
+		size_t NS = mxGetN (prhs[1]);	// TODO: CHECK SIZE
+
 		// get number of events
 		size_t NEvt=0;
 		if ( (p = mxGetField(prhs[0], 0, "EVENT") ) != NULL ) {
@@ -140,9 +143,33 @@ void mexFunction(
 
 		// allocate memory for header structure
 		hdr       = constructHDR (NS, NEvt);
-		data      = (biosig_data_type*) mxGetData (prhs[1]);
-		hdr->NRec = mxGetM (prhs[1]);
+		hdr->NRec = mxGetM (prhs[1]);	// TODO: CHECK SIZE
 		hdr->SPR  = 1;
+		data = (biosig_data_type*) mxGetData (prhs[1]);
+
+		switch (mxGetClassID(prhs[1])) {
+		case mxDOUBLE_CLASS: gdftyp=17; break;
+		case mxSINGLE_CLASS: gdftyp=16; break;
+		case mxCHAR_CLASS:   gdftyp=1;  break;
+		case mxINT8_CLASS:   gdftyp=1;  break;
+		case mxUINT8_CLASS:  gdftyp=2;  break;
+		case mxINT16_CLASS:  gdftyp=3;  break;
+		case mxUINT16_CLASS: gdftyp=4;  break;
+		case mxINT32_CLASS:  gdftyp=5;  break;
+		case mxUINT32_CLASS: gdftyp=6;  break;
+		case mxINT64_CLASS:  gdftyp=7;  break;
+		case mxUINT64_CLASS: gdftyp=8;  break;
+
+		case mxLOGICAL_CLASS:
+		case mxVOID_CLASS:
+		case mxFUNCTION_CLASS:
+		case mxUNKNOWN_CLASS:
+		case mxCELL_CLASS:
+		case mxSTRUCT_CLASS:
+		default:
+			mexErrMsgTxt("mexSSAVE(HDR,data) failed datatype of data is not supported\n");
+			return;
+		}
 	}
 	else {
 		mexErrMsgTxt("mexSSAVE(HDR,data) failed because HDR and data, are not a struct and numeric, resp.\n");
@@ -167,13 +194,8 @@ void mexFunction(
 				FlagUCAL = 0;
 		}
 		else {
-#ifndef mexSOPEN
-			mexPrintf("mexSSAVE: argument #%i is invalid.",k+1);
-			mexErrMsgTxt("mexSSAVE failes because of unknown parameter\n");
-#else
-			mexPrintf("mexSOPEN: argument #%i is invalid.",k+1);
+			mexPrintf("%s: argument #%i is invalid.",__FILE__, k+1);
 			mexErrMsgTxt("mexSOPEN fails because of unknown parameter\n");
-#endif
 		}
 	}
 
@@ -185,7 +207,6 @@ void mexFunction(
 #else
 	hdr->FLAG.ROW_BASED_CHANNELS = 0;
 #endif
-
 
 	/***** CHECK INPUT HDR STUCTURE CONVERT TO libbiosig hdr *****/
 	if (VERBOSE_LEVEL>7) mexPrintf("110: input arguments checked\n");
@@ -244,9 +265,28 @@ void mexFunction(
 		; /* use default values SPR=1, NREC = size(data,1) */
 	}
 
+
+	if (hdr->TYPE == SCP_ECG) {
+		/* TODO: convert HDR.data to hdr->AS.rawdata including
+			- rescaling (HDR.FLAG.UCAL)
+			- row/column orientation
+			- check whether dimensions fit [SPR*NRec,NS]
+			- Check OnOff channels
+			- conversion to int16
+		*/
+		// gdftyp = 3;
+
+		mexPrintf("%s: WARNING: writing SCPECG is work in progress, has known bugs, and is not ready for production use !!!!\n",__FILE__);
+
+		// VERBOSE_LEVEL=8;	// writing SCP is not well tested - increase verbosity 
+		for (k = 0; k < hdr->NS; k++) {
+			hdr->CHANNEL[k].GDFTYP = gdftyp;  // double
+		}
+	}
+
+
 	if (hdr->NRec * hdr->SPR != mxGetM (prhs[1]) )
 		mexPrintf("mexSSAVE: warning HDR.NRec * HDR.SPR (%i*%i = %i) does not match number of rows (%i) in data.", hdr->NRec, hdr->SPR, hdr->NRec*hdr->SPR, mxGetM(prhs[1]) );
-
 
 	if ( (p = mxGetField(prhs[0], 0, "LeadIdCode") ) != NULL ) {
 		for (k = 0; k < hdr->NS; k++)
@@ -264,8 +304,6 @@ void mexFunction(
 				mxGetString(mxGetCell(p,k), hdr->CHANNEL[k].Transducer, MAX_LENGTH_LABEL+1);
 		}
 	}
-
-
 	if ( (p = mxGetField(prhs[0], 0, "LowPass") ) != NULL ) {
 		for (k = 0; k < hdr->NS; k++)
 			hdr->CHANNEL[k].LowPass = (float)getDouble(p,k);
@@ -307,6 +345,11 @@ void mexFunction(
 		}
 	}
 
+	if ( (p = mxGetField(prhs[0], 0, "OnOff") ) != NULL ) {
+		for (k = 0; k < hdr->NS; k++)
+			hdr->CHANNEL[k].OnOff = (uint8_t)getDouble(p,k);
+	}
+//* 	TODO: GDFTYP is derived from 'data', ignore this 
 	if ( (p = mxGetField(prhs[0], 0, "GDFTYP") ) != NULL ) {
 		for (k = 0; k < hdr->NS; k++)
 			hdr->CHANNEL[k].GDFTYP = (uint16_t)getDouble(p,k);
@@ -489,7 +532,6 @@ void mexFunction(
 				pos += buflen;
 			}
 		}
-
 	}
 
 	hdr = sopen(FileName, "w", hdr);

@@ -1018,6 +1018,10 @@ typedef struct aecg {
         	size_t	 Length;
         } Section6;
         struct {
+		size_t   StartPtr;
+		size_t	 Length;
+        } Section7;
+        struct {
         	char	 Confirmed; // 0: original report (not overread); 1:Confirmed report; 2: Overread report (not confirmed)
 		struct tm t; 
 		uint8_t	 NumberOfStatements;

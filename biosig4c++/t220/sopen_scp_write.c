@@ -70,7 +70,7 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 		aECG->LatestConfirmingPhysician="/0";
 		aECG->Diagnosis="/0";
 		aECG->EmergencyLevel=0;
-#if (BIOSIG_VERSION < 10500)
+#if (BIOSIG_VERSION > 10500)
 		aECG->Section8.NumberOfStatements = 0;
 		aECG->Section8.Statements = NULL;
 		aECG->Section11.NumberOfStatements = 0;
@@ -103,6 +103,7 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 
 	aECG->Section5.Length = 0;
 	aECG->Section6.Length = 0;
+	aECG->Section7.Length = 0;
 
 
 	/*  */
@@ -145,7 +146,7 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 		curSectLen = 0; // current section length
 		//ptr = (uint8_t*)realloc(ptr,sectionStart+curSectLen);
 
-//		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) : Section %i/%i %i %p\n",__FILE__,__LINE__,curSect,NSections,sectionStart,ptr);
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) : Section %i/%i %i %p\n",__FILE__,__LINE__,curSect,NSections,sectionStart,ptr);
 
 		if (curSect==0)  // SECTION 0
 		{
@@ -487,6 +488,8 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 			PtrCurSect = ptr+sectionStart;
 			curSectLen = 16; // current section length
 
+			if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): %s(...) data.size=[%d,%d]\n",__FILE__,__LINE__,__func__,hdr->data.size[0],hdr->data.size[1]);
+
 			// Number of leads enclosed
 			*(ptr+sectionStart+curSectLen++) = NS;
 
@@ -495,13 +498,13 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 // Situations number of leads simultaneouly recorded != total number of leads are not supported
 // We assume all the leads are recorded simultaneously
 			*(ptr+sectionStart+curSectLen++) = (NS<<3) | 0x04;
-
+			uint32_t SPR = hdr->SPR * hdr->NRec;
 			for (i = 0; i < hdr->NS; i++) {
 				CHANNEL_TYPE *CH=hdr->CHANNEL+i;
 				if (CH->OnOff != 1) continue;
 
 				leu32a(1L, ptr+sectionStart+curSectLen);
-				leu32a(hdr->data.size[0], ptr+sectionStart+curSectLen+4);
+				leu32a(SPR, ptr+sectionStart+curSectLen+4);
 				*(ptr+sectionStart+curSectLen+8) = (uint8_t)CH->LeadIdCode;
 				curSectLen += 9;
 			}
@@ -523,6 +526,9 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 		}
 		else if (curSect==6)  // SECTION 6
 		{
+
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i): Section %d v%3.1g %i,%i  \n",__func__,__LINE__,curSect, versionSection*0.1,(int)aECG->Section6.StartPtr,(int)aECG->Section6.Length);
+
 		    if (versionSection < 25)  // SECTION 6
 		    {
 			uint16_t GDFTYP = 3;
@@ -542,6 +548,9 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 			char flagfirst = 1;
 			for (i = 0; i < hdr->NS; i++) {
 				CHANNEL_TYPE *CH=hdr->CHANNEL+i;
+
+		if (VERBOSE_LEVEL>8) fprintf(stdout,"%s (line %i): %d#%d  %g/%g \n",__func__,__LINE__,CH->OnOff,i,avm,AVM);
+
 				if (CH->OnOff != 1) continue;
 
 				// check for physical dimension and adjust scaling factor to "nV"
@@ -560,6 +569,9 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 			avm16 = lrint(AVM);
 			leu16a(avm16, ptr+sectionStart+curSectLen);
 			avm = leu16p(ptr+sectionStart+curSectLen);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i): avm:%g  avm16:%d AVM:%g\n", __func__, __LINE__, avm, avm16, AVM);
+
 			curSectLen += 2;
 			if (fabs((AVM - avm)/AVM)>1e-14)
 				fprintf(stderr,"Warning SOPEN (SCP-WRITE): Scaling factor has been truncated (%f instead %f).\n",avm,AVM);
@@ -589,7 +601,7 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 			for (i = 0; i < NS; i++) {
 				leu16a((uint16_t)hdr->data.size[0]*2, ptr+sectionStart+curSectLen);
 				avm = leu16p(ptr+sectionStart+curSectLen);
-				AVM = hdr->data.size[0]*2;
+				AVM = hdr->SPR*hdr->NRec*2;
 				if (fabs((AVM - avm)/AVM)>1e-14)
 					fprintf(stderr,"Warning SOPEN (SCP-WRITE): Block length truncated (%f instead %f us).\n",avm,AVM);
 				curSectLen += 2;
@@ -602,7 +614,7 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 			hdr->NRec = 1;
 
 			// Prepare filling the data block with the ECG samples by SWRITE
-			curSectLen += SZ * (hdr->data.size[hdr->FLAG.ROW_BASED_CHANNELS] * NS);
+			curSectLen += SZ * hdr->SPR*hdr->NRec * NS;
 
 			// Evaluate the size and correct it if odd
 			if ((curSectLen % 2) != 0) {
@@ -786,7 +798,7 @@ int sopen_SCP_write(HDRTYPE* hdr) {
 		sectionStart += curSectLen;	// offset for next section
 	}
 
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"SOPEN_SCP_WRITE 300\n");
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %d): %s(...)\n",__FILE__,__LINE__,__func__);
 
 	// Prepare filling the data block with the ECG samples by SWRITE
 	if (versionSection < 25)
