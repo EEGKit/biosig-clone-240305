@@ -13498,7 +13498,7 @@ size_t swrite(const biosig_data_type *data, size_t nelem, HDRTYPE* hdr) {
 
 
 	if (VERBOSE_LEVEL>7)
-		fprintf(stdout,"%s (line %i): %i %i\n",__func__,__LINE__,(int)hdr->NRec,hdr->NS);
+		fprintf(stdout,"%s (line %i): %dx%d %d\n",__func__,__LINE__,(int)hdr->NRec,hdr->SPR,hdr->NS);
 
 	size_t bi8 = 0;
 	for (k1=0,k2=0; k1<hdr->NS; k1++) {
@@ -13537,19 +13537,19 @@ size_t swrite(const biosig_data_type *data, size_t nelem, HDRTYPE* hdr) {
 					__func__,__LINE__,(int)k1,(int)k2,(int)k3,(int)k4,(int)k5,(int)col,
 					(int)hdr->data.size[0],(int)hdr->data.size[1],(int)hdr->SPR,(int)nelem,(int)hdr->NRec);
 
+			sample_value = 0.0;
         		if (hdr->FLAG.ROW_BASED_CHANNELS) {
-            			for (k3=0, sample_value=0.0; k3 < DIV; k3++)
+				for (k3=0; k3 < DIV; k3++)
         				sample_value += data[col + (k4*hdr->SPR + k5*DIV + k3)*hdr->data.size[0]];
                         }
             		else {
-            			for (k3=0, sample_value=0.0; k3 < DIV; k3++)
+				for (k3=0; k3 < DIV; k3++)
         				sample_value += data[col*nelem*hdr->SPR + k4*hdr->SPR + k5*DIV + k3];
                         }
+			sample_value /= DIV;
 
 			if (VERBOSE_LEVEL>8)
 				fprintf(stdout,"%s (line %i): %f/%i\n",__func__,__LINE__,sample_value,(int)DIV);
-
-			sample_value /= DIV;
 
 			if (!hdr->FLAG.UCAL)	// scaling
 				sample_value = sample_value * iCal + iOff;

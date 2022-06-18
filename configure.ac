@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([biosig], [2.4.1])
+AC_INIT([biosig], [2.4.2])
 AC_COPYRIGHT([Copyright (C) 2019-2022 Alois Schlögl])
 AC_CONFIG_SRCDIR([biosig4c++/biosig.c])
 AC_CONFIG_HEADERS([config.h])

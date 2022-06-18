@@ -33,6 +33,11 @@ for Octave, Matlab, Mathematica, R, and Java.
 	R default-jre \
 	octave octave-tsa octave-nan octave-signal octave-statistics
 
+--- msys2
+    pacman -Su
+    libiconv libiconv-dev unzip gcc autoconf make
+    mingw-w64-x86_64-python-numpy
+    mingw-w64-x86_64-python-setuptools
 
 Installing Biosig from source is as simple as
    ./configure
