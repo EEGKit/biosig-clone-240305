@@ -117,7 +117,9 @@ void mexFunction(
 		return;
 	}
 
+#ifndef NDEBUG
 	VERBOSE_LEVEL=0;	// set debug level to minimum
+#endif
 
 /*
  	improve checks for input arguments
