@@ -5758,13 +5758,26 @@ if (VERBOSE_LEVEL>8)
 		hdr->NS   = 1;
 		hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL,hdr->NS*sizeof(CHANNEL_TYPE));
 		CHANNEL_TYPE *hc = hdr->CHANNEL;
+		hc->OnOff = 1;
+		hc->LeadIdCode = 0;
+		hc->Transducer[0]=0;
+		hc->TOffset = 0.0;
+		hc->LowPass = 0.0;
+		hc->HighPass = 0.0;
+		hc->Notch   = 0.0;
+		hc->XYZ[0]  = 0;
+		hc->XYZ[1]  = 0;
+		hc->XYZ[2]  = 0;
+		hc->Impedance = NAN;
+		hc->bi = 0;
+		hc->bi8 = 0;
 
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
 
 		// Waveform title
 		next = strchr(next,0)+1;
 		while (*next==32) next++;
-		strcpy(hc->Label, next);
+		memcpy(hc->Label, next, MAX_LENGTH_LABEL+1);
 
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
 
@@ -5851,8 +5864,8 @@ if (VERBOSE_LEVEL>8)
 		double uvn = atof(next);
 		hc->Cal = vn*uvn;
 		hc->Off = uvz - vz*vn*uvn;
-		hc->PhysMax	= hc->DigMax * hc->Cal;
-		hc->PhysMin	= hc->DigMin * hc->Cal;
+		hc->PhysMax	= hc->DigMax * hc->Cal + hc->Off;
+		hc->PhysMin	= hc->DigMin * hc->Cal + hc->Off;
 
 		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
 
