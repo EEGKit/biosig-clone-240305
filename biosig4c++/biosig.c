@@ -1562,6 +1562,7 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
 	const char* MAGIC_NUMBER_BRAINVISION       = "Brain Vision Data Exchange Header File";
 	const char* MAGIC_NUMBER_BRAINVISION1      = "Brain Vision V-Amp Data Header File Version";
 	const char* MAGIC_NUMBER_BRAINVISIONMARKER = "Brain Vision Data Exchange Marker File, Version";
+	const uint8_t MAGIC_NUMBER_NICOLET_WFT[] = {0x33,0,0x32,0,0x31,0,0x30,0};
 
     	/******** read 1st (fixed)  header  *******/
   	uint32_t U32 = leu32p(hdr->AS.Header+2);
@@ -1608,10 +1609,10 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
 
 #endif //ONLYGDF
 
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"(%s line %i: %x %x!  <%8s>\n",__func__,__LINE__, leu16p(hdr->AS.Header),leu16p(hdr->AS.Header+154),hdr->AS.Header);
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"(%s line %i: %x %x!  <%8s> TYPE=<%s>\n",__func__,__LINE__, leu16p(hdr->AS.Header),leu16p(hdr->AS.Header+154),hdr->AS.Header,GetFileTypeString(hdr->TYPE));
 
-    	if (hdr->TYPE != unknown)
-      		return(hdr);
+	if (hdr->TYPE != unknown)
+		return(hdr);
 
 #ifndef  ONLYGDF
 	else if (!memcmp(hdr->AS.Header, "ABF ", 4)) {
@@ -1671,6 +1672,10 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
 	    	hdr->TYPE = BLSC;
     	else if (!memcmp(Header1,"FileFormat = BNI-1-BALTIMORE",28))
 	    	hdr->TYPE = BNI;
+	else if (!memcmp(Header1, MAGIC_NUMBER_NICOLET_WFT, 8))	{ // WFT/Nicolet format
+		hdr->TYPE = WFT;
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) %s \n", __FILE__, __LINE__, __func__);
+	}
         else if (!memcmp(Header1,MAGIC_NUMBER_BRAINVISION,strlen(MAGIC_NUMBER_BRAINVISION)) || ((leu32p(hdr->AS.Header)==0x42bfbbef) && !memcmp(Header1+3, MAGIC_NUMBER_BRAINVISION,38)))
                 hdr->TYPE = BrainVision;
         else if (!memcmp(Header1,MAGIC_NUMBER_BRAINVISION1,strlen(MAGIC_NUMBER_BRAINVISION1)))
@@ -2244,6 +2249,7 @@ const struct FileFormatStringTable_t FileFormatStringTable[] = {
 	{ VTK,    	"VTK" },
 	{ WAV,    	"WAV" },
 	{ WCP,    	"WCP" },
+	{ WFT,    	"WFT/Nicolet" },
 	{ WG1,    	"Walter Graphtek" },
 	{ WMF,    	"WMF" },
 	{ XDF,    	"XDF" },
@@ -3937,7 +3943,7 @@ else if (!strncmp(MODE,"r",1)) {
 
 	}
 
-	if (VERBOSE_LEVEL>7) fprintf(stdout,"[222] %i\n",(int)count);
+	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...): count%i\n",__FILE__,__LINE__,__func__,(int)count);
 	hdr->HeadLen = count;
 	getfiletype(hdr);
 	if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i) FMT=%s Ver=%4.2f\n",__FILE__,__LINE__,GetFileTypeString(hdr->TYPE),hdr->VERSION);
@@ -5724,6 +5730,216 @@ if (VERBOSE_LEVEL>8)
 		hdr->NRec = FileBuf.st_size/hdr->NS;
 	        ifseek(hdr, hdr->HeadLen, SEEK_SET);
 
+	}
+
+	else if (hdr->TYPE==WFT) {
+		// WFT/Nicolet
+		hdr->HeadLen = atol((char*)hdr->AS.Header+8);
+		if (count<hdr->HeadLen) {
+			hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, hdr->HeadLen);
+			count   += ifread(hdr->AS.Header+count,1,hdr->HeadLen-count,hdr);
+		}
+		uint16_t gdftyp=3;  // int16_t
+
+		// File_size
+		char *next = strchr(hdr->AS.Header+8,0)+1;
+		while (*next==32) next++;
+		hdr->FILE.size = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// File format version
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		hdr->VERSION = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		hdr->NS   = 1;
+		hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL,hdr->NS*sizeof(CHANNEL_TYPE));
+		CHANNEL_TYPE *hc = hdr->CHANNEL;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// Waveform title
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		strcpy(hc->Label, next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		struct tm T0;
+		T0.tm_sec=0;
+		T0.tm_min=0;
+		T0.tm_hour=0;
+		// date year
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		T0.tm_year = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// date month
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		T0.tm_mon = atol(next)-1;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// date day
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		T0.tm_mday = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// milliseconds since midnight
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		long msec = atol(next);
+		T0.tm_sec = msec / 1000;
+		msec      = msec % 1000;
+		hdr->T0 = tm_time2gdf_time(&T0) + ldexp(msec/(3600*24*1000.0),32) ;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// date day
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		hdr->SPR  = 1;
+		hdr->NRec = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		hc->Transducer[0] = '\0';
+		hc->GDFTYP 	= 3;	// int16
+		hc->SPR 	= hdr->SPR; //
+		hc->LowPass	= -1.0;
+		hc->HighPass 	= -1.0;
+		hc->Notch	= -1.0;  // unknown
+		hc->DigMax	= 32767;
+		hc->DigMin	= -32768;
+
+		hc->OnOff    	= 1;
+		hc->PhysDimCode = 4275; // uV
+		hc->LeadIdCode  = 0;
+
+		// vertical zero
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		int vz = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// vertical norm
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		double vn = atof(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// user vertical zero
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		double uvz = atof(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// user vertical norm
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		double uvn = atof(next);
+		hc->Cal = vn*uvn;
+		hc->Off = uvz - vz*vn*uvn;
+		hc->PhysMax	= hc->DigMax * hc->Cal;
+		hc->PhysMin	= hc->DigMin * hc->Cal;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// user vertical label
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		const char *physdim = next;
+		if (!memcmp(next,"V ",2))
+			hc->PhysDimCode = 4256;
+		else
+			hc->PhysDimCode = PhysDimCode(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// user horizontal zero
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		hdr->SampleRate = 1.0/atof(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// user horizontal norm
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		double uhn = atof(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// user horizontal label
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		const char *my_physdim = next;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// user notes
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		const char *user_notes = next;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// audit
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		const char *audit = next;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// nicolet_digitizer_type
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		const char nicolet_digitizer_type = next;
+		strcpy(hdr->ID.Manufacturer._field, "Nicolet");
+		strcpy(hdr->ID.Manufacturer._field+8, next);
+		hdr->ID.Manufacturer.Name  = hdr->ID.Manufacturer._field;
+		hdr->ID.Manufacturer.Model = hdr->ID.Manufacturer._field+8;
+		hdr->ID.Manufacturer.Version = NULL;
+		hdr->ID.Manufacturer.SerialNumber = NULL;
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// bytes per data point
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		hdr->AS.bpb = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		// resolution
+		next = strchr(next,0)+1;
+		while (*next==32) next++;
+		int resolution = atol(next);
+
+		if (VERBOSE_LEVEL>7) fprintf(stdout,"%s line %d: %s(...) <%s>:\n", __FILE__,__LINE__,__func__,next);
+
+		int k=24;
+		hdr->SampleRate = 200;	// unknown
+		while (next < (hdr->AS.Header + hdr->HeadLen)) {
+
+			if (k==189) hdr->SampleRate = 1.0/atof(next);
+
+			if (VERBOSE_LEVEL>8) fprintf(stdout,"%s line %d: %s(...) : %d <%s>\n", __FILE__,__LINE__,__func__, k, next);
+			next = strchr(next,0)+1;
+			while (*next==32) next++;
+			k++;
+		}
 	}
 
 	else if (hdr->TYPE==BNI) {
