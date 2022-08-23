@@ -14,9 +14,19 @@ The build and installation is quite flexible, and will adapt to your configurati
 is available, the biosig language binding for python will be installed. The same is try
 for Octave, Matlab, Mathematica, R, and Java.
 
+--- Required packages at compile time ---
+
+  Debian (and derivatives)
+       apt-get install gawk libb64-dev tinyxml-dev libdcmtk-dev
+
+  MacOSX/homebrew
+       brew install gcc-11 g++-11 gawk make autoconf libb64 tinyxml suite-sparse dcmtk libarchive
+
+
 --- Recommended packages at compile time ---
 
-   apt-get install \
+  Debian (and derivatives)
+    apt-get install \
 	gawk \
 	libb64-dev tinyxml-dev libdcmtk-dev \
 	liboctave-dev octave \
@@ -25,6 +35,9 @@ for Octave, Matlab, Mathematica, R, and Java.
 	libpython-dev libpython3-dev \
 	R texlive-fonts-extra \
 	default-jdk
+
+  MacOSX/homebrew
+        brew install gcc-11 g++-11 gawk make autoconf libb64 tinyxml suite-sparse dcmtk libarchive
 
 --- Recommended packages at runtime ---
    apt-get install \
@@ -39,7 +52,34 @@ for Octave, Matlab, Mathematica, R, and Java.
     mingw-w64-x86_64-python-numpy
     mingw-w64-x86_64-python-setuptools
 
+
+Compile Biosig from git (without installing):
+
+   WD=$HOME/src/biosig-code   # working directory, adapt to your needs
+   git clone https://git.code.sf.net/p/biosig/code $WD
+   cd $WD
+   autoconf
+   ./configure
+   make
+   export PATH=$WD/biosig4c++:$PATH
+   export LD_LIBRARY_PATH=$WD/biosig4c++:$LD_LIBRARY_PATH
+   sudo make install
+
+Compile Biosig from source (without installing)
+
+   wget https://sourceforge.net/projects/biosig/files/BioSig%20for%20C_C%2B%2B/src/biosig-2.4.2.src.tar.xz
+   tar xvf biosig-2.4.2.src.tar.xz
+   cd biosig-2.4.2
+   autoconf
+   ./configure
+   make
+   export PATH=$(pwd)/biosig4c++:$PATH
+   export LD_LIBRARY_PATH=$(pwd)/biosig4c++:$LD_LIBRARY_PATH
+   sudo make install
+
+
 Installing Biosig from source is as simple as
+
    ./configure
    make
    sudo make install
