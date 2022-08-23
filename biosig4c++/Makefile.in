@@ -379,6 +379,7 @@ SOURCES      += biosig.c \
 		t210/sopen_alpha_read.c \
 		t210/sopen_axg_read.c \
 		t210/sopen_cadwell_read.c \
+		t210/sopen_biosigdump_read.c \
 		t210/scp-decode.cpp \
 		t220/sopen_scp_write.c \
 		t220/crc4scp.c \
@@ -418,6 +419,7 @@ OBJECTS      += \
 		sopen_alpha_read.o \
 		sopen_axg_read.o \
 		sopen_cadwell_read.o \
+		sopen_biosigdump_read.o \
 		sopen_rhd2000_read.o \
 		sopen_scp_write.o \
 		sopen_hl7aecg.o \
@@ -443,6 +445,7 @@ MinGWOBJECTS  = \
 		win32/sopen_alpha_read.obj \
 		win32/sopen_axg_read.obj \
 		win32/sopen_cadwell_read.obj \
+		win32/sopen_biosigdump_read.o \
 		win32/sopen_rhd2000_read.obj \
 		win32/sopen_scp_write.obj \
 		win32/sopen_hl7aecg.obj \

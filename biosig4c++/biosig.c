@@ -148,6 +148,7 @@ void sopen_abf2_read   (HDRTYPE* hdr);
 void sopen_axg_read    (HDRTYPE* hdr);
 void sopen_alpha_read  (HDRTYPE* hdr);
 void sopen_cadwell_read(HDRTYPE* hdr);
+void sopen_biosigdump_read (HDRTYPE* hdr);
 void sopen_cfs_read    (HDRTYPE* hdr);
 void sopen_FAMOS_read  (HDRTYPE* hdr);
 void sopen_fiff_read   (HDRTYPE* hdr);
@@ -1670,6 +1671,10 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
     		 || !memcmp(hdr->AS.Header+307, "E\x00\x00\x00\x00\x00\x00\x00DAT", 11)
     		)
 	    	hdr->TYPE = BLSC;
+    	else if (!memcmp(Header1,"#BIOSIGDUMP v1.0",16)) {
+	    	hdr->TYPE = BiosigDump;
+	    	hdr->VERSION = 1.0;
+	}
     	else if (!memcmp(Header1,"FileFormat = BNI-1-BALTIMORE",28))
 	    	hdr->TYPE = BNI;
 	else if (!memcmp(Header1, MAGIC_NUMBER_NICOLET_WFT, 8))	{ // WFT/Nicolet format
@@ -2151,6 +2156,7 @@ const struct FileFormatStringTable_t FileFormatStringTable[] = {
 	{ BDF,    	"BDF" },
 	{ BESA,    	"BESA" },
 	{ BIN,    	"BINARY" },
+	{ BiosigDump,   "BIOSIGDUMP" },
 	{ BKR,    	"BKR" },
 	{ BLSC,    	"BLSC" },
 	{ BMP,    	"BMP" },
@@ -5953,6 +5959,11 @@ if (VERBOSE_LEVEL>8)
 			while (*next==32) next++;
 			k++;
 		}
+	}
+
+	else if (hdr->TYPE==BiosigDump) {
+	        hdr->HeadLen = count;
+		sopen_biosigdump_read(hdr);
 	}
 
 	else if (hdr->TYPE==BNI) {
