@@ -791,9 +791,12 @@ end;
 				case 6 		%% recording Technician
 					VAL = fread(HDR.FILE.FID,[1,LEN],'uint8=>char');
 					HDR.REC.Technician = VAL;
-				case 7 		%% recording institution/hospital/lab
+				case 7		%% recording institution/hospital/lab
 					VAL = fread(HDR.FILE.FID,[1,LEN],'uint8=>char');
 					HDR.REC.Hospital = VAL;
+				case 255	%% Free header (experimental)
+					VAL = fread(HDR.FILE.FID,[1,LEN]),'uint8=>char');
+					HDR.userheader = VAL;
 				otherwise 
 					fseek(HDR.FILE.FID,LEN,'cof'); 
 				end; 
