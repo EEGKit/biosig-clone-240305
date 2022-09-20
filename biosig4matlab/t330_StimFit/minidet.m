@@ -7,7 +7,7 @@ function [results, traceTab, average] = minidet(trace,template,rCrit,aCrit,refra
 %    [results, traceTab, average] = minidet(trace,template,rCrit,aCrit,refract)
 %
 %  Input: 
-%    dtrace :   raw sampling data
+%    trace :   raw sampling data
 %    template: default is a bi-exponential template with tauRise=0.5ms, 
 %              tauDecay=5ms, a 10ms baseline, for data sampled with 20kHz
 %          template = F([0:0.05:49.9]', 10, .5, 5);
@@ -109,7 +109,7 @@ x = (r(1:end-4)<=r(2:end-3) & r(2:end-3)<=r(3:end-2) & r(3:end-2)>r(4:end-1) & r
 tEventList = find(x)'+delay;
 
 results.tEventList = tEventList; % stimfit(...)
-if ~isempty(refract)
+if ~isempty(refract) && ~isempty(tEventList)
 	%MMA%  tEventListRev = Mean /@ Split[   tEventList, (Abs[#2 - #1] <=  refract) &] ;  (* split list into sublists containing close elements *)  
 	ix = cumsum([1,diff(tEventList)>refract]);
 	tEventListRev=zeros(ix(end),1);
