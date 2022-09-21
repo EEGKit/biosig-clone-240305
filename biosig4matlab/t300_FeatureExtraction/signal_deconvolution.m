@@ -25,12 +25,12 @@ function d = signal_deconvolution(r,t,fs,highpass,lowpass)
 %     detection of spontaneous synaptic currents in vitro and in vivo.
 %     Biophysical Journal Volume 103 October 2012 1–11.
 
-%  Copyright (C) 2012,2013 by Alois Schloegl, IST Austria <alois.schloegl@ist.ac.at>
+%  Copyright (C) 2012,2013,2022 by Alois Schloegl, IST Austria <alois.schloegl@ist.ac.at>
 %  This is part of the BIOSIG-toolbox http://biosig.sf.net/
 
 
 %% check filter settings - input arguments
-if nargin>4
+if nargin>3,
     if numel(highpass)==2,
 	B = highpass;
     else
