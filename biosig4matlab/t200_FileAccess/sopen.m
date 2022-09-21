@@ -795,7 +795,7 @@ end;
 					VAL = fread(HDR.FILE.FID,[1,LEN],'uint8=>char');
 					HDR.REC.Hospital = VAL;
 				case 255	%% Free header (experimental)
-					VAL = fread(HDR.FILE.FID,[1,LEN]),'uint8=>char');
+					VAL = fread(HDR.FILE.FID,[1,LEN],'uint8=>char');
 					HDR.userheader = VAL;
 				otherwise 
 					fseek(HDR.FILE.FID,LEN,'cof'); 
