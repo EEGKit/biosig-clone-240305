@@ -1,6 +1,6 @@
 /*
 
-    Copyright (C) 2011,2013,2015 Alois Schloegl <alois.schloegl@ist.ac.at>
+    Copyright (C) 2011,2013,2015,2022 Alois Schloegl <alois.schloegl@ist.ac.at>
     This file is part of the "BioSig for C/C++" repository
     (biosig4c++) at http://biosig.sf.net/
 
@@ -242,14 +242,23 @@ void mexFunction(
 	}
 	if ( (p = mxGetField(prhs[0], 0, "FileName") ) != NULL ) 	FileName 	= mxArrayToString(p);
 	if ( (p = mxGetField(prhs[0], 0, "SampleRate") ) != NULL ) 	hdr->SampleRate = getDouble(p, 0);
-	if ( (p = mxGetField(prhs[0], 0, "NS") ) != NULL )	 	hdr->NS         = getDouble(p, 0);
 
 #ifdef DEBUG
 	mexPrintf("%s (line %d): TYPE=<%s><%s> VERSION=%f\n",__FILE__,__LINE__,tmpstr,GetFileTypeString(hdr->TYPE),hdr->VERSION);
 #endif
 
-	p1 = mxGetField(prhs[0], 0, "SPR");
-	p2 = mxGetField(prhs[0], 0, "NRec");
+	if ( (p = mxGetField(prhs[0], 0, "NS") ) != NULL ) {
+		hdr->NS         = getDouble(p, 0);
+		mexPrintf("HDR.NS=%d/%g is defined - but will not be used, size(data,2) is used instead;\n", hdr->NS, getDouble(p, 0));
+	}
+	p1=NULL; p2=NULL;
+	if ( (p1 = mxGetField(prhs[0], 0, "SPR") ) != NULL ) {
+		mexPrintf("HDR.SPR=%d/%g is defined - but will not be used, size(data,1) is used instead;\n", hdr->SPR, getDouble(p1, 0));
+	}
+	if ( (p2 = mxGetField(prhs[0], 0, "NRec") ) != NULL ) {
+		mexPrintf("HDR.NRec=%d/%g is defined - but will not be used, size(data,1) is used instead;\n", hdr->NRec, getDouble(p2, 0));
+	}
+
 	if      ( p1 && p2) {
 		hdr->SPR  = (size_t)getDouble(p1, 0);
 		hdr->NRec = (size_t)getDouble(p2, 0);
@@ -267,7 +276,6 @@ void mexFunction(
 		; /* use default values SPR=1, NREC = size(data,1) */
 	}
 
-
 	if (hdr->TYPE == SCP_ECG) {
 		/* TODO: convert HDR.data to hdr->AS.rawdata including
 			- rescaling (HDR.FLAG.UCAL)
@@ -276,19 +284,22 @@ void mexFunction(
 			- Check OnOff channels
 			- conversion to int16
 		*/
-		// gdftyp = 3;
+		gdftyp = 3;
+	        // hdr->FLAG.ROW_BASED_CHANNELS = 1;
 
 		mexPrintf("%s: WARNING: writing SCPECG is work in progress, has known bugs, and is not ready for production use !!!!\n",__FILE__);
 
-		// VERBOSE_LEVEL=8;	// writing SCP is not well tested - increase verbosity 
+#ifndef NDEBUG
+		VERBOSE_LEVEL=8;	// writing SCP is not well tested - increase verbosity
+#endif
 		for (k = 0; k < hdr->NS; k++) {
 			hdr->CHANNEL[k].GDFTYP = gdftyp;  // double
 		}
 	}
-
-
-	if (hdr->NRec * hdr->SPR != mxGetM (prhs[1]) )
-		mexPrintf("mexSSAVE: warning HDR.NRec * HDR.SPR (%i*%i = %i) does not match number of rows (%i) in data.", hdr->NRec, hdr->SPR, hdr->NRec*hdr->SPR, mxGetM(prhs[1]) );
+	else {
+		if (hdr->NRec * hdr->SPR != mxGetM (prhs[1]) )
+			mexPrintf("mexSSAVE: warning HDR.NRec * HDR.SPR (%i*%i = %i) does not match number of rows (%i) in data.", hdr->NRec, hdr->SPR, hdr->NRec*hdr->SPR, mxGetM(prhs[1]) );
+	}
 
 	if ( (p = mxGetField(prhs[0], 0, "LeadIdCode") ) != NULL ) {
 		for (k = 0; k < hdr->NS; k++)
