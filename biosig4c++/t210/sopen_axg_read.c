@@ -334,6 +334,16 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i) NS=%i nCol=%i\n", __FILE__, 
 
 			if (ns+1 == hdr->NS) {
 				flag_traces_of_first_sweep_done = 1;
+				// if current column corresponds to last channel, ...
+				// check if all traces of the same sweep have the same length, and ...
+				for (ns=0; ns < hdr->NS; ns++) {
+					CHANNEL_TYPE *hc = hdr->CHANNEL + ns;
+					if (hc->OnOff != 1) continue;
+					else if (hdr->SPR != hc->SPR) {
+						if (VERBOSE_LEVEL > 7) fprintf(stdout,"%s (line %i): SPR=%d #%dspr=%d \n", __FILE__, __LINE__, hdr->SPR, ns, hc->SPR );
+						biosigERROR(hdr,B4C_FORMAT_UNSUPPORTED,"AXG - SPR differs between channel");
+					}
+				}
 
 				// ... add segment break in event table.
 				if ( hdr->EVENT.N + 1 >= EventN ) {
