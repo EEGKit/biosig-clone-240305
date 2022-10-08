@@ -5924,7 +5924,7 @@ if (VERBOSE_LEVEL>8)
 		// nicolet_digitizer_type
 		next = strchr(next,0)+1;
 		while (*next==32) next++;
-		const char nicolet_digitizer_type = next;
+		const char nicolet_digitizer_type = *next;
 		strcpy(hdr->ID.Manufacturer._field, "Nicolet");
 		strcpy(hdr->ID.Manufacturer._field+8, next);
 		hdr->ID.Manufacturer.Name  = hdr->ID.Manufacturer._field;
@@ -5950,7 +5950,7 @@ if (VERBOSE_LEVEL>8)
 
 		int k=24;
 		hdr->SampleRate = 200;	// unknown
-		while (next < (hdr->AS.Header + hdr->HeadLen)) {
+		while (next < (char*)(hdr->AS.Header + hdr->HeadLen)) {
 
 			if (k==189) hdr->SampleRate = 1.0/atof(next);
 

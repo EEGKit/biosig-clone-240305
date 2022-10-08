@@ -351,7 +351,7 @@ EXTERN_C int sopen_dcmtk_read(HDRTYPE* hdr) {
 		*/
 
 	if (VERBOSE_LEVEL>7) fprintf(stdout,"# %s (line %d): DCMTK is used to read dicom files.\n",__func__,__LINE__);
-
+	return 0;
 }
 #endif  // DCMTK
 
