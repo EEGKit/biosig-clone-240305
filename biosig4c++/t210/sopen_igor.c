@@ -407,7 +407,8 @@ void sopen_ibw_read (HDRTYPE* hdr) {
 				hdr->CHANNEL[0].DigMin = (w2->botFullScale-w2->hsB) / w2->hsA;
 */
 #else
-				hdr->SampleRate /= w2->hsA * PhysDimScale(PhysDimCode(w2->xUnits));
+				uint16_t pdc = PhysDimCode(w5->dimUnits[0]);
+				hdr->SampleRate /= w2->hsA * (pdc==0 ? 0.001 : PhysDimScale(pdc));	// if physical units unspecified, assume millisecond
 				hdr->CHANNEL[0].PhysMax = w2->topFullScale;
 				hdr->CHANNEL[0].PhysMin = w2->botFullScale;
 #endif
@@ -460,7 +461,8 @@ void sopen_ibw_read (HDRTYPE* hdr) {
 				hdr->CHANNEL[0].PhysDimCode = PhysDimCode(w5->dataUnits);
 				hdr->CHANNEL[0].SPR = hdr->SPR = 1;
 				hdr->NRec        = w5->npnts;
-				hdr->SampleRate /= w5->sfA[0] * PhysDimScale(PhysDimCode(w5->dimUnits[0]));
+				uint16_t pdc = PhysDimCode(w5->dimUnits[0]);
+				hdr->SampleRate /= w5->sfA[0] * (pdc==0 ? 0.001 : PhysDimScale(pdc));	// if physical units unspecified, assume millisecond
 
 				if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i): %g.x+%g \n",__FILE__,__LINE__,w5->sfA[0],w5->sfB[0]);
 				if (VERBOSE_LEVEL>7) fprintf(stdout,"%s (line %i): |%s|%s|%s|%s|\n",__FILE__,__LINE__,w5->dimUnits[0],w5->dimUnits[1],w5->dimUnits[2],w5->dimUnits[3]);
