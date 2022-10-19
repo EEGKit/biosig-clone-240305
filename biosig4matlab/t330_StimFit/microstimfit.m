@@ -31,11 +31,12 @@ function [results, option] = microstimfit(data, Fs, evtpos, varargin)
 %      option.peakEnd	[in samples relative to event_pos]
 %      option.meanN	smoothing window, in order to get the peak
 %      option.dir	direction of peak( 1: up, -1: down, 0: up or down)
-%      option.plotFlag	1: plot figure	0: no plotting
+%      option.plotFlag	1: draw figure and wait for keystrock;	0: no plotting; -1: draw figure and continue
 %      optioon.baseFlag: 0 (default): mean (average) of baseline
 %                        1 : median of baseline
-%      option.fitFlag	0: no fitting
+%      option.fitFlag	0 [default]: no fitting
 %			1: fit monoexponential model 'a*exp(-x/tau)+offset'
+%			2: fit biexponential model 'a*exp(-x/tau)+offset' to decay time (from peakTime to t2)
 %      option.thres	threshold value for AP (in relative units or unit voltage or current per sample interval), and 
 %      option.thresFlag	controls the threshold criterion (0 = relative to max slope, 1 = absolute). 
 %      option.fitEnd	data length for fitting, starting from the peak time 
@@ -56,7 +57,8 @@ function [results, option] = microstimfit(data, Fs, evtpos, varargin)
 %     available online: doi: http://dx.doi.org/10.3389/fninf.2014.00016
 %     https://pub.ist.ac.at/~schloegl/publications/GuzmanEtAl2014.fninf-08-00016.pdf
 
-% Copyright (C) 2017-2019 Alois Schlögl, IST Austria <alois.schloegl@ist.ac.at>
+
+% Copyright (C) 2017-2019,2022 Alois Schlögl, IST Austria <alois.schloegl@ist.ac.at>
 
 % TODO: 
 % smoothing window length 
@@ -120,15 +122,13 @@ default.baseEnd=round(-Fs*10e-3);
 default.peakBeg=round(-Fs*10e-3);
 default.peakEnd=round(+Fs*20e-3);
 default.fitEnd=round(+Fs*50e-3);
-default.meanN=1;
+default.meanN=round(50e-6*Fs);	% see [1], Fig. 3-C
 default.dir=0;
 default.plotFlag=0;
 default.baseFlag=0;
 default.fitFlag=0;
 default.thres=0.03;
 default.thresFlag=0;
-default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t/TAU) + B
-default.fitfunJ = @(p, x) ((exp (-x*p(3)) - x*p(1)*exp (-x*p(3))) + 1);	% A * exp(-t/TAU) + B
 
 if (nargin>3) && isstruct(varargin{1})
 	option = varargin{1};
@@ -186,8 +186,22 @@ results.label = {'tix','baseline','baseSD','-','peak','tPeak', ...
 		 't20Real', 't80Real', 't50AInt', 't50AReal', 't50BInt', 't50BReal', 't0Real', ...
 		 'tMaxSlopeRiseReal', 'maxSlopeRiseReal', 'tThreshold', 'yThreshold', ...
 		};
+
 if (option.fitFlag==1)
 	results.label(end+[1:3]) = {'a','offset','tau [s]'};
+	option.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t/TAU) + B
+	% default.fitfunJ = @(p, x) ((exp (-x*p(3)) - x*p(1)*exp (-x*p(3))) + 1);	% A * exp(-t/TAU) + B
+	results.fitResults=repmat(NaN,N,3);
+elseif (option.fitFlag==2)
+	results.label(end+[1:4]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]'};
+	option.fitfun = @(p, x) p(1) * exp (-x*p(3)) - p(2) * exp (-x*p(3));	% A1 * exp(-t/TAU1) - A2 * exp(-t/TAU2)
+	% default.fitfunJ = @(p, x) ((exp (-x*p(3)) - x*p(1)*exp (-x*p(3))) + 1);	% A * exp(-t/TAU) + B
+	results.fitResults=repmat(NaN,N,4);
+	results.weightedTau=repmat(NaN,N,1);
+elseif (option.fitFlag==0)
+	;
+else
+	warning('fitting function not defined')
 end
 
 results.data = repmat(NaN,N,length(results.label)); 
@@ -201,8 +215,9 @@ if 0, (option.meanN~=1)
 elseif (option.meanN~=1)
 	% this is closer to what stimfit is doing 
 	n=option.meanN;
+	n2=floor(n/2);
 	sdata=filter(ones(n,1),n,data);
-	sdata=[sdata(n/2+1:end);repmat(NaN,n/2,size(sdata,2))];
+	sdata=[sdata(n2+1:end);repmat(NaN,n2,size(sdata,2))];
 else
 	sdata=data;
 end
@@ -273,7 +288,7 @@ for k=1:N;
 
 	peakRegion = sdata( max(option.peakBegin+ix,1) : min(ix+option.peakEnd,size(data,1)) ) - base;
 
-	if option.dir && xor(peak < 0, option.dir < 0) 
+	if option.dir && any(xor(peak < 0, option.dir < 0))
 		warning('microStimfit: peak has wrong direction  - this is strange'); 
 	end
 
@@ -308,7 +323,6 @@ for k=1:N;
 	maxSlopeRiseReal  = max(peakRegion3);
 	tMaxSlopeRiseReal = find(peakRegion3==maxSlopeRiseReal) + ix + option.peakBegin - 0.5;
 
-	% Finalizing Output /home/schloegl/src/biosig-code/biosig4matlab
 	t50AReal = mean(t50AReal);
 	tMaxSlopeRiseReal(2:end) = [];	% First only
 	t0Real(2:end) = [];		% First only
@@ -348,21 +362,47 @@ for k=1:N;
 
 	t = [0:option.fitEnd]';
 	if (option.fitFlag==1) % && (abs(peak)>0))
+		% results.label(end+[1:3]) = {'a','offset','tau [s]'};
+		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t/TAU) + B
+
 		fitResult = [];
 		fExp      = option.fitfun;
 
-		pInit = [peak(k), base, 1/(mean(t50BReal) - mean(t50AReal))];
+		pInit = [peak(k), base, Fs/(mean(t50BReal) - mean(t50AReal))];
 		LB = [-inf, -inf, 0];
-		UB = [+inf, +inf, 10*Fs];
+		UB = [+inf, +inf, Fs];
 
 		%% settings = optimset ('lbound',[-inf,-inf,0]','ubound',[inf,inf,Fs*10]');
 		%opts = optimset('Algorithm','levenberg-marquardt');
 		%opts = optimset('Jacobian',default.fitfunJ);
 		%opts = optimset('Algorithm','levenberg-marquardt','Jacobian',default.fitfunJ);
 		try
+			t = [0:option.fitEnd]';
 			decay = data(results.peakTime(k)*Fs+evtpos(k) + t);
-			[fitResult, model_values, cvg, outp] = lsqcurvefit (option.fitfun, pInit', t, decay, LB, UB);
-			results.data(k, 18:20) = [fitResult(1), fitResult(2), 1/(fitResult(3)*Fs)];
+			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t/Fs, decay, LB, UB);
+			results.fitResults(k,1:3) = [fitResult(1), fitResult(2), 1/fitResult(3)];
+			results.data(k, 18:20)    = [fitResult(1), fitResult(2), 1/fitResult(3)];
+		catch
+			warning('fitting failed; optimization toolbox or optim package missing')
+			fitResult=[];
+		end
+	elseif (option.fitFlag==2) % && (abs(peak)>0))
+		% results.label(end+[1:3]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]'};
+		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) - p(2) * exp (-x*p(3));	% A1 * exp(-t/TAU1) - A2 * exp(-t/TAU2)
+
+		fitResult = [];
+		fExp      = option.fitfun;
+		invtau1   = Fs/(mean(t50BReal) - mean(t50AReal));
+		pInit = [peak(k), peak(k)/2, invtau1, invtau1/2];
+		LB = [-inf, -inf, 0, 0];
+		UB = [+inf, +inf, Fs, Fs];
+
+		try
+			t = [0:option.fitEnd-results.peakTime(k)]';
+			decay = data(results.peakTime(k)*Fs+evtpos(k) + t) - base;
+			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t/Fs, decay, LB, UB);
+			results.fitResults(k,1:4) = [fitResult(1), fitResult(2), 1/fitResult(3), 1/fitResult(4)];
+			results.weightedTau(k,1)  = sum(fitResult(1:2))/sum(fitResult(1:2)./fitResult(3:4));
 		catch
 			warning('fitting failed; optimization toolbox or optim package missing')
 			fitResult=[];
@@ -399,22 +439,29 @@ for k=1:N;
 		set(h(end),'linewidth',lineWidth);
 		title(sprintf('%i/%i',k,N))
 		
-		if (option.fitFlag==1) && ~isempty(fitResult)
+		if any(option.fitFlag==[1:2]) && ~isempty(fitResult)
 			hold on;
-			y=option.fitfun(fitResult,t);
+			%% TODO: check time scale (samples vs seconds)
+			y=option.fitfun(fitResult,t/Fs);
+			if (option.fitFlag==2) y=y+base; end
 			plot(t/Fs+results.peakTime(k),y,'c','linewidth',4);
 			%plot(x/Fs,fitResult(x),'c','linewidth',4);
 			hold off
-		end;
-		drawnow 
-		pause
+			drawnow
+			if option.plotFlag > 0,
+				fprintf(1,'Press any key');
+				pause;
+			end
+		end
 	end
 end
 
+%% TODO: check time scale (samples vs. seconds)
 results.MaxSlope = results.data(:,15);
 results.BaseLine = Baseline;
 results.BaseLineDev = BaseSD;
 
+results.OnsetTime = (results.data(:,13)-evtpos)/Fs;
 results.RiseTime = diff(results.data(:,[7,8]),[],2)/Fs;
 results.HalfWidth = diff(results.data(:,[10,12]),[],2)/Fs;
 results.PeakTime = diff(results.data(:,[1,6]),[],2)/Fs;
