@@ -258,7 +258,7 @@ if option.dir==1,
 	peak = peak - Baseline;
 elseif option.dir==-1,
 	[peak, tPeak2] = min(peakRegion,[],2);
-	peak = peak + Baseline;
+	peak = peak - Baseline;
 elseif option.dir==0,
 	tmp = peakRegion - repmat(Baseline,[1,peakSZ(2),1]);
 	[peak, tPeak2] = max(abs(tmp), [], 2);
