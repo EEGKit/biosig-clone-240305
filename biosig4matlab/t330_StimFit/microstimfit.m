@@ -35,8 +35,8 @@ function [results, option] = microstimfit(data, Fs, evtpos, varargin)
 %      optioon.baseFlag: 0 (default): mean (average) of baseline
 %                        1 : median of baseline
 %      option.fitFlag	0 [default]: no fitting
-%			1: fit monoexponential model 'a*exp(-x/tau)+offset'
-%			2: fit biexponential model 'a*exp(-x/tau)+offset' to decay time (from peakTime to t2)
+%			1: fit decay with monoexponential model 'a*exp(-x/tau)+offset' (from peakTime to t2)
+%			2: fit decay with biexponential model 'a1*exp(-x/tau1)+a2*exp(-x/tau2) ' (from peakTime to t2)
 %      option.thres	threshold value for AP (in relative units or unit voltage or current per sample interval), and 
 %      option.thresFlag	controls the threshold criterion (0 = relative to max slope, 1 = absolute). 
 %      option.fitEnd	data length for fitting, starting from the peak time 
@@ -189,13 +189,12 @@ results.label = {'tix','baseline','baseSD','-','peak','tPeak', ...
 
 if (option.fitFlag==1)
 	results.label(end+[1:3]) = {'a','offset','tau [s]'};
-	option.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t/TAU) + B
-	% default.fitfunJ = @(p, x) ((exp (-x*p(3)) - x*p(1)*exp (-x*p(3))) + 1);	% A * exp(-t/TAU) + B
+	option.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t * invTau) + B
+	% default.fitfunJ = @(p, x) ((exp (-x*p(3)) - x*p(1)*exp (-x*p(3))) + 1);	% A * exp(-t*invTau) + B
 	results.fitResults=repmat(NaN,N,3);
 elseif (option.fitFlag==2)
 	results.label(end+[1:4]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]'};
-	option.fitfun = @(p, x) p(1) * exp (-x*p(3)) - p(2) * exp (-x*p(3));	% A1 * exp(-t/TAU1) - A2 * exp(-t/TAU2)
-	% default.fitfunJ = @(p, x) ((exp (-x*p(3)) - x*p(1)*exp (-x*p(3))) + 1);	% A * exp(-t/TAU) + B
+	option.fitfun = @(p, x) (p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(3)));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2)
 	results.fitResults=repmat(NaN,N,4);
 	results.weightedTau=repmat(NaN,N,1);
 elseif (option.fitFlag==0)
@@ -363,7 +362,7 @@ for k=1:N;
 	t = [0:option.fitEnd]';
 	if (option.fitFlag==1) % && (abs(peak)>0))
 		% results.label(end+[1:3]) = {'a','offset','tau [s]'};
-		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t/TAU) + B
+		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t * invTau) + B
 
 		fitResult = [];
 		fExp      = option.fitfun;
@@ -388,7 +387,7 @@ for k=1:N;
 		end
 	elseif (option.fitFlag==2) % && (abs(peak)>0))
 		% results.label(end+[1:3]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]'};
-		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) - p(2) * exp (-x*p(3));	% A1 * exp(-t/TAU1) - A2 * exp(-t/TAU2)
+		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(3));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2)
 
 		fitResult = [];
 		fExp      = option.fitfun;
@@ -402,7 +401,8 @@ for k=1:N;
 			decay = data(results.peakTime(k)*Fs+evtpos(k) + t) - base;
 			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t/Fs, decay, LB, UB);
 			results.fitResults(k,1:4) = [fitResult(1), fitResult(2), 1/fitResult(3), 1/fitResult(4)];
-			results.weightedTau(k,1)  = sum(fitResult(1:2))/sum(fitResult(1:2)./fitResult(3:4));
+			% (A1/invTau1 + A2/invTau2)/(A1+A2)
+			results.weightedTau(k,1)  = sum(fitResult(1:2)./fitResult(3:4)) / sum(fitResult(1:2));
 		catch
 			warning('fitting failed; optimization toolbox or optim package missing')
 			fitResult=[];
