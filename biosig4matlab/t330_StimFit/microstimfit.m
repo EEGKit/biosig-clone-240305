@@ -37,6 +37,7 @@ function [results, option] = microstimfit(data, Fs, evtpos, varargin)
 %      option.fitFlag	0 [default]: no fitting
 %			1: fit decay with monoexponential model 'a*exp(-x/tau)+offset' (from peakTime to t2)
 %			2: fit decay with biexponential model 'a1*exp(-x/tau1)+a2*exp(-x/tau2) ' (from peakTime to t2)
+%			3: fit decay with biexponential model 'a1*exp(-x/tau1)+a2*exp(-x/tau2)+offset' (from peakTime to t2)
 %      option.thres	threshold value for AP (in relative units or unit voltage or current per sample interval), and 
 %      option.thresFlag	controls the threshold criterion (0 = relative to max slope, 1 = absolute). 
 %      option.fitEnd	data length for fitting, starting from the peak time 
@@ -194,8 +195,13 @@ if (option.fitFlag==1)
 	results.fitResults=repmat(NaN,N,3);
 elseif (option.fitFlag==2)
 	results.label(end+[1:4]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]'};
-	option.fitfun = @(p, x) (p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(3)));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2)
+	option.fitfun = @(p, x) (p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(4)));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2)
 	results.fitResults=repmat(NaN,N,4);
+	results.weightedTau=repmat(NaN,N,1);
+elseif (option.fitFlag==3)
+	results.label(end+[1:5]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]','offset'};
+	option.fitfun = @(p, x) (p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(4)) + p(5));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2) + offset
+	results.fitResults=repmat(NaN,N,5);
 	results.weightedTau=repmat(NaN,N,1);
 elseif (option.fitFlag==0)
 	;
@@ -222,7 +228,7 @@ else
 end
 
 markerSize = 16;
-lineWidth  = 4;
+lineWidth  = 2;
 
 [base,baseSZ]=trigg(data, evtpos, option.t1, option.t2);
 results.datatype='STIMFIT';
@@ -385,9 +391,10 @@ for k=1:N;
 			warning('fitting failed; optimization toolbox or optim package missing')
 			fitResult=[];
 		end
+
 	elseif (option.fitFlag==2) % && (abs(peak)>0))
 		% results.label(end+[1:3]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]'};
-		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(3));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2)
+		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(4));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2)
 
 		fitResult = [];
 		fExp      = option.fitfun;
@@ -407,13 +414,36 @@ for k=1:N;
 			warning('fitting failed; optimization toolbox or optim package missing')
 			fitResult=[];
 		end
+
+	elseif (option.fitFlag==3) % && (abs(peak)>0))
+		% results.label(end+[1:3]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]'};
+		% default.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(4)) + offset;	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2) + offset
+
+		fitResult = [];
+		fExp      = option.fitfun;
+		invtau1   = Fs/(mean(t50BReal) - mean(t50AReal));
+		pInit = [peak(k), peak(k)/2, invtau1, invtau1/2, base];
+		LB = [-inf, -inf, 0, 0, -inf];
+		UB = [+inf, +inf, Fs, Fs, +inf];
+
+		try
+			t = [0:option.fitEnd-results.peakTime(k)]';
+			decay = data(results.peakTime(k)*Fs+evtpos(k) + t);
+			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t/Fs, decay, LB, UB);
+			results.fitResults(k,1:5) = [fitResult(1), fitResult(2), 1/fitResult(3), 1/fitResult(4), fitResult(5)];
+			% (A1/invTau1 + A2/invTau2)/(A1+A2)
+			results.weightedTau(k,1)  = sum(fitResult(1:2)./fitResult(3:4)) / sum(fitResult(1:2));
+		catch
+			warning('fitting failed; optimization toolbox or optim package missing')
+			fitResult=[];
+		end
 	end
 
 	if (option.plotFlag),
 		h = plot([option.t1:option.t2]/Fs, data([option.t1:option.t2]+ix,:),'-', ...
-			(t0Real-ix)/Fs, base,'k.',...
-			(t20Real-ix)/Fs, myf(t20Real-ix),'r.', ...
-			(t80Real-ix)/Fs, myf(t80Real-ix),'g.', ...
+			(t0Real-ix)/Fs, base,'kx',...
+			(t20Real-ix)/Fs, myf(t20Real-ix),'rx', ...
+			(t80Real-ix)/Fs, myf(t80Real-ix),'gx', ...
 			(t50AReal-ix)/Fs, myf(t50AReal-ix),'b.', ...
 			(t50BReal-ix)/Fs, myf(t50BReal-ix),'b.', ...
 			(tMaxSlopeRiseReal-ix)/Fs, myf(tMaxSlopeRiseReal-ix),'c.', ...
@@ -439,7 +469,7 @@ for k=1:N;
 		set(h(end),'linewidth',lineWidth);
 		title(sprintf('%i/%i',k,N))
 		
-		if any(option.fitFlag==[1:2]) && ~isempty(fitResult)
+		if any(option.fitFlag==[1:3]) && ~isempty(fitResult)
 			hold on;
 			%% TODO: check time scale (samples vs seconds)
 			y=option.fitfun(fitResult,t/Fs);
