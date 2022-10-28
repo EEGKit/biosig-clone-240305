@@ -404,7 +404,7 @@ for k=1:N;
 		UB = [+inf, +inf, Fs, Fs];
 
 		try
-			t = [0:option.fitEnd-results.peakTime(k)]';
+			t = [0:option.fitEnd-results.peakTime(k)*Fs]';
 			decay = data(results.peakTime(k)*Fs+evtpos(k) + t) - base;
 			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t/Fs, decay, LB, UB);
 			results.fitResults(k,1:4) = [fitResult(1), fitResult(2), 1/fitResult(3), 1/fitResult(4)];
@@ -427,7 +427,7 @@ for k=1:N;
 		UB = [+inf, +inf, Fs, Fs, +inf];
 
 		try
-			t = [0:option.fitEnd-results.peakTime(k)]';
+			t = [0:option.fitEnd-results.peakTime(k)*Fs]';
 			decay = data(results.peakTime(k)*Fs+evtpos(k) + t);
 			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t/Fs, decay, LB, UB);
 			results.fitResults(k,1:5) = [fitResult(1), fitResult(2), 1/fitResult(3), 1/fitResult(4), fitResult(5)];
@@ -453,7 +453,7 @@ for k=1:N;
 			[option.t1;option.t2]/Fs, [1;1]*peak(k)+base,'r-',  ...
 			[option.peakBegin;option.peakEnd]/Fs, [1;1]*peak(k)+base,'r-', ...
 			results.peakTime(k)*[1;1], YLIM,'r-',  ...
-			t/Fs, myf(t+results.peakTime(k)),'b-');
+			results.peakTime(k)+t/Fs, myf(t+results.peakTime(k)*Fs),'b-');
 
 		set(h(2),'markersize',markerSize)
 		set(h(3),'markersize',markerSize)
