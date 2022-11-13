@@ -189,7 +189,7 @@ typedef struct en1064_t {
 en1064_t en1064;
 
 /* new node in Huffman tree */
-htree_t* newNode() {
+htree_t* newNode(void) {
 	htree_t* T  = (htree_t*) malloc(sizeof(htree_t));
 	T->child0   = NULL;
 	T->child1   = NULL;

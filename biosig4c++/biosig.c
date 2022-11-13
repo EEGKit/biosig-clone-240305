@@ -1146,7 +1146,7 @@ int biosig_set_hdr_ipaddr(HDRTYPE *hdr, const char *hostname) {
 /**                                                                        **/
 /****************************************************************************/
 
-uint32_t get_biosig_version () {
+uint32_t get_biosig_version (void) {
 	return ((BIOSIG_VERSION_MAJOR<<16) + (BIOSIG_VERSION_MINOR<<8) + BIOSIG_PATCHLEVEL);
 }
 

@@ -1150,7 +1150,7 @@ size_t reallocEventTable(HDRTYPE *hdr, size_t EventN);
 	allocate, and resize memory of event table
  ------------------------------------------------------------------------*/
 
-void FreeGlobalEventCodeTable();
+void FreeGlobalEventCodeTable(void);
 /*
 	free memory allocated for global event code
  ------------------------------------------------------------------------*/

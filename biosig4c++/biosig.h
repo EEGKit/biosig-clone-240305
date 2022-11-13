@@ -44,7 +44,7 @@ extern "C" {
 /**                                                                        **/
 /****************************************************************************/
 
-uint32_t get_biosig_version ();
+uint32_t get_biosig_version (void);
 /* 	returns the version number in hex-decimal representation
 	get_biosig_version() & 0x00ff0000 :  major version number
 	get_biosig_version() & 0x0000ff00 :  minor version number
@@ -168,7 +168,7 @@ ssize_t stell(HDRTYPE* hdr);
  --------------------------------------------------------------- */
 
 #ifndef  ONLYGDF
-ATT_DEPREC int serror();
+ATT_DEPREC int serror(void);
 /*	handles errors; it reports whether an error has occured.
  *	if yes, an error message is displayed, and the error status is reset.
  * 	the return value is 0 if no error has occured, otherwise the error code
