@@ -1,12 +1,11 @@
 #! /bin/bash
 
-BSVERSION="1.8.4"
+BSVERSION="2.3.1"
 MPDIR=`pwd`
 
-wget http://downloads.sourceforge.net/project/biosig/BioSig%20for%20C_C%2B%2B/src/biosig4c%2B%2B-${BSVERSION}.src.tar.gz
-
-RMD160=`openssl rmd160 -r biosig4c++-${BSVERSION}.src.tar.gz | awk '{print $1;}'`
-SHA256=`openssl sha256 -r biosig4c++-${BSVERSION}.src.tar.gz | awk '{print $1;}'`
+wget http://downloads.sourceforge.net/project/biosig/BioSig%20for%20C_C%2B%2B/src/biosig-${BSVERSION}.src.tar.gz
+RMD160=`openssl rmd160 -r biosig-${BSVERSION}.src.tar.gz | awk '{print $1;}'`
+SHA256=`openssl sha256 -r biosig-${BSVERSION}.src.tar.gz | awk '{print $1;}'`
 
 echo "rmd160:" ${RMD160}
 echo "sha256:" ${SHA256}

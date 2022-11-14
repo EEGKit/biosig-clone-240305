@@ -1,6 +1,5 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 # $Id$
-
 PortSystem          1.0
 PortGroup           cmake 1.0
 
@@ -8,8 +7,8 @@ name                libbiosig
 version             BSVERSION
 categories          science
 platforms           darwin
-license             GPL-3
-maintainers         gmx.de:christsc
+license             GPL-3+
+maintainers         {gmx.de:christsc @neurodroid}
 description         I/O library for biomedical data
 long_description    BioSig is a library for accessing files in several \
                     biomedical data formats (including EDF, BDF, GDF, \
@@ -20,14 +19,14 @@ homepage            http://biosig.sourceforge.net/index.html
 master_sites        sourceforge:biosig
 master_sites.mirror_subdir \
                     /BioSig%20for%20C_C++/src
-distname            biosig4c++-${version}.src
-worksrcdir          biosig4c++-${version}
+distname            biosig-${version}.src
+worksrcdir          biosig-${version}/biosig4c++
 checksums           rmd160  RMD160 \
                     sha256  SHA256
 
 depends_build-append \
                     port:gawk
-depends_lib         port:SuiteSparse \
+depends_lib         port:SuiteSparse_CHOLMOD \
                     port:zlib \
                     port:libiconv
 
@@ -47,4 +46,4 @@ configure.cflags-append \
 configure.cxxflags-append \
                     -DMACPORTS
 
-livecheck.regex     biosig4c\\+\\+-(\[0-9a-z.\]+)\\.src${extract.suffix}
+livecheck.regex     biosig-(\[0-9a-z.\]+)\\.src${extract.suffix}
