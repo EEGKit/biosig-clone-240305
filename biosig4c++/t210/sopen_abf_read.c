@@ -162,11 +162,13 @@ EXTERN_C void sopen_atf_read(HDRTYPE* hdr) {
 			// split string into label and unit "label (unit)";
 			char *str = Label[K2+k];
 			if (str != NULL) {
-				char *unit = strchr(str+1, '('); *unit=0; unit++;
+				char *unit = strchr(str+1, '(');
 				strncpy(hc->Label, str+1, MAX_LENGTH_LABEL+1); // do not copy quotes
 
 				// extract physical units enclosed in parenthesis "Label (units)"
 				if (unit != NULL) {
+					*unit=0;
+					unit++;
 					char *tmpstr = strchr(unit,')');
 					if (tmpstr != NULL) {
 						*tmpstr = 0;
