@@ -191,6 +191,14 @@ results.label = {'tix','baseline','baseSD','-','peak','tPeak', ...
 
 numFixLabels = length(results.label);
 
+if (option.fitFlag>0)
+if exist('OCTAVE_VERSION','builtin') && ~exist('lsqcurvefit','file')
+	try
+		pkg load optim
+	end
+end
+end
+
 if (option.fitFlag==1)
 	results.label(end+[1:3]) = {'a','offset','tau [s]'};
 	option.fitfun = @(p, x) p(1) * exp (-x*p(3)) + p(2);	% A * exp(-t * invTau) + B
