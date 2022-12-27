@@ -5,15 +5,15 @@
 #    ./release.sh VERSION_NAME
 #
 #  for example:
-#    ./release.sh 2.0.5-rc1
+#    ./release.sh 2.5.0
 #
-# Copyright (C) 2004,2008,2011,2012,2013,2016-2020 Alois Schloegl
+# Copyright (C) 2004,2008,2011,2012,2013,2016-2022 Alois Schloegl
 
 
 ## TODO: add freetb4matlab
 ## Tagging a release
 
-B4OMversion=3.8.1
+B4OMversion=3.8.2
 
 SRCDIR=/home/schloegl/src
 MXEDIR=$SRCDIR"/mxe.github.schloegl"

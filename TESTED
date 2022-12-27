@@ -1,0 +1,243 @@
+Dataformats supported by BioSig http://biosig.sf.net
+
+-------------------------------------------------------------------------------------------------
+			Matlab	Matlab	Matlab 	Octave	Octave	C/C++	Python	Java	SigViewer
+			6.5	7.0	7.6	2.9	>3.0	(g)
+-------------------------------------------------------------------------------------------------
+	EVENTS	Support				Linux	Linux
+FORMAT		(A)
+-------------------------------------------------------------------------------------------------
+3DM	        3E
+8SVX
+AAC
+ABF (7)			rz	rz	rz	rz	rz	rz	rz		rz
+ABF2 (2)(j)		rz	rz	rz	rz	rz	rz	rz		rz
+ACQ v.42-   +(d)	R	r	r	r	r	rz	rz		rz
+ACQ v.42+
+ADPCM
+AIFF/C	   -	R	rw	rw	rw	rwz	rwz
+AKO
+AINF       	R	r 	r 	r	r	r	rz			rz
+Alice4
+alpha      +	R	r 	r 	r	r	r	r (5)	r (5)		r (5)
+AMR
+AON4
+ARC(Cadwell)
+ASA
+ASF
+ATF	   G		r(9)	r (9)	r (9)	r(9)	r(9)	r	r		r
+AU/SND (4) -	R	rw	rw	rw	rwz	rwz
+AVG	   -	R	r	r	r	r	rz
+AVI	   -
+AVR
+AXG			rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz			rz
+axon
+Axona			rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz			rz
+BCI2000	   	R	r	r	r	r	rz	rz			rz
+BDF	   -	R	rw	rw	rw	rz (9)	rz (9)	rwz	rz		rz
+BDF+	   -	R	r	r	r	rz (9)	rz (9)	rz	rz		rz
+BDIP
+BESA
+BIN			rw (9)	rw (9)	rw (9)	rw (9)	rw (9)	rw			r
+BKR 	   -	RO	rw	rw	rw	r	rwz	rz			rz
+BMP	   I		r	r	r	r	rz
+BLSC/Ceeg		r	r	r	r	r	r	r		r
+BrainVision	R	r	r	r	r	r 	rw			r
+CDF
+CEN/FEF
+CFS	 	R	rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+CFWB	   -	R	rw	rw	rw	rwz	rwz	rwz			rz
+CNT(Neuroscan)+	RO	r	r	r	r	rz	rz	rz		rz
+CSE
+CTF-MEG	   +	R	r	r	r	r	r	rz			>
+DAQ
+DDF/DDB
+DEMG	   -	R	r	r	r	r	rz	rz	rz		rz
+DDT	   -	R	r	r	r	r	r
+DICOM/Waveform (3)	r	r	r	r	r	r	r		r
+EAS(Cadwell)
+EBNEURO
+EBS
+-------------------------------------------------------------------------------------------------
+			Matlab	Matlab	Matlab 	Octave	Octave	C/C++	Python	Java	SigViewer
+-------------------------------------------------------------------------------------------------
+EDF	   	R	rw	rw	rw	rwz	rwz	rwz	rz	.	rz
+EDF+       +	R	r	r	r	r	rz	rz	rz		rz
+EEG(Neurscan)-	R	r	r	r	r	r
+EEG1100 	R	rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+EEG(COHERENCE)
+EEGLAB     	R	r	r	r	r	r
+EEProbe		R	r (a)	r (a)	r (a)
+EGI/RAW	   +	R	r	r	r	r	rz	rz			rz
+EMBLA		R	r	r	r		r
+EMSA			rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz			rz
+EPL	   -	R	r	r	r	r	r
+ePrime (h)	R	r	r	r	r	r
+ESPS
+ET-MEG	   +	R	r	r	r	r	r
+ETG4000	   +		r	r	r	r	r	rz			rz
+EZ3(Cadwell)
+FAMOS (2)		r (9)	r (9)	r (9)	-	r (9)	r	r		?
+FDA-XML			rwz (9)	rwz (9)	rwz (9)	-	rwz (9)	rwz	rz	.	rz
+FEF-Vital
+FEF (f)			rz	rz	rz	rz	rz	rz
+FieldTrip	R	r	r	r	r	r
+FIFF		R	r (b)	r (b) 	r (b)
+FITS	   I		r	r	r	r	r
+FLAC
+FS3, FS4		r	r	r	r	r
+gBS (5)			r	r	r
+GDF v1	   +	RO	rw	rw	rw	rwz	rwz	rwaz	rz		rz
+GDF v2	   +	RO	rw	rw	rw	rwz 	rwz	rwaz	rz		rwz
+GE-ECG			rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz(3)	rz		rz
+GIF
+GTF	   +	RO	r	r	r	rz	rz
+HEA/MIT	   +	R	rw	rw	rw	rw	rw	rz (1)			>
+H12+
+HDF
+HEKA			rz	rz	rz	rz	rz	rz			rz
+HGT	   I		r	r	r	r	r
+HL7aECG			rwz (9)	rwz (9)	rwz (9)	rwz (9)	rwz (9)	rwz	rz		rz
+Holter
+IBW 		R	rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+IFS
+IGES		3E
+IHE Cardiology
+ISHNE			rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+ITX 		R	rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+JPEG
+KWIK
+LABVIEW
+Lexicor
+MAT   (e)	R	r	r	r
+MM	   M		r	r	r	r	r
+MFER  (5)	R	r	r	r	rz	rz	rz	r		rz
+MOV/QTFF
+MPEG
+MRI
+NeuroShare
+NetCDF
+NEURON		R	rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+NEV
+NEX	+	R	r	r	r	rz	rz
+NIST
+Nicolet
+NRF
+NSN
+NWB
+OpenXDF
+OFF	  3D		r	r	r	r	r
+OGG
+Open-EPhys
+Persyst		R	rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+PL2
+PLX	   +	R	r	r	r	rz	rz
+PNM (PBMA, PGMA, PPMA, PBMB, PGMB, PPMB)
+	   I		r	r	r	rz	rz
+PNG
+POLY5			r	r	r	rz	rz	rz			rz
+QTFF/MOV
+-------------------------------------------------------------------------------------------------
+			Matlab	Matlab	Matlab 	Octave	Octave	C/C++	Python	Java	SigViewer
+-------------------------------------------------------------------------------------------------
+RDF	   +	R	r	r	r	rz	rz
+RG64	   +	R	r	r	r	r	r
+RHD2000 (i)	R	r	r	r	r	r	r	r	r	r
+RHS2000	(i)	R	r	r	r	r	r	r	r	r	r
+RigSys(old)-	R	r	r	r	r	r
+RigSys(new)
+RMF
+SCP-ECG	   -	R	rw 	rw	rw 	rw	rwz	rwz	r		rz
+SEGY
+SID
+Sifor (Draeger)
+SIGIF	   -	R	r	r	r	rz	rz
+SigmaPLpro -	R	r	r	r	rz	rz	r	r		r
+SigViewerCSVEventTable	r	r	r	r	r	r	r		r
+SMA 	   +	R	r	r	r
+SMF 	  3D 	R	r	r	r	r	r
+SMP
+SMR/SON		R	r	r	r	r	r	r			r
+SNDT
+SND/AU (4) -	R	rw	rw	rw	rw	rwz
+SON
+SPEEX
+SSD
+STA
+STL	  3D		r	r	r	rz	rz
+STS
+SWF
+SYNERGY
+TEAM
+TIFF	   I
+TMS32		R	r	r	r	rz	rz	rz	r		rz
+TMSiLOG		R	r	r	r	r	r	r	r		r
+TRC
+TRI
+UFF58
+UNIPRO (Mortara)
+UNISENS
+VOC
+VTK 	  3D
+VRML 	  3D
+WAV	   -	R	rw	rw	rw	rw	rwz
+WaveSurfer
+WFT	   -	R	rz (9)	rz (9)	rz (9)	rz (9)	rz (9)	rz	rz		rz
+WCP	   -	R	r	r	r	r	r	r
+WinEEG
+WG1	   +	R	r	r	r	r	r
+SierraECG  -	R	(6,c)	(6,c)	(6,c)
+XBM	   I		r	r	r	r	r
+XDF
+XLTEK
+XML-FDA    -	R	rwz (9)	rwz (9)	rwz (9)	rwz (9)	rwz (9)	rzw(3)	r		r
+XML (6)	   -
+XPM	   I		r	r	r	r	r
+
+More information on signal formats is available at:
+http://pub.ist.ac.at/~schloegl/matlab/eeg/
+
+
+LEGEND:
+-------
+r	read mode is supported
+rw	read and write mode is supported
+z	on-the-fly (de-)compression
+? 	not tested, probably yes
+-	does not work, or not yet implemented
+	not tested, no test files available; however, format identification should work.
+
+
+Footnotes:
+----------
+
+(1) formats 8,212,310,311 multi-segment, multi-datfiles, multi-format are not supported
+(2) incomplete: many features are not supported, causing a failure in reading the data
+(3) requires libdcmtk
+(4) Only encoding types 1-7 of SND/AU format are supported
+(5) filename must be <dir>/alpha.alp
+(6) requires XMLTREE from Guillaume Flandin
+(7) not well tested
+(8) -
+(9) requires mexSLOAD for reading and mexSSAVE for writing, both are from BioSig4C++.
+(a) requires Robert Oostenveld's MEX-files to read EEProbe files
+(b) requires Neuromag FIFF file access functions for Matlab
+(c) uncompressed format can be read, compressed format not supported.
+(d) not implemented yet.
+(e) MAT-files do not contain a standardized BIOSIG header; only a few standardized MAT-files are supported
+(f) experimental, currently only the FEF from CNSystems are supported.
+(g) the C/C++ implementation is used for interfaces to a number of platforms including
+    Matlab, Octave, Python, R, Java and Mathematica
+    Support for other platforms is possible.
+(h) the ascii/txt/csv exported ePrime data is supported.
+(i) requires libbiosig v2.0 or later
+(j) requires libbiosig v2.2.2 or later,
+
+(A) R: Rereferencing supported
+    O: Automated Overflow detection
+
+
+------------------------------------------------
+latest update:
+Sat 06 Aug 2022 10:05:00 AM CEST
+Copyright (C) 2003-2022 Alois Schlögl

@@ -1,0 +1,3625 @@
+
+Bitcoin account for supporting biosig project:
+  bitcoin:1FRm7zaQnic3UW86d9iGkUGzD57TE3qzoe
+
+
+Next release:
+
+====================================================
+--- Version: 2.4.5 ---------------------------------
+
+Tue 27 Dec 2022 11:13:36 AM CET
+====================================================
+
+* biosig4octave and matlab:
+    microStimFit for Octave and Matlab
+
+* b4c/libbiosig/biosig-tools:
+    ATF: bug fix (crashed when units were not defined)
+
+
+====================================================
+--- Version: 2.4.3 ---------------------------------
+
+Sat 8 Oct 2022 13:05:42 AM CEST
+====================================================
+
+* b4c/libbiosig/biosig-tools
+    support reading WFT/Nicolet format added
+    ITX: fix reading files (when eventtable is not empty)
+    IBW: default time scale is now milliseconds
+    AXG: add sanity checks (sample number of all traces in sweep must match)
+    fix compiler warnings
+
+* biosig4octave and matlab
+    GDF: add support for H3/tag255
+    signal_deconvolution: fix check of filter settings
+    minidet: fix when event list is empty
+    mexSSAVE: saving to SCP improved
+
+sha256:
+7b6000e2275c00a67d7a25aaf7ffad229978d124315f5f910844b33a8a61e532  biosig-2.4.3.src.tar.xz
+0325bda1fd61f5f750d79fe6f7efc364dcd1b1b93336a7c90676a007254d462f  biosig-2.4.3.src.zip
+4bd2236cfb2e54420a223eb275734b1c8fbf2b0804c3fcda8ba6a7b3cfad76fe  biosig-2.4.3-Windows-32bit.zip
+b4ff590a1bf9cee19acf34572b74a34e6baea642b67d55c779a079f9ff912281  biosig-2.4.3-Windows-64bit.zip
+
+
+====================================================
+--- Version: 2.4.2 ---------------------------------
+
+Sat 18 Jun 2022 10:25:42 AM CEST
+====================================================
+
+- mexSSAVE: basic support for writing SCP files
+- SCP(read): improve handling of strange SCP files
+- fix edfannot2evt() when HDR.T0 is not defined (eeglab issue 472)
+- mexSLOAD: make flag OVERFLOWDETECTION:OFF work
+- MOD: enable cross-validation in demo scripts,
+- accovf: remove requirement for avx2
+- fix use of dcmtk 3.6.7
+
+d0c5ee41dea7208227b9a196015cbbedd7b11615a57c6ed578fa24cfbb3722d1  biosig4octmat-3.8.1.zip
+eedffd9b9c19ff0be23315b690d66754fdd73c43aacb708a56e803d558271fdb  biosig-2.4.2.src.tar.xz
+7503f2b7e658afc0503465d8090de625ebfa74bf79da56c6ecb472a62faf7b79  biosig-2.4.2.src.zip
+d6603e9c41b164381fdeb481b6894ed1575dd7dc534ebed4dc87a35acf0c4331  biosig-2.4.2-Windows-32bit.zip
+a234cf61e4d9ee8e3d624c27f9f3e641d3284dbd1ca8060a0aa330d1e8b0ad82  biosig-2.4.2-Windows-64bit.zip
+
+
+====================================================
+--- Version: 2.4.1 ---------------------------------
+
+Thu 21 Apr 2022 11:26:20 PM CEST
+====================================================
+
+- MOD: demo_mod[x]: improvements and cleanup
+- basic support for platform MSYS2 added
+- biosig4R interface added <NEW>
+- minidet added <NEW>
+- sviewer can use mexSLOAD
+- writing of ATF files improved
+Bug fix(es):
+- IBW: fix reading samplerate (i.e. scale of x-axis)
+
+sha256sum:
+f7426d3fd238df1c54071ca59a14c3f4f92839fe1a54cdcfed9f32598ec98080  biosig-2.4.1.src.tar.xz
+b25b7fb7a3bcaf36a617842c869986eb1bb26e2238ab7cd00d418f15122cffc2  biosig-2.4.1.src.zip
+445c9bab3bf078c1658ef86ad1cea535da3f09b4226302b07aba269c1f4f9cca  biosig-2.4.1-Windows-32bit.zip
+cc860ff4d86ad519d87d7e246ac1a23b48bd173f85ad88ea3cdf38bc0dabcd3c  biosig-2.4.1-Windows-64bit.zip
+
+====================================================
+--- Version: 2.4.0 ---------------------------------
+
+Sat 19 Mar 2022 11:18:02 AM CEST
+====================================================
+
+- Significant performance improvement of MOD method
+  The computation of the auto- and cross-covariance functions
+  for the training step are now done in a mex-function
+
+====================================================
+--- Version: 2.3.3 ---------------------------------
+
+Fri 13 Aug 2021 11:18:02 AM CEST
+====================================================
+
+- fix build on MacOSX
+sha256sum:
+d9592dc820d6e84a0cd78ece8269f4922f802faf515bd6b91c21d690a9a0ca67  biosig4octave-2.3.3.src.tar.gz
+ecff695e912265cbb817b936209086d1b5854afeb44ed58e701feeb2e0b1b33e  biosig-2.3.3.src.tar.gz
+bc1295d716e61f39707c6aa327f5be4d7a64fe9790b944ecd8c59f4706c8d623  biosig-2.3.3.src.zip
+
+====================================================
+--- Version: 2.3.2 ---------------------------------
+
+Mon 02 Aug 2021 07:10:33 PM CEST
+====================================================
+
+- improvements in "Biosig for Octave"
+sha256sum:
+d5c27f6d575fd0e61bb45d51f8d0ec4bf004de105d13746a728a7ddebbbb06e9  biosig4octave-2.3.2.src.tar.gz
+0bf97608fb0bfb2e474abe40c02de5b902d55810afdbd5959c7ba9725a120d5c  biosig-2.3.2.src.tar.gz
+
+
+====================================================
+--- Version: 2.3.1 ---------------------------------
+
+Mon 19 Jul 2021 03:18:25 PM CEST
+====================================================
+
+- improved support for the following data formats:
+	EDF+ : relax requirement that reserved field must start with "EDF+"
+	ABF2 : check scaling - seems good
+	ATF  : support multi-channel traces, segments will be concatanated
+               (and not considered different channels)
+ 	AXG  : extend support to some real-world data sets
+
+3563f0ef575450408625c113b04893765f9713393e7d7ceace6377a27b89f04c  biosig4octmat-3.7.9.tar.gz
+905743f2799e6a4a93bc973de76575304ba56c916eea69809d49ad925873709e  biosig4octmat-3.7.9.zip
+1edf6228ac99456d551ba88c997a493d39fc9ca09f4442e27e1470a30c3a34b9  biosig-2.3.1.src.tar.gz
+0e1208d00021fcdc876e42067b2f5ce4d11c6ad79d77c03526a2b01a64abf2fb  biosig-2.3.1.src.zip
+a1d7b52fb2a134901ec39ed7bf9b150868cab20cd7698d01242ff22aae1fee43  biosig-2.3.1-Windows-32bit.zip
+bd459f7a5fb98a0b9692a6da893c33ebfc9b08036aad1ddae369441e2d14c5ea  biosig-2.3.1-Windows-64bit.zip
+
+====================================================
+--- Version: 2.3.0 ---------------------------------
+
+Wed 30 Jun 2021 00:45:42 CEST
+====================================================
+
+- <NEW> basic support for reading ABF2 files added
+- demo script of the MOD method (Zhang et al. 2021) improved.
+- <NEW> rotary-decoder added (used in Zhang et al. 2020)
+  biosig4matlab/t250_ArtifactPreProcessingQualityControl/rotary_decoder.m
+- several bug fixes and minor improvements
+- improvements in language bindings for Octave, Python and R
+
+sha256sum:
+25f98655bea0763bed9622f4d84984dcdf14df9b0dc4917bc0bba20594079316  biosig4octmat-3.7.8.tar.gz
+39684adae1d1c20c58702b16179e1f1e1b444444c69d0755477fc063b7d2946c  biosig4octmat-3.7.8.zip
+9c66d1167628d6c2027168fb82bcd3c28357e59bd5d8b1d9e615457a2eb59ca0  biosig-2.3.0.src.tar.gz
+d2712cf26c5a1822db507a269c1937a42bbb25b1aeea55dd964c636082fb5070  biosig-2.3.0.src.zip
+c6c33baadc7f31ff21b87b66b1eb5f941acd80d32b503ce5fff2fc0b7171f8ef  biosig-2.3.0-Windows-32bit.zip
+c5f107f209236ccc02c2e2b4ee227e4bff1573a021b8fdaa1ee451205271d624  biosig-2.3.0-Windows-64bit.zip
+
+
+====================================================
+--- Version: 2.2.1 ---------------------------------
+
+Thu 15 Apr 2021 00:06:25 CEST
+====================================================
+
+- fix JSON export when SampleRate is undefined (e.g. infinity)
+- add sanity check for certain files
+
+sha256sum:
+71f55644e30cb21a83dc4d43cc64740265a3476d81b18f351369f1f0daf5f00e  biosig4octmat-3.7.7.tar.gz
+4371eeaa92dca9069ab0ceea7ae48d41ad047e7c2e2674813c6678b88848c797  biosig-2.2.1.src.tar.gz
+a7e52fe74cf278de9eb3f255773e3849d4e376926c2875ac89900cd04ab18fb3  biosig-2.2.1-Windows-32bit.zip
+e66945117e18b187483b528254d10f7dd9aef2840da3694a81225ff70beea9c5  biosig-2.2.1-Windows-64bit.zip
+
+====================================================
+--- Version: 2.2.0 ---------------------------------
+
+Sun 21 Mar 2021 02:21:50 CET
+====================================================
+
+= biosig4matlab =
+- add Machine-Learning-Optimal-Detection (MOD) method (Zhang et al. 2020,2021)
+- sopen (gdf): add support for timezone information
+- fix issue eeglab#93 (encoding of EDF+ annotations)
+- fix install script
+
+sha256sum:
+0cbcfc666e2371f9a46e9b4d56d2a69a6c46762cfe3ded370285c95605839ea2  biosig4octmat-3.7.6.tar.gz
+4a16ba6bfca15a4828ec1848eb05cd42fad22aa1a88a53729d2a0515ff7d5b04  biosig-2.2.0.src.tar.gz
+f7f0d03fc44ec56f0d629515e0cf80d4d113081bd1054a3c8fe60df0456744f2  biosig-2.2.0-Windows-32bit.zip
+9c4e8923a61702744f9e4deaf3679a5a7852a00361b9a53aede8a848417d27e1  biosig-2.2.0-Windows-64bit.zip
+
+
+====================================================
+--- Version: 2.1.2 ---------------------------------
+
+Wed 6 Jan 2021 18:15:45 CEST
+====================================================
+
+- fix minor bug
+
+
+====================================================
+--- Version: 2.1.1 ---------------------------------
+
+Sat 2 Jan 2021 18:15:45 CEST
+====================================================
+
+The main new features are:
+*) Support for Python and R on Windows:
+  a mechanism to load Biosig data into Python and R
+  on the MS Windows platform. It consists of two parts:
+  biosig2gdf.exe and loadgdf.{py,r}. biosig2gdf is an
+  executable file that loads biosig data and converts
+  it into a GDF data stream, this GDF data
+  stream is then parsed by loadgdf.{py,r}.
+
+*) biosig_vhdr_generator.sh ...
+  ... is a tool to generate vhdr-header files for headerless
+  binary *.dat files from a template header file.
+  This can useful for data sets recorded with ktan
+  and other recording systems. These header files
+  can then be used to open the *.dat files with sigviewer
+  and other biosig tools without additional conversion.
+  The header information is provided through a
+  vhdr template file.
+
+*) some minor bug fixes.
+
+sha256
+e9ddbcb2418e9f3b04efd1a419bbed335072b0695b189d254a58fbbd65eec5a0  biosig4octmat-3.7.5.tar.gz
+1b5bf62739faf3caef7cb7fbb14c7f1dea352caa548b08c7bb5adaaef2f4d1b4  biosig-2.1.2.src.tar.gz
+08bf73c5813b3b3c526d08c9de105dc58846c20e7767a5363197888daded17d5  biosig-2.1.2-Windows-32bit.zip
+779363b683539c6fd4f01ee4aca530c5ad4c3a22a17950b0c98893a1ffb82fa4  biosig-2.1.2-Windows-64bit.zip
+
+1d61c29e12f4f2b49ef39718324fa45699ea42952433a88bc48554e91578fb7b  biosig4octmat-3.7.4.tar.gz
+808c6edef3ff7d0afe8bb59eb6cabd3d9023b7077aae84fb90923cbb845e4564  biosig-2.1.1.src.tar.gz
+43f53ec49ce6cae2b7238308b1713275dc8306031d8bc2f32be3f3c3728aa922  biosig-2.1.1-Windows-32bit.zip
+ad4ff2150fd0944a9f01d8c6b88f2a97290b5e9e0989bc971b2e2bf05496b1ad  biosig-2.1.1-Windows-64bit.zip
+
+
+====================================================
+--- Version: 2.1.0 ---------------------------------
+
+Sat 17 Oct 2020 18:15:45 CEST
+====================================================
+
+* biosig4c++:
+- RHD2000/RHS2000: bug fix scaling of Amplifier channels (its uV not V)
+- reading of large (>2 GB) files fixed
+- [b4m] add warning about too large block size when writing to GDF
+- build tools (Makefile, configure) improved for
+  bindings to Matlab, Octave, Mathematica, Python
+
+* biosig4matlab:
+- add warning about too large block size when writing to GDF
+
+sha256sum:
+562ff3d5aee834dc7d676128e769c8762e23a40e0c18e6995628ffdcaa3e1c7e  biosig-2.1.0.src.tar.gz
+a70c02612939bcf3f2d8dc616f6b8b360a4f77e5d22c0a15d89d50c269194ec3  biosig-2.1.0-Windows-32bit.zip
+2badca26c37996f3c0d29cf629aea84bae7372e5a2c4462b44d85ebafeccf8dc  biosig-2.1.0-Windows-64bit.zip
+
+====================================================
+--- Version: 2.0.6 ---------------------------------
+
+Sun 23 Aug 2020 17:33:59 CEST
+====================================================
+
+- convert docu/help to UTF-8
+- octave installation improved
+- improve build system
+
+sha512sum:
+75cc33db01d72bec946ae77c815804e4233ef72a3a0512b73a06df791eda167b7ca1832f7f8403662d6aa5ae83def2a9ecbcb8a4686274ce95aede727444552d  biosig-2.0.6.src.tar.gz
+sha256sum:
+46025ca9b9f9ccc847eb12ba0e042dff20b9420d779fe7b8520415abe9bc309a  biosig-2.0.6.src.tar.gz
+sha1sum:
+3c42b8e96347483f58ddff92f04c4d72ea1d27aa  biosig-2.0.6.src.tar.gz
+md5sum:
+fb97e53958757b423e302f8f13cb2a69  biosig-2.0.6.src.tar.gz
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.7.2 ----------------------------------
+
+Sat 22 Aug 2020 17:34:20 CEST
+====================================================
+
+- rename STR2DOUBLE to BIOSIG_STR2DOUBLE to avaid namespace conflict
+- convert docu/help to UTF-8
+
+sha512sum:
+75e5c257444ff7c05c58c5eac8b45259a01965490afb5e3b3a16ee01dee494b20f1652df92d25890c0ee24a1c85671bf16f71b829bbfef273c203ad963a0b6a2  biosig4octmat-3.7.2.tar.gz
+sha256sum:
+de9cf22f770ca162ae24a0b93d419e3ad736e4140aa9270f891a72fbd1ab4020  biosig4octmat-3.7.2.zip
+sha1sum:
+0c4a6fc0bd600d53a0e37325e89372d43933f30d  biosig4octmat-3.7.2.tar.gz
+md5sum:
+0d12aacccd5711c5ce956bd49c2d2089  biosig4octmat-3.7.2.tar.gz
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.7.0 ----------------------------------
+
+Wed 15 Jul 2020 10:10:45 PM CEST
+====================================================
+
+* "Biosig for Octave and Matlab" (biosig4octmat) v3.7.0 released:
+  This is the last release as independent package, in future
+  biosig4octmat will be released as part of the Biosig releases
+  under $PREFIX/biosig/share/matlab .
+
+
+====================================================
+--- Version: 2.0.4 ---------------------------------
+
+Wed 15 Jul 2020 10:10:45 PM CEST
+====================================================
+
+* biosig-2.0.4-windows binary release is now available. The
+  binaries for 32 and 64 bit windows are now in separate
+  packages. The directory and file structure has changed.
+  (for details see README)
+
+* mathematica:
+    sload.exe is renamed to biosig.exe, and contains two functions Sload and Uload.
+
+
+====================================================
+--- Version: 2.0.4 ---------------------------------
+
+Fr 19 Jun 2020 11:41:41 CEST
+====================================================
+sha512sum:
+048068e4ff00a0edaec7045ec661ed977f9d1df9bfbe1e512a661633261097433914c4b15d658fcfbf54c887d13f1a0a580450ac7ad12cab41a189922cf821e5  biosig-2.0.4.src.tar.gz
+sha256sum:
+2b2b5d0cdb7a886b7c390d000bb9210b9b6e03f790c6443730dab96496926928  biosig-2.0.4.src.tar.gz
+sha1sum:
+d3126f92b371c98bc75672ebc8c3242468338a57  biosig-2.0.4.src.tar.gz
+md5sum:
+79bf78fa574eac60ab693b7d91d70e5b  biosig-2.0.4.src.tar.gz
+
+
+= Installation of language bindings improved on *nix (Unix/GNU/Linux) systems
+- Python/2/3:
+    After running:
+        apt-get install python-numpy python3-numpy libpython-dev libpython3-dev
+        ./configure && make
+        sudo make install
+    You can do:
+        $ python
+        >>> import biosig
+
+    A demo is provided in
+        biosig4c++/python/demo2.py
+        https://sourceforge.net/p/biosig/code/ci/master/tree/biosig4c++/python/demo2.py
+
+- Octave:
+   After running
+        sudo apt-get install liboctave-dev octave
+        ./configure && make
+	sudo make install
+   you will have mexbiosig installed in octave,
+       $ octave
+       >> pkg load mexbiosig 			% loads mexbiosig tools
+       >> mexSLOAD				% shows help of mexSLOAD
+       >> [data,HDR] = mexSLOAD('filename');	% loads biosig data
+
+
+
+====================================================
+--- Version: 2.0.3 ---------------------------------
+
+Wed 17 Jun 2020 01:37:04 CEST
+====================================================
+sha512sum:
+e79a92c66a62b39277882076a6fc430bbb2cf922b922aab5c1ea2125d9617b7ccffa4aebbaf5e26716ca44f0d4bf8437ac0ec57d283732ababb80bc2597ef0b6  biosig-2.0.3.src.tar.gz
+sha256sum:
+9b072345d2ee4b5c399c3338bb080ecb82a2980c2e2ecf6df8da053d71d281d4  biosig-2.0.3.src.tar.gz
+sha1sum:
+5e2639689a35190560cc8338f561febd54956344  biosig-2.0.3.src.tar.gz
+md5sum:
+2437ff4c8ff6b7ad90e29b670286c977  biosig-2.0.3.src.tar.gz
+
+= Compilation, building, installing_
+- biosig4matlab and biosig4c++ are now released in a single source package
+- parallel build (make -j) is now fixed
+
+= Data formats:
+- EDF+: support for sub-second resolution of StartTime
+- EDF+: support for multiple annotations channels
+- bdf2biosig_events: add mode to support BVA-style event import.
+- support of SubSecond resolution when StartTime and TimeStamps are printed to text (including JSON)
+
+= language bindings:
+- some basic support for R, Java is available.
+- mathematica: change from sload to biosig package,
+     which provides sload[...] and uload[...]
+- python packaging improved, when libbiosig is available on host,
+  "Biosig for python" can be installed with
+  pip install https://pub.ist.ac.at/~schloegl/biosig/prereleases/Biosig-1.9.2.tar.gz
+- Octave packaging improved
+  when libbiosig is provided by host, mexbiosig can be installed with
+  pkg install https://pub.ist.ac.at/~schloegl/biosig/prereleases/mexbiosig-1.9.5.src.tar.gz
+
+
+====================================================
+--- Version: 2.0.2 ---------------------------------
+
+Thu 04 Mar 2020 23:13:29 CET
+====================================================
+sha256:
+e94e6b4843d17b59eb5f2bb6d8508c63a2ab29ef6a712b8df5e2a6c3e3ed2db8  biosig4c++-2.0.2.src.tar.gz
+0898851f4c97b3d7076462841c38d5f76fd38f007d348c839fad38c95343d63f  biosig4c++-2.0.2.win.zip
+
+
+- RHD2000/RHS2000 format: <NEW>
+- IBW: fix SamplingRate (x1000)
+
+- manage visibility of symbols (see also
+  https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=925643)
+  this will break the ABI, SONAME version pushed to 3
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.9.5 ---------------------------------
+
+Thu 27 Jul 2019 11:16:10 PM CET
+====================================================
+sha256:
+20e72a5a07d1bf8baa649efe437b4d3ed99944f0e4dfc1fbe23bfbe4d9749ed5  biosig4c++-1.9.5.src.tar.gz
+28811fbafc9f07592b011584cf7c949649ce456b441c053b672ce01a0eba8779  biosig4c++-1.9.5.win.zip
+
+
+*) new features:
+- add option --free-text-event-limiter=";" (save2gdf, mexSLOAD)
+  in order to reduce number of distinct user-specified event types.
+- R binding: extract header information in JSON format
+
+*) development
+- use of tinyxml from OS, if provided
+
+*) bug fixes:
+- fix broken JSON export in cases when HDR.CHANNEL[].Transducer is not initialized
+- bug fix reading EDF+ annotations
+- mitigate crash when file contains too many (>255) user-specified event types.
+- minor improvements, docu, fix typos, etc.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.6.0 ----------------------------------
+
+Tue 16 Apr 2019 02:08:25 PM CEST
+====================================================
+sha256: 60d625aa476d4f731d9a8f89a7ae4f9af23c1468c10022e3b647b2dbb1c1b1c1  biosig4octmat-3.6.0.tar.gz
+
+-) [b4m] CSP: bug fix
+-) [b4m] sload:
+    deprecating NUMBER_OF_NAN_IN_BREAK
+-) [roc] roc:
+    support for matlab's style of using ROC added.
+-) detect_spike_bursts:
+    discontinuities are now handled w/o inserting extra NaN samples.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.9.4 ---------------------------------
+
+Sat 06 Apr 2019 11:16:10 PM CET
+====================================================
+
+-) sread(h,start,len,..): bug fix for start<0:
+   continue reading from current position
+
+-) "pu" is renamed to "physicalunits"
+
+-) improvements in the build system
+
+-) SONAME-VERSION pushed to 2
+
+sha256:
+f32339e14bf24faf37f2ddeaeeb1862a5b26aac6bb872a2c33b6684bca0ed02e  biosig4c++-1.9.4.src.tar.gz
+ac4ba8a8c1fb7b8d548ee2f1cfc72f38449ce6a2347186a8aa3898c18fcdf740  biosig4c++-1.9.4.win.zip
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.9.3 ---------------------------------
+
+Sun 02 Dec 2018 11:16:10 PM CET
+====================================================
+
++ DICOM/Waveform: read support implemented
+
++ SigViewer CSV Event Table: support reading
+
++ Identify new formats: EBNeuro, XDF
+
++ Bug fixes in:
+  reading Embla:
+     reading of multiple files was broken, now
+     only one ebm file can be read. Automatic alignment
+     of multiple files not supported anymore.
+  reading CNT (Neuroscan):
+     memory allocation problem fixed
+
++ Use autotools variables and DATADIR (contributed by Ankur Sinha)
+
++ minor improvments and bug fixes
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.4.0 ----------------------------------
+
+Tue 21 Aug 2018 02:08:25 PM CEST
+====================================================
+
+* improvements in functions:
+    detect_spikes_bursts
+    roc
+
+* remove some dependencies on NaN-toolbox in functions
+
+* some documentation improved
+
+* bug fixes (brainvision file format)
+
+
+
+* mexSLOAD, mexSOPEN
+  bug fix: remove undefined HDR.FILE object
+
+* Autoconf is now used, and most configurations are done automatically
+  - libtinyxml from operating system can be used
+  - libcholmod is automatically used
+  - enforces  -std=C99 or later
+  and many more.
+
+* Pagesize of initial read is increased from 512 to 4096 bytes
+
+* gdf_time2tm_time:
+	fix rounding issue.
+
+* save2gdf, scp2aecg:
+    anonymized processing can be controlled with command line arguments
+    -a (yes) and -n (no anonymized processing)
+
+* hdr->Patient.Name is now structured;
+    it consists of  three fields, Lastname, Firstname(s), and Second lastname.
+    The three fields are separated by the "unit separator" ASCII(31) or 0x1f;
+
+    Data formats supporting structured patient names (e.g. SCP, HL7aECG,ISHNE,
+    Persyst, etc, ) can make use of that structure. Other formats (e.g. GDF)
+    can use the above encoding to store patient names in a structured way.
+
+* JSON output
+    reports not only PatientName but also Lastname, Firstname
+    and secondLastname.
+
+* scp2aecg, SCP->HL7aECG conversion
+    - patient name is now structured in HL7
+    - hospital information improved
+
+
+=== Package: mexbiosig for Octave  =================
+--- Version: 1.9.2 ---------------------------------
+
+Son 24 Jun 2018 01:08:03 CEST
+====================================================
+
+- bug fix release
+  fixes issue of partially defined fieldnames
+  in HDR causing problems in Octave 4.4.
+
+  In order to apply the fix run within Octave
+    pkg uninstall mexbiosig
+    pkg install http://pub.ist.ac.at/~schloegl/biosig/prereleases/mexbiosig-1.9.2.src.tar.gz
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.9.0a ---------------------------------
+
+Son 17 Sep 2017 21:48:03 CEST
+====================================================
+
+biosig4matlab
+* t200/edfannot2evt.m
+	workaround for some EDF files,
+        recommend use of mexSLOAD instead.
+* t200/bv2biosig_events
+	make sure that the event description field
+           HDR.EVENT.Desc
+        is always provided. This should address
+	bug report 13777 in eeglab.
+
+
+libbiosig, biosig-tools:
+* Introduce autoconf for package configuration
+* experimental support for SCP3
+* several bug fixes, improved error checks
+* global variable B4C_ERRNUM B4C_ERRMSG removed (these were deprecated for quite some time).
+
+
+biosig4python:
+* change from swig to python modules
+* add support for python3
+* python: remove obsolute demo, and update example about
+*	new way of using biosig in python.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.6 ---------------------------------
+
+Sun 23 Jul 2017 23:08:03 PM CET
+====================================================
+
+- packaging for debian
+- libbiosig and libbiosig2 are now combined into
+  libbiosig.so.2. You just need to link
+   -lbiosig -lcholmod -lm -lz -lstdc++
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.5 ---------------------------------
+
+Fri 16 Jun 2017 11:58:03 PM CET
+====================================================
+
+- bug fixes:
+	MIT-BIH:
+		reading header where AMPgain is 0 (set to DEFGAIN=200)
+
+		fix dereferencing undefined pointers in debug/verbose mode
+	HL7aECG: writing
+		effectiveTime is rounded to full seconds
+		header requires field <type="OBSERVATION">
+
+- mexbiosig/mexSLOAD:
+	fix support for sparse re-referencing matrix
+
+- build system changes
+ 	Python, R, Mathematica are now based on libbiosig2,
+            and are dynamically linked
+        Matlab/Octave interface are linked to libbiosig(1),
+            and are statically linked
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.4b ---------------------------------
+
+Thu 22 Dec 2016 08:19:27 PM CET
+====================================================
+
+- bug fixes
+- built system improved for MXE, MacOSX, armhf
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.4 ---------------------------------
+
+Tue 22 Nov 2016 11:58:03 PM CET
+====================================================
+
+biosig4c++:
+	SON/SMR dataformat now supported
+	bug fixes: ACQ, Makefile
+	R binding added
+	bug fix for ARM (RaspberryPi)
+	Mathematica/sload error handling
+
+biosig4octmat:
+	bug fixes: EDF+, BrainVision
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.3 ---------------------------------
+
+Thu 16 Jun 2016 10:09:16 PM CEST
+====================================================
+biosig4c++:
+	EDFplus: reducing rounding errors in HDR.EVENT.{POS,TimeStamp}
+             when converting annotations into event table:
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.0.7 ----------------------------------
+
+Thu 16 Jun 2016 10:09:45 PM CEST
+====================================================
+biosig4matlab:
+	EDFplus: fix converting annotation channel into eventtable (edfannot2evt.m)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.2 ---------------------------------
+
+Sun 22 May 2016 11:55:01 AM CEST
+====================================================
+sha256sum:
+e007c279fcfd499251953114b6c07cd1d49c12b7c72555a3dce1aad7835bb093 biosig4c++-1.8.2.src.tar.gz
+ba8a2c2344b16da466e564cbfcddbc204f9f4f2709f95631dec223f40b551c2a biosig4c++-1.8.2.win.zip
+
+- number of bug fix:
+  - collapse_rawdata (segfault when no data needs moving)
+  - biosig_fhir: when collapse_rawdata removes some channel
+  - BDF/EDF: ensure strings a null-terminated
+
+- Python:
+  - use of module extensions for loading data
+
+- New demos for PHP, Perl and Python
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.1 ---------------------------------
+
+Tue 03 May 2016 10:55:01 PM CEST
+====================================================
+sha512sum:
+d3f3f5c60ea6291a80f2fd4052466acb4d257ec1484da16705c82ee919c9e859dbf030dbbec49fdde0da76cde8da77bd6fd05bdd9d1cfdb468f15170a0ba10a5
+biosig4c++-1.8.1.src.tar.gz
+5d72f00fd37d06e7ef8318fdfa013d66101a942a3af26359dab159a62a97205afef33f667872b56e7caa662b7b68465537ea4625ab626e80820d18e5adf08758
+biosig4c++-1.8.1.win.zip
+
+md5sum:
+396558de978087269ca582a23881693a  biosig4c++-1.8.1.src.tar.gz
+751ba9ffc92cf6459466bfb07f4f8199  biosig4c++-1.8.1.win.zip
+
+including missing binary files (biosig_fhir.exe, pu.exe, ..) files
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.0.5 ----------------------------------
+
+Tue 03 May 2016 10:55:33 PM CEST
+====================================================
+sha512sum:
+491e21adff2788e375417f9d12e829016532fbc157d02e041b69e04dde1e6527ed047407492fe03c9d459704f09876bf2a8aa96b76eaf2c7ede242e459826168
+biosig4octmat-3.0.5.tar.gz
+9befa5d31810fe9e8a8a120702dfd09ba50cdb39f0bad2d480f43ce3b7e6525db743fd3057a45a23e4b116fce6dd4c8267f6877eef5d7d7a5bc6b1056fcc4814
+biosig4octmat-3.0.5.zip
+
+md5sum:
+c21287b7f77241957590a3660e19933f  biosig4octmat-3.0.5.tar.gz
+7c4a8afcb77197aeb753edac380dc073  biosig4octmat-3.0.5.zip
+
+including missing binary files (e.g. *mexw32, *.mexw64) files
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.8.0 ---------------------------------
+
+Thu 10 March 2016 14:54:45 CET
+====================================================
+md5sum:
+363f1b4690cb9c24e13ed4548017fc33  biosig4c++-1.8.0.src.tar.gz
+7bcad96ff3b96f4d6ffc7cce61ce791e  biosig4c++-1.8.0.win.zip
+
+sha512sum:
+c55b5eeaec97d840ad7b5bddfb05a662fe5591cdbb01917a7504f174ea80c027733fa2174323fb66766acc89031bb56e1afd6b9b1f7efb536fd4aede5e5e31c4
+biosig4c++-1.8.0.src.tar.gz
+c164741228b3d9eadb14763faa5ef5573030934a01eaaca0677a4ed515544f631244ce61ce1fd246816fa327d95119ae17529579cc908b88c274e399086639f2
+biosig4c++-1.8.0.win.zip
+
+
+* Dataformat support
+  - WinWCP: added support
+  - CFS: add export of data variables "Start" and "Stamp"
+	into event table
+  - SCP/GDF: cleanup code about an obsolete idea on Section 12
+
+
+* Streaming support added:
+  - serialize/unserialize function for conversion
+    between internal HDRTYPE structure and GDF, and
+  - support HL7/FHIR binary template
+
+  - Demos in Perl and PHP demos
+    * generating base64-encoded GDF-streams,
+    * generating FHIR binary templates
+    * extracting file header information
+
+
+* Table of Physical units according to
+  11073-10101a:2015a amendments to 11073-10101:2004
+  has been updated.
+
+    - A number of new definitions are added.
+    - The following units were redefined, which might cause incompatibilities:
+
+    65408 ->  6432,"B", "Bel", "relative power decibel"
+     6816 ->  8096,"rpm","","revolutions per minute"
+    65440 ->  8320,"dyne s m2 cm-5","Vascular Resistance Index"-...
+    65504 ->  8192,"Wb m-2",,"<magnitude> Tesla"
+    65504 ->  8192,"T",,"<magnitude> Tesla"
+    65312 -> 10976,"mmHg s-1","rate of pressure change","millimeter mercury per second"
+    65152 ->  8256,"V/s","","Volt per second"
+
+    If you are concern, you might need to consider these changes
+    on the application level.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.0.4 ----------------------------------
+
+Thu 28 Apr 2016 11:38:52 PM CEST
+====================================================
+md5sum:
+7cb18e3eae33668019791529d0f8a276  biosig4octmat-3.0.4.zip
+b88680e1eb5c68562288c67b2d708f64  biosig4octmat-3.0.4.tar.gz
+
+sha512sum:
+072161576afbf30bead165f9fee252b1610db5636f458896be79138f81c6873c493acbcd7a5ebd11da02e670ddf40d7ead7de9f4a43bd6647705fc42f2263b29
+biosig4octmat-3.0.4.zip
+ee1c8b970949b2b13c8df4b5ac115b278b15217a20545e93895797b21969d723fde5a1364b9a7f04fadb1d93e45af81ada33e119f43776b39d5ffddf9676ffd4
+biosig4octmat-3.0.4.tar.gz
+
+
++ convert2single_sweep_atf added
+    converts multi-sweep data into single-sweep ATF files
+
++ supported file formats improved according to libbiosig
+
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.7 ---------------------------------
+
+Thu 10 Mar 2016 14:54:45 CET
+====================================================
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.0.3 ----------------------------------
+
+Mon 28 Mar 2016 11:30:00 PM CEST
+====================================================
+sha256:
+572a8e1cd6e70c958b2e40438338c4736a25cb1d2955121ff648a9d3fcc172ba  biosig4octmat-3.0.3.tar.gz
+97cb2eb746d1d5acb145474302645d5bfc3a8d9bf62a1c636c3c576127fbac3b  biosig4octmat-3.0.3.zip
+
+t200: sopen/write
+    additional checks for consistency of header information
+
+t250/detect_sharp_wave_ripple
+    honor channel argument, and apply detection method
+    only to selected channel.
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.7 ---------------------------------
+
+Thu 10 Mar 2016 14:54:45 CET
+====================================================
+
+sha256:
+b5574b5491964416853b21680c7259d511d5e17908e7d972f14ca6e5609b9727  biosig4c++-1.7.7.src.tar.gz
+60d8ce433e4efbfd452ba72d7e85e524c74d2b8305a9c6f80de2c4e706f5c572  biosig4c++-1.7.7.win.zip
+
+- CFS:
+    bug fix reading units with trailing spaces
+    better checks of string length
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.0.1 ----------------------------------
+
+Thu 03 Mar 2016 10:45:03 AM CET
+====================================================
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.6 ---------------------------------
+
+Thu 03 Mar 2016 10:44:44 AM CET
+====================================================
+
+- CFS:
+    bug fix for 2 issues:
+	(1) empty channels in sweeps, and
+	(2) change in scaling from sweep to sweep
+    In addition, code is more flexible with respect
+    to varying sampling rates and data types.
+    Accepts files with Marker channels
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.5 ---------------------------------
+
+Mon 15 Feb 2016 10:49:02 PM CET
+====================================================
+
+BDF: conversion of status channel into event table
+     matches the implementation in m-script.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 3.0 ----------------------------------
+
+Mon 15 Feb 2016 10:48:52 PM CET
+====================================================
+
+BDF: conversion of status channel to event table improved
+     fix regression from biosig4octmat 2.88
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.4 ---------------------------------
+
+Fri 29 Jan 2016 08:22:48 PM CET
+====================================================
+
+sha256sum:
+5f3b016a5681112a9078852449833046b39cfa48f253d0765949db0cb2bded3b  biosig4c++-1.7.4.src.tar.gz
+d5e67c5175038dda0774310b6a6e0c1fd02df6f6f4e0e9638fea5c7f58366211  biosig4c++-1.7.4.win.zip
+
+- sload for mathematica
+
+- mexbiosig:
+  prepare Octave package containing mexSLOAD, mexSOPEN, mexSSAVE
+
+- EDF+: libbiosig
+  bug fix reading annotations and converting to event table
+
+- GDF1-write: fix writing 0-termintor on PhysicalUnits string
+
+- SCP-write: select only ECG channels.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.96 ----------------------------------
+
+Fri 29 Jan 2016 08:22:48 PM CET
+====================================================
+
+sha256sum:
+e251fb961b6ec27e456cbe95968a8fc783285b6654671d3f6f2d0ae128706bb7  biosig4octmat-2.96.zip
+be87922f851638070fb944ed6564930abdcc824ec61ff70690c1a4575519845f  biosig4octmat-2.96.tar.gz
+
+biosig4matlab
+- BDF: bug fix reading BDF with sread.m
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.95 ----------------------------------
+
+Thu 19 Nov 2015 11:15:49 AM CET
+====================================================
+
+sha256:
+e0bb32210b5b1eb30fbb3bf7474af783691848e8960ec13358d78b473ccf3315 biosig4octmat-2.95.zip
+a5b314a614e207eb1b9be138a4a36b72a0b72cade5e47bc09e77e8fcadb8c2dd biosig4octmat-2.95.tar.gz
+
+biosig4matlab:
+   event table utility functions extensed including
+     add_events, select_events, unselect_events, sort_events
+
+mexSLOAD:
+    update *.mexw{32,64} binaries
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.3 ---------------------------------
+
+Thu 19 Nov 2015 11:15:41 AM CET
+====================================================
+
+sha256:
+c3debc3315dca2ad915bd0e6aac55df29c87b2b2be028f8b8b72a136f1b79c97 biosig4c++-1.7.3.src.tar.gz
+7e5d59bcc85d4f4e57cd9a0c0f7c2a880132d51d4955f66d8fe490be716e5860 biosig4c++-1.7.3.win.zip
+
+
+sload for mathematica:
+    binaries for Windows, Linux and MacOSX are
+    provided
+
+libbiosig:
+   HEKA: version check fixed (only v2 is supported)
+   check on memory allocation for event table added
+
+libgdf:
+   fix compiler issue
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.2 ---------------------------------
+
+Thu 27 Aug 2015 23:16:38 PM CEST
+====================================================
+
+- bug fix release: Makefile was broken wenn /usr/local/MATLAB* directory was not available
+
+sha1:
+f5fd7ffffc3525420830084e117da1aadd213be0  biosig4c++-1.7.2.src.tar.gz
+77b36dc5c155d952006658df12ed67998749ff7b  biosig4c++-1.7.2.win.zip
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.1 ---------------------------------
+
+Thu 27 Aug 2015 03:16:38 PM CEST
+====================================================
+
+- fix Python interface
+
+- improve homebrew recipes. libbiosig can be installed with
+    brew tap schloegl/biosig
+    brew install libbiosig
+
+- requirement on -std=gnu89 was relaxed
+
+- better heuristics to identify matlab path for
+  compiling mexSLOAD, etc.
+
+sha1:
+226435bba4b46447e367f30bee304aa2dc6034ef  biosig4c++-1.7.1.src.tar.gz
+7b5925f69da5858772389e7ff8cccaf91c6efc09  biosig4c++-1.7.1.win.zip
+
+md5:
+fd6fcb31b0aacd7af86399d8ddd51a9a  biosig4c++-1.7.1.src.tar.gz
+0911ce970ae68408da50f2ec1d4f3d81  biosig4c++-1.7.1.win.zip
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.7.0 ---------------------------------
+
+Thu 13 Aug 2015 05:20:25 PM CEST
+====================================================
+
+* Heka: fix some specific bug
+* gcc-5 compatibility
+* improved support for mex*.mexmaci
+* fix bug in swig interfaces
+* compiler warnings are addressed
+
+sha1
+af05487f6dd82f802e4c3ffec1218f24cda0dcea  biosig4c++-1.7.0.src.tar.gz
+65e0cb8c611897c0bc9cc9ef5d7ef46dbb6d6483  biosig4c++-1.7.0.win.zip
+
+md5
+1db24193a50d6b05caf772793b269d69  biosig4c++-1.7.0.src.tar.gz
+7d86876af85132f8f1a342254832725f  biosig4c++-1.7.0.win.zip
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.94 ----------------------------------
+
+Thu 13 Aug 2015 05:20:25 PM CEST
+====================================================
+
+* FLT support improved
+* detection of sharp-wave ripples
+* event type table extended (ECG's, maxSlopeTime and peaktime of action potientials)
+
+sha1:
+94cd06bbe1c133e66ed116a36b43b239247bf9b1  biosig4octmat-2.94.zip
+4eedaf3dbb791d01ecf81c76445ad70c02af70c7  biosig4octmat-2.94.tar.gz
+
+md5:
+6f157b8675eaa3560aa133de9a03ef8a  biosig4octmat-2.94.zip
+8ac137dc99bb9bdd5891a09e49d6e05a  biosig4octmat-2.94.tar.gz
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.6.4 ---------------------------------
+
+Fri 06 Mar 2015 11:04:47 AM CET
+====================================================
+
+* bug fixes in ITX and AXG
+* make && make install will install libbiosig
+* recipies for Homebrew (MacOSX) added
+* improvements in Makefile
+
+
+sha1sum:
+7ca064019f92b813f3d3ee1fc35581b25a8628eb  biosig4c++-1.6.4.src.tar.gz
+81367233467a878b4d5ce64c2b7f7bde2e438f00  biosig4c++-1.6.4.win.zip
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.6.2 ---------------------------------
+
+Wed 25 Feb 2015 09:16:33 PM CET
+====================================================
+
+* number of bug fixes
+* improve SCP-ECG and GDF support
+* address issues found by flawfinder
+* improve support for MacOSX (homebrew)
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.93 ----------------------------------
+
+Wed 25 Feb 2015 09:17:06 PM CET
+====================================================
+
+biosig4matlab
+- bug fix reading GDF/EDF/BDF file with SOPEN/SREAD/SCLOSE
+- reading MAT-files from ??? provided by Igor Farkas.
+- replace octave-specfic with matlab compatible syntax in maybe-missing
+   (endfor/endif  -> end)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.6.1 ---------------------------------
+
+Thu 04 Sep 2014 05:26:22 PM CEST
+====================================================
+
+bug fix release
+- ABF: fix scaling factors
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.6.0 ---------------------------------
+
+Thu 12 Jun 2014 08:43:53 PM CEST
+====================================================
+
+- AXG: support added
+- EDF+: fix segmemtation fault of some special EDF file.
+
+- The ABI is changed:
+  The size of some structs, and some enumeration types have changed.
+  Most likely, You'll need to recompile your application, even if
+  the dynamic biosig library (.so, .dll) is used.
+
+- API change: field CHANNEL->PhysDim is removed.
+     This is already deprecated for quite a while.
+     Use instead the function PhysDim3(CHANNEL->PhysDimCode)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.13 ---------------------------------
+
+Tue 29 Apr 2014 10:53:22 AM CEST
+====================================================
+
+MacOSX: improve compilation
+
+HEKA: bug fix - incorrect error status triggered when
+    data contains different sampling rates
+
+Python: bug fix
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.12 ---------------------------------
+
+Wed 12 Mar 2014 04:50:08 PM CET
+====================================================
+
+Platforms:
+    Cygwin:
+	fix -liconv
+
+Dataformats:
+    CFS:
+	support of data with different sweep length added
+    SCP:
+	text string conversion to UTF-8 added
+	improve support for older SCP version (1.0)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.11 ---------------------------------
+
+Sat 25 Jan 2014 09:37:42 PM CET
+====================================================
+
+NEW:
+	SCP: text strings converted to UTF-8
+Bug fix(es)
+	CFS: fix y-scale
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.10 ---------------------------------
+
+Thu 14 Jan 2014 09:22:35 PM CET
+====================================================
+
+biosig4c++
+   - platform CYGWIN supported
+   - improve ABI compatibility to MSV[SC] of level 1 interface
+   - CFS: more efficient memory use - faster and loads larger files on win32
+   - CFS: reading PULSE scripts data supported
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.9 ---------------------------------
+
+Thu 28 Nov 2013 09:22:35 PM CET
+====================================================
+
+biosig4c++
+   - ISHNE (Holter ECG): support improved and tested.
+   - ITX: bug fix, support improved
+   - MacPort: improved support (thanks to Christoph Schmidt-Hieber)
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.88 ----------------------------------
+
+Thu 28 Nov 2013 09:23:22 PM CET
+====================================================
+
+biosig4octmat
+   GDF 2.51: bug fix reading EventTable with time stamp data
+   GDF v2.51 is now the default version for writing GDF data
+   spike/burst analysis methods, generated events get timestamps if required
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.8 ---------------------------------
+
+Wed 23 Oct 2013 04:44:10 PM CEST
+====================================================
+
+biosig4c++
+   - platform CYGWIN supported
+   - improve level 2 interface
+   - level 2 python interface (experimental)
+   - FIFF: file type identification
+   - improved support for MacPorts:
+   - improved support for ATF, AXG formats
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.6 ---------------------------------
+
+Thu 08 Aug 2013 11:31:04 AM CEST
+====================================================
+
+biosig4c++/libbiosig
+   GDF 2.51: bug fix reading EventTable with time stamp data
+   fix interface of level 2 function biosig_get_nth_event (...)
+   HEKA: better checks against failing memory allocation on 32bit systems
+   MFER: support for some channel specific definitions has been added
+
+   improve interaction with MSVC compiler
+   export to DYGRAPH/JSON and CSV format added
+
+   and a number of minor bug fixes and improvements
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.5 ---------------------------------
+
+Thu 04 Jul 2013 05:58:51 PM CEST
+====================================================
+
++ HEKA: fix some large file issue.
+
+KNOWN ISSUE:
+- reading large HEKA files on 32 bit systems, might still cause
+  segmentation fault.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.4 ---------------------------------
+
+Wed 03 Jul 2013 05:58:51 PM CEST
+====================================================
+
+biosig4c++/libbiosig
++ ABF 1.x: support added
++ libbiosig.def and libbiosig.dll.a support
++ GDF: improved support for sparse samples
++ HEKA: resampling works now for rational frequency ratios
+   (samples with 20000 and 16666.7 Hz are converted to 100000 Hz)
++ CFS, HEKA: signficantly improved performance through
+   better memory manamagment.
++ IGOR: minor improvements
++ MFER: minor improvements
+
+
+Windows built for libbiosig has been moved to MXE, the Makefile
+became cleaner.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.85 ----------------------------------
+
+Wed 03 Jul 2013 05:59:52 PM CEST
+====================================================
+
+biosig4matlab
++ burstanalysis significantly extended
++ better visualization of short term memory
++ mexSLOAD contains many improvements (see biosig4c++)
++ use utf8 encoding in source files
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.5.0 ---------------------------------
+
+Tue 26 Mar 2013 11:43:51 AM CET
+====================================================
+
+biosig4c++/libbiosig v1.5.0:
+ABI change and adding support for:
++ support for GDF 2.51
+    Timestamps
+    timezone
+    SCP Sections 7-12
++ HEKA: Timestamp support added
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.4.4 ---------------------------------
+
+Tue 26 Mar 2013 09:43:42 AM CET
+====================================================
+
+biosig4c++/libbiosig v1.4.4
++ improved support for sparse sampleing
++ reading IBW (Igor Binary Waveforms)
++ use UTF 8 encoding of physical units and event description
++ EDF+: fix decoding of annotation channel
++ JSON output improved
++ prelease for 1.5, maintains ABI compatibility
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.82 ----------------------------------
+
+Thu 29 Nov 2012 10:21:42 AM CET
+====================================================
+
+t200/swrite:
+- fix bug when writing GDF files with sparse channel and SPR==1.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.4.2 ---------------------------------
+
+Thu 29 Nov 2012 10:21:34 AM CET
+====================================================
+
+This is mainly a bug fix release
+
+- scaling of HEKA format is now based on DataScaler instead of YRange
+  scaling change from sweep to sweep is now properly supported.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.81 ----------------------------------
+
+Tue 23 Oct 2012 10:36:21 AM CEST
+====================================================
+
+- support for CFS, NihonKohden format improved
+- bug fixes
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.4.1 ---------------------------------
+
+Tue 23 Oct 2012 10:35:31 AM CEST
+====================================================
+
+<NEW> libgdf: small, lightweight, libbiosig-compatible library, for gdf files only
+  backwards compatibility to pre v1.4.0 release
+  CFS: bug fix
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.4.0 ---------------------------------
+
+Tue 16 Oct 2012 11:43:39 AM CEST
+====================================================
+
+- re-entrancy and thread-safety implemented
+  removed or replaced all non re-entrant code. This concerned
+  error handling, global eventcode description, PhysDim became thread-safe.
+
+- error handling made re-entrant
+  use serror2(hdr) instead of serror()
+  serror() and global variables are kept for backwards compatibility
+
+- SigViewer: display of sparse samples enabled
+
+- Support for CFS format significantly improved
+  markers (matrix data) supported
+  support for interleaved data is done right
+
+- JSON output of header information
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.3.6 ---------------------------------
+
+Fri 14 Sep 2012 22:28:07 CEST
+====================================================
+
+- New formats: Persyst, EMSA,
+- EDF+/BDF+: improve decoding of annotation channel
+- improved and fixed interface to Python
+- improved libbiosig2 interface (still experimental)
+- improve mingw-cross-compiler built process
+- SCP-decode: replace exit() with more graceful error handling
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.80 ----------------------------------
+
+Fri 14 Sep 2012 22:28:07 CEST
+====================================================
+
+t200: reading of Persyst format implemented in m-code
+t300: two new utility functions for detection miniature epsp and ipsp events added
+   get_local_maxima_above_threshold, signal_deconvolution, demo/demo10.m. These methods have been used in an upcoming paper [1]
+
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.3.5 ---------------------------------
+
+Wed Jul 11 09:25:03 2012
+====================================================
+
+- Fix reading FEF format
+- MinGW interface
+   (include precompiled binaries of dependent libraries)
+- Mathematica: read header through JSON interface
+- minor improvements
+- restore API compatibility to v1.3.0
+- read support for level two interface
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.71 ----------------------------------
+
+Wed Jul 11 09:24:58 2012
+====================================================
+
+- include binary mex-files (where missing in v2.70)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.3.3 ---------------------------------
+
+Sun 24 Jun 2012 12:39:55 AM CEST
+====================================================
+
+- FEF format: add basic support <NEW>
+- minor improvements of interface
+- ITX format: bug fix
+- Debian hardening flags supported
+- Windows: use of MinGW eased
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.70 ----------------------------------
+
+Thu May 24 22:10:13 2012
+====================================================
+
+T320: NIRS tools <NEW>
+    donated by Guenter Bauernfeinds
+
+Dataformats:
+    automated identification of Neuroscan's 32bit CNT format
+
+t250:remove5060Hz
+    add fft-filter method
+
+Number of minor improvments bug fixes
+
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.3.0 source only ----------------------
+
+Thu May 24 22:10:07 2012
+====================================================
+
+Support of new data formats
+    Axona import <NEW>
+    Neuroscan CNT 32bit import
+        automated identification (thanks to Clemens Brunner)
+    Export Header Info in JSON format
+    XML-based formats (FDA-XML/HL7aECG)
+        support for utf16 based XML
+    SierraECG import <NEW>
+    BDF+ import <NEW>
+
+New platforms supported
+    IA64, Sparc, NetBSD
+
+Bug fixes:
+    GDF read: sampling rate
+    Memory alignment issues fixed on IA64 and Sparc platform
+    EDF+: extracting annotation channel fixed
+    fixes for MIT, SCP, HL7aECG format
+
+Matlab/Octave
+    cleaner interface.
+
+Applications
+    TTL2TRIG; reading data from sound card <NEW>
+    FLOWMON: reading data from serial interface
+
+Others:
+    Cleanup of code - address flawfinder all level 5 and most level 4 issues
+
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.1 ----------------------------------
+
+11 Nov 2011 01:21:14 AM CEST
+====================================================
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.61 ----------------------------------
+
+11 Nov 2011 01:21:07 AM CEST
+====================================================
+
+
+biosig4c++/libbiosig:
+    - improvements and bug fixes for several data formats
+    - mathematica interface returns time axis
+  Thanks to Stoyan Mihaylov for:
+    - solve memory leaks when loading compressed SCP files
+    - tests and improvements for ARM platform
+
+
+biosig for octave and matlab:
+    - improvements and bug fixes for a number of data formats
+    - spike and burst detection algorithms for actionpotential
+    - several detection algorithms support now the output
+        of EVT and GDF files containing the detected events.
+    - improvements in several statistical and evalation functions
+
+
+=== Package: SigViewer =============================
+--- Version: 0.5.1-as.5 ----------------------------
+
+Fri 19 Aug 2011 01:21:14 AM CEST
+====================================================
+
+- fix seg-fault when GotoNextEvent becomes larger than 16.7 Mio sample
+- show header information
+- no extra file eventcodes.txt needed.
+- improved support for a number of data formats
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 1.0 ----------------------------------
+
+Fri 19 Aug 2011 01:21:14 AM CEST
+====================================================
+
+- many bug fixes and minor improvents (see CHANGELOG for details)
+- mexSSAVE
+- cleaner code, less warnings
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.60 ----------------------------------
+
+Fri 19 Aug 2011 01:21:07 AM CEST
+====================================================
+
+<NEW> spike and burst detection of actionpotentials added.
+
+<NEW> mexSSAVE for saving file formats supported by libbiosig directly from Octave/Matlab
+
+DOC:
+    EVENTCODES: Codes for spikes and bursts (0x0201 and 0x0202, resp). are included.
+
+T200:
+    BDF: conversion from status channel to event table can be controlled
+    through additional input parameter (SLOAD, SOPEN);
+
+T250:
+    spike and burst detection of actionpotentials added.
+
+T500:
+    plota(...,'ISI'), plota(..., 'RRI')
+	provides a nice plot for inter-spike intervals, and R-R intervals
+    displaying multiple bursts in an overlayed way
+
+Bug fixes:
+    mexSLOAD.mexw32 (fatal error for famos files)
+    famos: Physical units
+    writing GDF/EVT files
+    SLOAD: HDR.EVENT.POS off by 1 sample when mexSLOAD was used.
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.54 ----------------------------------
+
+Tue May 24 14:24:17 2011
+====================================================
+
+bug fix release
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.97 ----------------------------------
+
+Wed May 18 14:15:24 2011
+====================================================
+
+<NEW> Binaries for 64bit Windows
+	*.mexw64 64: mex-files 64 bit Matlab on Windows
+	win64/save2gdf.exe
+	win64/libbiosig.a
+	win64/sigviewer.exe
+
+<NEW> sload language binding to Mathematica 7 and 8
+
+Major improvements
+    HEKA: support for different sampling rates, sweep selection
+    SCP: bug fix
+    CFS: bug fix, sweep selection,
+    Neuron: format tested and fixed
+
+save2gdf:
+    selecting data from a time interval added
+    heka2itx converter
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.52 ----------------------------------
+
+Mon Feb 14 17:34:59 2011
+====================================================
+
+It contains no big changes but several useful improvements.
+win32/mex binaries are included, again.
+
+== NEW ==
+- Crude detector for action potentials added
+- CFS, Heka, ITX are supported through libbiosig/mexSLOAD.mex
+   mexSLOAD has been compiled for v7.11, so it might not work
+   for older versions.
+   (for older versions and for Octave, download biosig4c++
+   and follow the instructions to compile mexSLOAD; or stay with v2.51)
+
+== Bug(s) fixed ==
+- GDF: decoding of HDR.Classlabel and HDR.TRIG fixed for unsorted
+       eventtable
+
+== Improved ==
+- change binary to logical operators, if suitable. This reduced
+    the number of warnings on Octave and Matlab
+- eeg2hist: shows now also single point exceeding the threshold
+- sview: viewing short-time ECG made nicer
+- sread: more efficient
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.96 ----------------------------------
+
+Tue Feb  1 16:34:52 2011
+====================================================
+
+biosig4c++:
+    - support for new data formats including Heka/PatchMaster, CED-CFS, NEURON and ITX
+    - mathematica language binding
+    - upgrade to XML parser to latest tinyxml
+    - Interface is extended by a field "TOffset" for indicating the (sub-sample) timedelay between channels
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.95.2 ----------------------------------
+
+Tue Nov 23 10:41:59 2010
+====================================================
+
+biosig4c++
+    support for additional file formats (CFS, 16 bit ISHNE, )
+    experimental language bindings to Java, PHP, Perl, Ruby and Tcl
+    experimental support for igor xops
+    win32 with zlib support
+    identification of additional file formats (including STATA, SAS, SPSS, .LNK, MSV
+    versioning of libbiosig
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.51 ----------------------------------
+
+Tue Nov 23 10:41:59 2010
+====================================================
+   number of minor improvements
+   fix installer
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.50 ----------------------------------
+
+Fri 27 Aug 2010 03:26:55 PM CEST
+====================================================
+
+- improved NaN-toolbax
+    paired and unpaired t-test for data with missing values
+    bug fix in train_sc, better documentation in test_sc
+    median is faster
+- install script improved
+- BDF: default decoding of status channel changed
+    16 bit raising edge are detected per default
+- mexSLOAD: improve error handling and workaround for bug in Octave
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.49 ----------------------------------
+
+Fri 02 Jul 2010 08:50:14 PM CEST
+====================================================
+
+- dependencies on proprietary signal and statistical toolbox are
+  removed, free alternatives from freetb4matlab are included.
+
+- improved freetb4matlab
+- eventcodes for ECG events refined
+- maybe-missing is obsolete
+- install adds path to freetb4matlab at the end of the path
+    in order to avoid unexpected changes
+- fix EDF-write of date
+- alternative algorithms for ECG and QRS-detection included
+- better compatibility with Octave (periodogram,fir1, etc.)
+- fix for ISHNE format
+- sviewer: update code to newer syntax
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.42 ----------------------------------
+
+Mon 19 Apr 2010 10:34:15 PM CEST
+====================================================
+
+- reduce dependency on Signal/toolbox and statistics toolbox
+- support BVA/MULTIPLEX format
+- number of minor, but useful improvements and bug fixes
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.93 ----------------------------------
+
+Mon 19 Apr 2010 10:34:15 PM CEST
+====================================================
+
+- support BVA/MULTIPLEXED format
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.40 ----------------------------------
+
+Thu 08 Apr 2010 02:21:30 PM CEST
+====================================================
+t200:
+    improved support for MIT/HEA format
+    improve mexSLOAD (BDF, rerefMatrix, IHE ECG added, ASCII-read, CNSFEF, EDF+, BVA)
+    support for Re-referencing matrices improved
+    fix BrainVision vectorized format
+
+t300: heartratevariability
+    add FFT spectrum
+
+NaN:
+    classification algorithms added
+    libSVM and liblinear (linear SVM) are included
+    speed improvments due to mex-implementations
+
+freetb4matlab:
+    fixes for signal and statistics toolboxes
+    is now installed by default
+
+many more bug fixes and minor improvements
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.92 ----------------------------------
+
+Sat 06 Mar 2010 01:49:18 AM CET
+====================================================
+
+- ASCII to SCP conversion fixed
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.91 ----------------------------------
+
+Wed 03 Mar 2010 08:16:24 PM CET
+====================================================
+
+- save2gdf tries to find smallest block size
+- GDF: v2.21 support
+- ASCII: read/write supported
+- BVA: reading vectorized files fixed
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.90 ----------------------------------
+
+Mon 14 Dec 2009 03:31:20 PM CET
+====================================================
+
+- addressed win32/libbiosig.lib issue
+- better python support
+- some bug fixes
+
+
+=== Package: Biosig for Python =====================
+--- Version: 0.03 ----------------------------------
+
+Mon 14 Dec 2009 03:31:20 PM CET
+====================================================
+- bug fix release
+- this is mostly obsolete,
+- use biosig4c++ provides better suppor for python
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.89 ----------------------------------
+
+Fri 04 Dec 2009 12:03:16 AM CET
+====================================================
+
+- GDF v2.20 implemented
+- rereferencing supported
+- several bug fixes
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.31 ----------------------------------
+
+Wed 28 Jul 2009 11:58:39 AM CET
+====================================================
+
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.84 ----------------------------------
+
+Thu 18 Jun 2009 12:00:52 PM CEST
+====================================================
+
+- writing of zipped hl7aecg files
+- minor improvments and bug fixes
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.22 ----------------------------------
+
+Wed 13 May 2009 11:58:39 AM CET
+====================================================
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.82 ----------------------------------
+
+Tue 14 Apr 2009 03:55:01 PM CEST
+====================================================
+
+
+- FAMOS: experimental support for interleaved data
+- GE-ECG: <NEW> support added
+- GDF sparse sampleing: initialization of sparse channels fixed
+- HL7aECG: support reading gzipped- HL7aECG data
+- mexSLOAD: faster - avoid extra copying of data
+- GDF,SCP: support pacemaker information
+- minor bug fixes
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.80 ----------------------------------
+
+Fri 20 Feb 2009 11:59:05 AM CET
+====================================================
+
+- Network support using the BioSig-Client-Server (BSCS) protocol.
+This enables to store data on a server and retrieve it by various means including mexSLOAD, SigViewer and save2gdf.
+- Better support for BEST/alpha data format
+- minor improvements
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.21 ----------------------------------
+
+Fri 20 Feb 2009 11:58:39 AM CET
+====================================================
+
+- bug fix release. Fix problem with EVENT.POS when multiple files are opened (using wildcard *).
+- improvement reading large BVA files
+- fix for FLTOPEN-WRITE
+- minor changes
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.20 ----------------------------------
+
+Tue 27 Jan 2009 12:31:33 PM CET
+====================================================
+
+- new mex-files support more data formats
+- t200: support for following file formats improved:
+    FLT(ET-MEG)
+- t400: classify, xval
+- t500/SVIEW: ecg-view improved
+- minor improvements
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.79 ----------------------------------
+
+Tue 27 Jan 2009 11:47:13 AM CET
+====================================================
+
+- sread:
+   caching makes SigViewer significantly faster
+   reorganize inner loop
+- EDF+: conversion of eventcodes improved
+- alpha(B.E.S.T) format (partly) supported
+
+- Interface to Gnu Scientific Library
+
+and several othor minor changes.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.78 ----------------------------------
+
+Wed 17 Dec 2008 04:22:44 PM CET
+====================================================
+
+- bug fixes in HL7aECG, CNT
+- Win32/mexSLOAD updated
+- Win32: technician name supported
+- mexSLOAD: precompiled binaries for LNX86, AMD64, WIN32
+- improved docu
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.77 ----------------------------------
+
+Wed 03 Dec 2008 01:10:53 PM CET
+====================================================
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.17 ----------------------------------
+
+Fri 20 Nov 2008 05:32:54 PM CEST
+====================================================
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.76 ----------------------------------
+
+Tue 14 Nov 2008 05:29:37 PM CEST
+====================================================
+
+New supported formats:
+- BLSC: read support added <NEW>
+- FAMOS: read support added <NEW>
+
+Improved support for format:
+- BVA: V-Amp supported
+- CFWB: files with time channel considered
+- SCP: read section 8
+
+Pre-compiled binary for windows included
+    mexSLOAD, save2gdf
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.74 ----------------------------------
+
+Tue 07 Oct 2008 05:29:37 PM CEST
+====================================================
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.15 ----------------------------------
+
+Fri 05 Sep 2008 05:32:54 PM CEST
+====================================================
+
+- BCI offline analysis becomes simpler for the user
+    new demo2 shows all essential steps and is better documented
+- resolved name conflict with function perm
+- t300: heartratevariability: add spectral density
+- t200: SigmaPLpro format added
+- viewedf - a light-weigth file viewer added
+    (tested only with EDF/EDF+/GDF)
+- sviewer: default overflowdetection is off
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.71 ----------------------------------
+
+Fri 05 Sep 2008 05:33:01 PM CEST
+====================================================
+
+- save2gdf:
+    important bug fix (for files with multiple sampling rates)
+- python interface is now working (Thanks to Luca Citi)
+- SigmaPLpro format added
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.70 ----------------------------------
+
+Wed 11 Aug 2008 11:15:53 AM CEST
+====================================================
+
+biosig4c++:
+- save2gdf.exe (precompiled executable for windows) included
+- GDF v2.10 implemented
+- information about IPaddress and Technician of data recordings support improved
+- support for Poly5/TMS32/TMSiLOG(binary+ascii)
+- bug fixes in a number of file formats (ACQ, AINF, DEMG, EGI MFER)
+- quite a number if minor improvements
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.14 ----------------------------------
+
+Tue 05 Aug 2008 03:38:45 PM CEST
+====================================================
+
+t200: SOPEN, SREAD, GETFILETYPE
+    Embla: reading support <NEW>
+    EEProbe: fix minor bug
+    TMSiLOG: read support implemented
+    BCI2000: fix reading HDR.T0, reading events
+    Poly5/TMS32: fix GDFTYP, and clean up
+    ASCII:IBI: fix reading last line
+    fix reading Table of EventCodes
+t200/sload
+    uses mexSLOAD if available.
+t200/hdr2ascii
+   fixes for several cases of incomplete HDR
+t250: detectmuscle
+    add another algorithm
+t300: heartratevariability
+    fix issue with sampleing rate
+t400:findclassifier
+    classlables can be arbitrarly ordered - consecutive number of the labels is not required anymore.
+t490:kappa
+    more graceful handling of NaN's.
+t500: topo2
+     <NEW> topographic map
+SViewer
+     fix minor issues; fix link to help function
+     patient information is stored in event file
+
+many bugs were fixed
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.69 ----------------------------------
+
+Wed 23 Jul 2008 11:15:53 AM CEST
+====================================================
+
+Version 0.69:
+- converter for Windows (MinGW) included
+- decompose files into BIN format (i.e. ASCII header file + binary files for each channel). The converters are bin2rec
+and rec2bin
+- multi-segment support included (EEG1100 format)
+- HL7 writing: channel selection supported
+- minor fixes and improvements for EDF+ and CFWB
+- several bug fixes
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.13 ----------------------------------
+
+Thu 19 Jun 2008 11:32:48 AM CEST
+====================================================
+
+- improved support for the BCI2000 format
+    support vor BCI2000 v1.1 is added
+    state vector is decoded into the event table.
+
+- GDF: experimental Header3
+    the header3 includes optional fields like
+    user-specified event description
+    and a private field for bci2000 data.
+    other information might be included eventually.
+
+- mexSLOAD is used per default within SLOAD
+    The advantage of mexSLOAD is the support of
+    additional dataformats (e.g. HL7aECG) and it is increasing
+    the speed of SLOAD.
+    A precompiled mex-file is included for linux_i386.
+    Other platforms need to compile it from biosig4c++.
+    (if mexSLOAD is not available, the traditional M-files are used)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.64 ----------------------------------
+
+Thu 19 Jun 2008 11:08:32 AM CEST
+====================================================
+
+- support of BCI2000 format improved
+- support writing of selected channels
+- sorting and conversion of event table
+- stand-alone en/decoder for physical units
+- improved stability
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.12 ----------------------------------
+
+Tue 27 May 2008 10:39:10 AM CEST
+====================================================
+
+- minor (bug fix) release
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.63 ----------------------------------
+
+Mon 26 May 2008 09:02:16 AM CEST
+====================================================
+
+- for a number of file formts support is added (MIT/Physiobank, BCI2000)
+   or improved (EDF+, BrainVision, AINF, GDF1)
+- sources for sigviewer are included
+
+
+=== Package: SigViewer ============================
+--- Version: 0.2 ----------------------------------
+
+Mon 28 Apr 2008 08:08:54 PM CEST
+====================================================
+
+- supports many new data formats (currently approx. 15)
+- several improvments in the user interface
+    (auto scaling)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.62 ----------------------------------
+
+Fri 25 Apr 2008 10:03:27 AM CEST
+====================================================
+
+bug fix release:
+- alignment problem to mex-interface fixed
+- SCP: fix initializing FLAG's
+- depreciate use of HDR.Dur
+- BrainVision: scaling factor fixed
+- Makefile: avoid duplicate entries (its an issue on SPARC)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.61 ----------------------------------
+
+Fri 18 Apr 2008 04:36:14 PM CEST
+====================================================
+
+bug fix release:
+-) fix resampling if file contains different sample rates.
+-) some memory leaks removed
+-) better interface documentation
+-) some minor changes
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.11 ----------------------------------
+
+Fri 18 Apr 2008 01:47:59 PM CEST
+====================================================
+
+- minor (bug fix) release if mexSLOAD is installed and filetype is not supported
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.10 ----------------------------------
+
+Fri 11 Apr 2008 04:17:17 PM CEST
+====================================================
+
+
+-) SLOAD works optionally with mexSLOAD
+If mexSLOAD from biosig4c++ is installed, the speed for
+supported data formats (ca. 15) is significantly increased.
+Furthermore, it allows loading  HL7aECG data which is not
+supported otherwise.
+
+-) the maybe-missing directory has been moved one level up
+
+-) some new time-domain features have been included (t300/tdp.m)
+
+-) the generalized PDC is included as another coupling measure
+
+-) many smaller improvements and bug fixes are included
+
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.60 ----------------------------------
+
+Fri 11 Apr 2008 04:16:38 PM CEST
+====================================================
+
+- many bugs are fixed
+- mexSLOAD becomes really useful
+- compiles on MacOSX and MinGW
+- sparsely sampled data of GDF2 is converted into a channel
+- BrainVision Marker file (VMRK) supported
+
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.59 ----------------------------------
+
+Mon 17 Mar 2008 11:03:19 AM CET
+====================================================
+
+This is a major release:
+
+- Support for reading additional fileformats:
+    AINF, BrainVision, DEMG.
+    Now, ca. 15 formats can be read, and 7 data formats
+    can be written to.
+  Several improvements and bug fixes are included.
+
+Furthermore, biosig4c++ becomes more a library.
+- It provides libbiosig.a with a clean
+   external interface as defined in biosig.h.
+
+This library is useful for several applications:
+-  a mex-interface mexSLOAD for the use with Octave and
+   Matlab is added. mexSLOAD seems somehow redundant to
+   BioSig4OctMat; however mexSLOAD can read HL7aECG/FDA-XML
+   data (this is not possible with BioSig4OctMat) and is
+   typically much faster.
+-  an interface to python is added. (this is still experimental)
+-  The upcoming release of SigViewer will use it.
+
+And finally,
+- Apple platform is supported, too.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 2.00 ----------------------------------
+
+Fri 25 Jan 2008 08:51:27 PM CET
+====================================================
+
+- fix for Matlab 7.2
+- support for FreeMat v3.5 improved
+- bug fixes
+- identification of SCP-ECG fixed
+- support data set of CinC2007 challenge
+- add Naive Bayes Classifier
+- License updated to GPL v3
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.54 ----------------------------------
+
+Fri 25 Jan 2008 08:47:34 PM CET
+====================================================
+
+- ABF2 identification added
+- EDF writing fixed
+- SPARC support improved
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.53 ----------------------------------
+
+Thu 15 Nov 2007 03:22:57 PM CET
+====================================================
+
+    + Licence changed to "GPLv3 or later"
+    + SCP identification extended, more SCP files are supported
+    + SCP support is further tested and improved
+      (majority of ICS-FORTH database is now supported)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.52 ----------------------------------
+
+Fri 19 Oct 2007 09:19:15 PM CEST
+====================================================
+
+    + GDF v1 writing supported
+	./save2gdf -f=GDF1 file.nnn file.nnn.gdf
+    + MFER read/write
+    + Date conversion improved
+    + SCP-Decode stabilized (less seg-faults)
+	397 ok, 18 seg faults, 167 unknown
+    + SPARC support improved
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.51 ----------------------------------
+
+Fri 31 Aug 2007 05:08:24 PM CEST
+====================================================
+
+Fri 31 Aug 2007 04:18:49 PM CEST
+biosig4c++:
+    + global VERBOSE_LEVEL
+    + SCP: relax CRC check;
+    + improve checks in Section 1 for avoiding segmentation faults.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.49 ----------------------------------
+
+Fri 24 Aug 2007 10:42:41 PM CEST
+====================================================
+
+SCP-HL7 extensively tested.
+- Support for Demographic information is improved. Now, Name, Gender,
+  Birthday, Weight and Height of patients are correctly propagested
+- Scaling of the data is correctely maintained.
+- On-the-fly (de-)compression is supported and tested for SCP, GDF, EDF, BDF, CWFB.
+- Physical units are supported (using ISO11073 / IEEE1073 encoding)
+- Bug fixes
+- Several testing functions are included
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.47 ----------------------------------
+
+Thu 09 Aug 2007 10:42:00 PM CEST
+====================================================
+
++ ON-THE-FLY-(DE)COMPRESSION included in SCP
+    with internal compression (SCP-DECODE).
+
++ SAVE2GDF: header information is displayed only
+    if now output file is given.
+
++ Reading of EGI format supported
+
++ many minor improvments in reading BKR,
+    HL7 (Lead identification), BDF/EDF (warnings),
+    add error handling function, XML (accept ByteOrderMarks),
+    SWRITE (crucial typo)
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.98 ----------------------------------
+
+Thu 09 Aug 2007 10:41:54 PM CEST
+====================================================
+
+T200:
+	+ BDF and Events
+	decoding of status channel changed
+	bit17 does not encode trial/epoch (0x0300)
+	but new segment (0xfffe).
+	+ SOPEN, SREAD
+	EDF,BDF & OCTAVE: fix decoding of Birthdate
+	CWFB & Octave: fix sread
+	EGI: reading of event information fixed
+
+T250:	+ GET_REGRESS_EOG
+    	support for _automated_ BSS methods added
+
+T300: 	+ ECG and Heartratevariability:	better docu,
+	+ CommonSpatialPattern (CSP) added
+	+ Brainrate: fix SEF90 and SEF95 estimation
+	+ Desatur <NEW> oxygen desaturation added
+    	+ support of Geweke's  Granger Causality
+
+T400	+ LD5 classifier (motivated by CSP) added
+
+And always many minor bug fixes and improvements
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.46 ----------------------------------
+
+Fri 03 Aug 2007 06:13:52 PM CEST
+====================================================
+
+Version 0.46
++ ON-THE-FLY-(DE)COMPRESSION: is now really working
+    for GDF,EDF,BDF,CWFB and SCP (without internal compression)
+
++ EDF,BDF: deblank HDR.Transducer and HDR.Label
+    fix identification of LeadIdCode
+
++ Support for on-the-fly (de)compression included
++ Bug related to memory allocation (SCP) fixed
++ CFWB format supported
++ The bidirectional converters between following formats
+  SCP, HL7, GDF, BDF, EDF, CFWB  have been tested on
+  i386, AMD64 and PPC64 platform.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.44 ----------------------------------
+
+Mon 30 Jul 2007 10:29:13 AM CEST
+====================================================
++ The converter SAVE2GDF has been tested on the platforms
+i386 (LittleEndian) and PC64 (BigEndian)
++ The scaling and the physical units are not restricted.
+
+Changes:
+- improved tests
+- fix of scaling Phys/Dig/Min/Max
+- full support of Physical Dimensions according to ISO11073
+- full support of Lead Identification Label (based on EN1064)
+- SWRITE is now implemented (EDF,BDF,GDF)
+- PPC64 supported (BigEndian platform)
+- optimized memory use in GDF.
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.97 ----------------------------------
+
+Sun 1 Jul 2007 23:07:40 PM CET
+====================================================
+
+- T200:
+      EEProbe: reading header implemented
+      FLT/ET-MEG: read and write support improved
+      SCP(EN1064): read improved
+      SSAVE, SAVE2GDF: improved
+- T250:
+      artifact_selection: bug fix
+
+- T310: <NEW>
+      signal processing for Wavelet-based ERD/ERS and PLV analysis, HRV.
+
+- T510: <NEW>
+      Visualization for T310
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.41 ----------------------------------
+
+Thu 07 Jun 2007 09:18:40 PM CEST
+====================================================
+
+- save2gdf got some documentation on help and usage
+- SCP(read) produced now labels. This fixes the problem that
+   converting SCP2GDF lost the channel labels
+- saving of GDF fixed: a predefined value in HDR.VERSION produced an invalid Version number.
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.40 ----------------------------------
+
+Fri 01 Jun 2006 10:15:46 CET
+====================================================
+
+- Support of HL7aECG
+- Bidirectional converters between HL7aECG, SCP and GDF
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.96 ----------------------------------
+
+Wed 27 Apr 2007 05:07:40 PM CET
+====================================================
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.95 ----------------------------------
+
+Wed 07 Mar 2007 05:07:40 PM CET
+====================================================
+
+T200: more data formats, bug fixes
+
+T250: EOG correction coefficients are estimated
+    now from filted (1-6Hz) filtered data.
+    more methods (PCA, REG+PCA) included.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.94 ----------------------------------
+
+Tue 06 Feb 2007 10:56:23 AM CET
+====================================================
+
+T200: AINF format supported
+       header-to-ascii export (HDR2ASCII) and import (SOPEN) included
+
+T450: exteneded Multiple test statistic
+    FDP (false discovery proporation), gFWE (genearalized family-wise error),
+    GLOB (global tests) are included
+
+T501: PLOT_COUPLING
+    include visualization of PLOT_COUPLING (from G. Nolte) in CVS-repository
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.93 ----------------------------------
+
+Tue 23 Jan 2007 09:57:18 AM CET
+====================================================
+
+T200:
+    - Reading support for these file formats FLT, STL
+    - Additional fileformats are recognised (3DM, IGES, UFF58, PLY)
+    - Automated EOG_CORRECTION supported in SLOAD
+	using the option "EOG_CORRECTION:ON"
+
+T250:
+    - Automated overflow detection improved for several fileformats
+	including EDF, GDF, BDF, BrainVision, BKR, alpha, GTF, BCI2002b
+
+    - Quality control using Histogram analysis (EEG2HIST) improved: it supports the
+	interactive selection of saturation thresholds possible using EEG2HIST
+
+    - automated correction of EOG artifacts improved.
+	The EOG channels are identified using the channel labels.
+
+
+There are also two new categories T410 and T501.
+
+T450: statistical analysis using false discovery rate (FDR)
+    these functions are provided by Claudia Hemmelmann from University Jena, Germany.
+
+T501: visualization of EEG coupling
+    This is provided by Guido Nolte.
+
+Thanks to both. Both are important tools for investigating EEG coupling.
+
+Several minor changes are included, too. however please consider this as
+an experimental version. Testing (especially of the new tools) is welcome.
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.91 ----------------------------------
+
+Nov 2006
+====================================================
+
+
+VERSION 1.91:
+=============
+
+DOC: EVENTCODES
+    <NEW> codes for eye, muscle and respiratory activity,
+
+T200:SOPEN
+    - fix some problems converting from EDF+ to GDF format
+    - BrainVision: reading of header information improved
+    - ISHNE: fixed several open issues.
+
+T200:SLOAD
+    - support of automated EOG-CORRECTION included in SLOAD
+
+T200:PYHSICALUNITS
+    - support of UCUM-x73 conversion table
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.90 ----------------------------------
+
+Wed 11 Oct 2006 01:23:23 AM CEST
+====================================================
+
+T200:
+    several formats added
+    HDR structure: change Label, Transducer, PhysDim
+    from char-array to cell-strings
+
+T250:
+    Quality control with histogram and entropy method
+
+T400:
+    support of Sparse-LDA classifier
+    SVM uses pre-whiting
+    libSVM is included in release, and
+    libSVM-support works with Octave, too.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.83 ----------------------------------
+
+Wed 23 Aug 2006 09:58:37 PM CEST
+====================================================
+
+T200:
+    + Format GDF2.0 finalized
+	supports sparse sampling
+	more detailed subject-specific header
+    + other minor improvements
+
+T400: TEST_SC
+    + fix output labels
+
+T500: PLOTA
+    + visualization of Electrode positions
+
+- minor bug fixes
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.82 ----------------------------------
+
+Wed 02 Aug 2006 10:58:26 PM CEST
+====================================================
+
+- T200:
+     loading of 32-bit CNT (Neuroscan) files
+     loading of EEGLAB data files
+     include functions for loading EEProbe files
+
+- T250: REMOVE5060HZ
+     methods for removing line interferences
+
+- minor bug fixes in T200/SREAD, NaN/NANSTD, T300/NQRSDETECT
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.80 ----------------------------------
+
+Wed 12 Jul 2006 10:09:16 PM CEST
+====================================================
+
+T300: signal processing
+- new QRS-detector included
+   The new algorithm as a higher detection accurarcy.
+
+T400: classifiers
+- support for new classifiers added.
+   Now, GSVD is supported for reducing high dimensional
+   data. Also SVM and RBF-SVM are supported. Also, an
+   interface to Linear Programming Machines (LPM) are included.
+
+- hyperparameters of SVM and other classifiers can be
+   provided through the MODE argument in FINDCLASSIFIER
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.77 ----------------------------------
+
+Wed 14 Jun 2006 08:29:29 AM CEST
+====================================================
+
+ Writing SCP file format supported
+ Reading SCP file format improved (includes CRC check)
+ Octave compatibility improved
+
+bug fix in IOPEN
+help in MVFREQZ corrected
+minor improvements and bug fixes
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.76 ----------------------------------
+
+Thu 27 Apr 2006 09:51:37 PM CEST
+====================================================
+
+minor improvements and bug fixes
+- MVAR estimator improved
+- Support for large BDF-files fixed
+- fixed LOOM in findclassifier
+- Benchmark got a new version number
+etc. (see CHANGELOG)
+
+=== Package: Biosig for Python =====================
+--- Version: 0.02 ----------------------------------
+
+Sat 25 Mar 2006 02:56:52 CET
+====================================================
+
+Initial release
+- reading of GDF (v1 and v2), EDF and BDF is supported
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.32 ----------------------------------
+
+Wed 22 Mar 2006 22:15:46 CET
+====================================================
+
+- BDF support fixed
+- support of AMD64 and PPC64 platforms further improved
+- reading of SCP-ECG format (thanks to Eugenio Cervesato)
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.75 ----------------------------------
+
+Wed 15 Mar 2006 22:15:46 CET
+====================================================
+
+    - TFMVAR + PLOTA: several improvements (datatype: TMMVAR 2.0)
+         delay time added
+         t-test fixed
+         improved display, especially if many channels are used
+
+    - PAYNTER filter fixed
+    - reading SCP-file format fixed (for Octave)
+    - more tests on XML-based formats
+
+several minor improvements (for details see CHANGELOG)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.29 ----------------------------------
+
+Fri 03 Feb 2006 00:23:51 CET
+====================================================
+    + support of g++ (stricter syntax checking)
+    + amd64 and ppc64 support improved
+    + prepared support of SCP and HL7aECG
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.70 ----------------------------------
+
+Mon 19 Dec 2005 12:23:32 CET
+====================================================
+
+    NEW: Benchmark test using BioSig
+
+    T200:
+    +   BDF: EVENTs and OVERFLOW detection are derived from Status channel
+    +	EDF+ annotation channel: improved support
+    + 	handling of physical dimensions improved
+    +   handling of IFF (like EEProbe) format improved
+
+    T300:
+    + 	added BARLOW, HJORTH, WACKERMANN
+    + 	added HEARTRATEVARIABILITY
+
+    T400:
+    + 	untraining functions of statistical classifiers
+    +   1-vs-rest (for M>2 classes) well tested
+
+    T500: PLOTA
+    +	MVAR: improved
+    + 	AMARMA (AAR) improved
+    +   TF-MVAR supports display of AutoSpectra
+
+    Octave support:
+	regexp, datesplit included in maybe-missing
+	needed for EDF+ Birthday decoding
+
+    + TSA and NaN-toolboxes: updated version
+
+    bug fixes:
+	saving event files
+	EEProbe .TRG-format
+	EEProbe: UCAL correctly supported
+	UNTRAIN_SC: errorenous crossvalidation in statistical classifiers fixed
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.28 ----------------------------------
+
+Thu 01 Dec 2005 05:21:56 CET
+====================================================
+
+- function arguments modified. The usage resembles more closely the usage in STDIO.H
+
+- Big-Endian platform supported
+- bug fixes for EDF, BDF and CNT format
+- Makefile for Linux
+- main generates GDF file and displays header information of existing files
+
+- preparation to support SCP and HL7aECG format
+
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.65 ----------------------------------
+
+Sat 29 Oct 2005 22:02:52 CEST
+====================================================
+
+T200:
+    Encoding of Physical Units in HDR.PhysDimCode
+    on-the-fly (de-)compression (using the 'z'-mode of fopen)
+
+    Improvements handling EVENT-files
+    SCP-ECG amendments supported
+    fixing of EEProbe
+    BrainVision Marker file supported
+
+T300: QRSDETECT
+    round indices to integers
+
+T400:
+    support of SVM - classifier
+    better modularization (training and testing separated)
+
+T490:
+    evaluation of 2-class results extended to N-classes
+    Wolpaw's and Nykopp Mutual information, regression, AUC added
+
+MAYBE-MISSING:
+    Improved support for Octave
+    is not installed for Matlab 7.0 or higher
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.21 ----------------------------------
+
+Sat 29 Oct 2005 22:02:36 CEST
+====================================================
+
+GDF: reading and writing
+EDF: reading and writing
+
+Version 0.21 includes
++ reading BDF, BKR, CFWB, CNT included
++ mapping of raw data to matrix
+
++ datatype of DigMax/Min changed to DOUBLE
++ HDR.PhysDimCode added (encoding of physical dimension)
+
+
+=== Package: Biosig for C/C++ ======================
+--- Version: 0.10 ----------------------------------
+
+Mon 12 Sep 2005 19:31:13 CEST
+====================================================
+
+First release:
+- supports reading and writing of the GDF format.
+- and reading of EDF files.
+
+
+=== Package: Biosig for Octave and Matlab ==========
+--- Version: 1.60 ----------------------------------
+
+Mon 12 Sep 2005 19:31:13 CEST
+====================================================
+
+Major changes
+==============
+
+T200:
+    Support for GDF 2.0 pre
+    GTF fixed
+
+T300:
+    imagCOH MVFREQZ, TFMVAR, PLOTA
+
+T490: CRITERIA4ASYNCBCI
+    evaluation of asychronous BCI
+
+T200:
+    Electrode position data supported
+    HDR.ELEC.XYZ contains information on Electrode postions
+
+NaN: XCOVF added: calculates XCORR from data with NaN's
+
+
+Minor changes:
+==============
+T300: Berger
+    allows EVENT-Structure as input argument enable resampling
+
+Support of more formats
+       IMAGE: EXIF, BigTIFF,.
+       GTF: event information
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.56 -------------
+
+Wed 08 Jun 2005 18:50:48 CEST
+======================================
+
+- T200:
++ support of ACQ format with different sampleing rates
+
++ fix critical bug
+    Channels selection in EDF/GDF/BDF files was broken.
+    It selected always the first channels (e.g. CHAN=[1,3,5] returned channels [1:3])
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.55 -------------
+
+Tue 07 Jun 2005 11:55:36 CEST
+======================================
+
+T200:
++   support of alpha-trace format extended
+
++   EDF/GDF support incorporated in SOPEN and SREAD - functions SDF*.M  removed
+
++   many small improvements - for details see CHANGELOG
+
+VIEWER
+    included support of marker file of alpha-format
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.52 -------------
+
+Wed 27 Apr 2005 17:58:54 CEST
+======================================
+
++ ABF and ATF support included
++ GTF support improved
+
++ CNT: Automated Overflow Detection added
+
++ Berger algorithms for resampleing of HRV added
+
++ QRSDetection: correction of fiducial point included
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.51 -------------
+
+Sun 10 Apr 2005 15:24:40 CEST
+======================================
+
+Adding support for these formats
+- DDT, NEX, PLX, GTF, TMS32/Portilab
+
+- Bug fix for MIT format=310
+
+- Octave compatibility tested and improved
+
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.50 -------------
+
+Fri 25 Mar 2005 13:52:36 CET
+======================================
+
++ NEW: SAVE2GDF
+    supports saving data in GDF format.
+    It's useful for converting any supported format into GDF.
+    Often, the data size can be reduced, sometimes significantly.
+
++ Full support for the PHYSIOBANK database
+
++ support for BCI2000 format added
++ reading of EDF+ Events
+
++ several bug fixes and minor improvements
+    (see CHANGELOG for details)
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.40 -------------
+
+Mon 07 Mar 2005 18:54:47 CET
+======================================
+
++ Wrapper function for Training (TRAIN_SC) and
+testing of statistical (TEST_SC) classifiers.
+
++ Multiclass LDA (LDBC2, LDBC3, LDBC4)
+
++ triggered loading (TLOAD) with artifact rejection
+
++ Support for Walter-Graphtek (WG1)-dataformat
++ Improved support for Physiobank data
+
++ COV in the NaN-toolbox is compatible with Matlab-systax of COV
++ SUMSKIPNAN can be compiled with ML6 and ML7
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.30 -------------
+
+Sat 05 Feb 2005 18:59:19 CET
+======================================
+
+- EOG correction using Regression analysis
+- automated overflow detection for GDF and BKR format
+- Option "OVERFLOWDETECTION:OFF" added in SLOAD
+- Definition of Eventcodes extended
+
+- support of formats ALICE4, RigSys, XBM,
+- Multifrequency support of MIT-WFDB files
+- image formats are handled separately
+
+- SVIEWER V1.5
+  - new layout
+  - several bugs fixed
+
+AND
+- performance improvements
+- extended support of dataformats and
+- bug fixes
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.20 -------------
+
+Fri 30 Dec 2004 23:01:15 CET
+======================================
+
+- BCI competition 2005 datasets are supported
+
+- Support for BCI2000-format included
+- Support for DBI-ECoG data of Michigan included
+
+- automated overflow detection for BKR
+
+- SVIEWER: 1/2 page scrolling
+
+- Artifact processing
+   conversion of artifactscoring
+
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 1.00 -------------
+
+Wed 24 Nov 2004 04:41:05 PM CET
+======================================
+
+SVIEWER, a powerful viewing and scoring
+program is included. Now, it is really an important
+milestone which justifies the new version number 1.00.
+Thanks to Franz Einspieler, a student of the
+University of Technology Graz, Austria.
+
+
+--- Minor changes ---
+T200:
+identification of the following formats added:
+AON4, SID, SWF,
+
+Improved support for Formats:
+Brainvision, TIFF, Holter, MIT and FITS
+
+SLOAD:
+FITS format supports no Ascii and binary tables, too.
+
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.90 -------------
+
+Thu 11 Nov 2004 11:59:24 CET
+======================================
+
++ support for more dataformats (including IMAGE 2D & 3D, and Matrix) added
++ support for MVAR added
++ Hjorth added
++ Validation function for BCI competition added
+Functions which are not always available, have been included
+in directory MAYBE-MISSING. This directory should be added
+at the end of the path. In case some function is not available,
+the one in MAYBE-MISSING is used.
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.80 -------------
+
+Mon 27 Sep 2004 22:36:06 CEST
+======================================
+
++ Support of reading data of BCI competition 2003
++ Extensive tests and bug fixes (AIF, MIT-BIH)
++ Support for reading ACQ, DICOM and TFM-Excel format
++ Support for reading BMP (image) format
++ Identification of ELF, DLL, EXE type
++ Asychronous classifier added (T400)
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.73 -------------
+
+Thu 16 Sep 2004 15:45:39 CEST
+======================================
+
++ support for ACQ, BMP format added
++ file type identification with GETFILETYPE
++ Asynchronous classifier FC0 added (t400)
++ fix for MIT-BIH format and minor bug fixes
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.70 -------------
+
+Wed 15 Sep 2004 07:45:53 CEST
+======================================
+
+BIOSIG + EEGLAB packed
+This is packed in a different way than EEGLAB4.5b.
+It provides a cleaner directory structure.
+Currently, its available from from
+http://pub.ist.ac.at/~schloegl/biosig/prereleases/
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.70 -------------
+
+Tue 31 Aug 2004 09:33:40 CEST
+======================================
+
+Important changes and improvements:
+-----------------------------------
++ Event encoding: A canonical event table is included. This
+        should help to standardize event encoding. The current event table
+        is used in the Graz BCI project and in the GDF dataformat.
+        (T200: EVENTCODES.TXT)
+
++ Support for event encoding of WSCORE and of artifact database included
+        (T200: SOPEN, SDFOPEN, SLOAD)
+
++ Correction of EOG artifacts using regression analysis included
+        (T250: REGRESS_EOG.M)
+
++ script for testing SCP-files included
+        (DEMO: SCPTEST.M)
+
++ Suppport for 256/100 Resampling included.
+        (T250: RESAMPLE_MATRIX.MAT, RS.M)
+
++ Detection of Obstructive Apnoe/Hypopnea Event corrected and improved
+        (T300/oahe.m)
+
++ Classifier (T400):
+        - general (quadratic) classifier included (GDBC.M)
+
+        - FINDCLASSIFIER2 is the successor of FINDCLASSIFIER1
+        It provides better support for quadratic classifiers;
+        also the search for the optimal time segment is slightly
+        modified. (T400)
+
+Minor changes:
+--------------
+(T200): Identification of AKO, IMA_ADPCM_Sound, and VTK format included
+        Identification of FEF format improved
+        Fix for Tapus-version of the ECG-SCP format
+        implement DOVERMED version of FDA-XML
+        Overflow detection in GDF is ON per default
+
+(T500): Plota
+     display of confusion matrix and HRV-AAR improved
+
+
+=== Package: rtsBCI ==================
+--- Release: rtsBCI 0.10 -------------
+
+Don 19 Aug 2004 15:43:41 CEST
+======================================
+
+The Graz Brain-Computer Interface open source package rtsBCI
+is a collection of methods and functions for real-time data
+acquisition, storage, signal processing and visualization
+based on Matlab/Simulink and Microsoft Windows operating system.
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.60 -------------
+
+Mon 24 May 2004 05:51:44 PM CEST
+======================================
+
+- support of many new data formats included (T200)
+    MFER, EEProbe, BrainVision, FIF, CTF, EDF+, Sierra ECG 1.03 (Philips XML)
+- identification of following formats (T200)
+    NEX, STX, LNK, OGG, FLAC, RMF, AVR, 8SVX, SMP, SNDT, ESPS, VOC, SPEEX
+-  Support of ReReferencing
+-  Support of Event information in GDF
+
+- Calculating BCI classifier (with crossvalidation) added
+
+- T300: Paynter Filter added
+- T400: FINCLASSIFIER1 improvements
+- T500: many improvements in of PLOTA and SVIEW
+
+- bug fixes
+
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.41 ---------
+
+Wed 12 May 2004 02:52:46 AM CEST
+======================================
+
++ support of SierraECG (Philips XML 1.03) and XML-FDA included
+   in standard interface
++ support of RG64 format fixed
++ STX and LNK files are identified
++ bug fix in STR2DOUBLE
+
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.40 ---------
+
+Wed 05 May 2004 04:00:50 AM CEST
+======================================
+
++ support of many new formts
+    XML, NRF (Nicolet), BrainVision, CTF, EEProbe, FIFF, MFER, EDF+
+
++ Improved header check and simplified code for writing BKR data.
+
++ Events are added in GDF format.  The proposed Event codes are
+implemented, too. GDF will be used in the future recordings at TU Graz.
+
++ Support for rereferencing matrix added: linear combination and
+spatial filters can be applied more efficiently.
+
++ Trigger and Event encoding improved.
+
++ bug fixes.
+
++ More tests with Octave. There are known problems with some
+Octave versions between 2.1.51 and 2.1.57. These problems are
+fixed in the latest CVS version. Therefore, it can be expected
+Octave 2.1.58 or higher will do again.
+
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.50 -------------
+
+Tue 30 Mar 2004 08:52:47 PM CEST
+======================================
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.30 ---------
+
+Tue 30 Mar 2004 08:52:41 PM CEST
+======================================
+
++ Re-referencing supported -
+    performance improvement for certain applications.
++ Re-referencing unified amoung formats
++ Identification of many new formats implemented
+  XML, NRF, TRI, FS3, FS4, MEG4, BrainVision, CTF
+
++ bug fixes
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.46 -------------
+
+Mon 08 Mar 2004 08:49:52 PM CET
+======================================
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.25 ---------
+
+Mon 08 Mar 2004 08:49:52 PM CET
+======================================
+
++ SAVE2BKR converts event information into trigger channels
++ BKR and EDF write: improved header checks
++ Loading TSD and BCI.Paradigm information supported
++ CNT: information on filter settings corrected
++ EDF arbitrary combination of sampling rate
++ EGI format, fixed some problem
++ BKR support of automated overflow detection
+
++ post-analysis for BCI experiments improved
++ Timevarying multivariate autoregressive analysis added
+
++ SVIEW <NEW> simple signal viewer
++ PLOTA:
+        bar diagram added
+        TVMVAR visualisation added
++ Standard electrode positions (2-D and 3-D) added
+
++ Many more tests on Octave 2.1.50-56
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.42 -------------
+
+Thu 12 Feb 2004 07:05:11 PM GMT+1
+======================================
+
++ Support of SCP-ECG, DEMG, CFWB, and Alpha-Trace format added
++ bug fixes for the CNT-format
++ Support of Artifact-Selection files (*.sel)
++ STR2NUM and SETSTRING are replaced in order to avoid the use of EVAL.
++ Support of EVENTS is unified.
++ demo for writing WAV-files added
++ Classifier for BCI data included
++ Evaluation criteria KAPPA, ROC, AUC added.
++ Fix SAVE2BKR for EDF data
+
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.24 ---------
+
+Tue 10 Feb 2004 10:49:10 AM GMT+1
+======================================
+
+- Submission to the OPENECG programming contest.
+- SCPOPEN supports
+    bimodal decompression,
+    reconstitution of reference beat subtraction
+    Huffman decoding.
+  Now, all important features for reading SCP-ECG
+  are included.
+- SCPTEST included in DEMO
+- SETFIELD operator replaced (avoid using EVAL)
+- support of artifact selection (*.SEL files)
+
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.20 ---------
+
+Wed 28 Jan 2004 11:14:12 PM CET
+======================================
+update of Version 1.20
+    support of SCP-ECG format included
+    STR2NUM replaced by STR2DOUBLE
+    patches and bug fixes of standard Octave functions are included
+    extensive tests and bug fixes for Octave 2.1.5x
+    further harmonization of event information
+
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.11 ---------
+
+Fri 19 Dec 2003 01:09:50 PM CET
+======================================
+update of Version 1.10
+    CFWB, Alph-trace and DEMG added
+    fixed minor bugs in CNT, G.Tec, WAV format
+    consolidationg EVENT information
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.30 -------------
+
+Thu 18 Dec 2003 07:58:05 PM CET
+======================================
+
+DATAFORMATs (T200):
+   new: CFWB (r/w), Alpha-Trace (r), and DEMG (r)
+   fixed minor bugs in CNT, G.Tec, WAV format
+   consolidating EVENT information
+
+CLASSIFICATION (T400):
+    extended to N-class problems
+
+VALIDATION CRITERIA (T490):
+    added KAPPA, ROC, AUC, QCMAHAL,
+
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.10 ---------
+
+Thu 11 Dec 2003 05:28:53 PM CET
+======================================
+
+- fixed writing of WAV files
+- add identification of ASF files
+- add read support for CFWB (Chart4Windows Binary translated) format
+- consolidating of EVENT information
+
+
+=== Package: DATAFORMAT ==============
+--- Release: DATAFORMAT 1.00 ---------
+
+Mon 13 Oct 2003 08:02:10 PM CEST
+======================================
+
+Notes:
+Octave/Matlab filters for many different signal file formats:
+
+Read and Write is supported for these formats:
+AIFF/C, AU/SND, BDF, BKR, EDF, GDF, WAV
+
+Read is supported for
+AVG, CNT, EEG, EGI/RAW, HEA/MIT, SIG, SMA
+
+Formats of many other file types can be identified.
+
+
+Changes:
+- Moved files from t200/* to ./*
+- Removed obsolete EEGfun.M.
+    Sfun are a full substitute.
+- support for WAV, AIFF/C, SND/AU included
+- detection of further dataformats included
+
+
+
+=== Package: BIOSIG ==================
+--- Release: BIOSIG 0.27 -------------
+
+Mon 13 Oct 2003 08:02:10 PM CEST
+======================================
+
+BIOSIG  contains many useful functions for signal processing.
+Many dataformats are supported, the toolbox provides a unique
+interface to read many formats, writing of the most common
+formats (EDF, etc) is also supported.
+
+Several useful algorithm are implemented, e.g. QRS-detection,
+algorithms for stochastic model paramters (autoregressive,
+multivariate, time-varying etc.) are included through the
+TSA toolbox. Handling of missing values and artifacts is
+supported, assuming that NaN encodes artifacts and missing values.
+
+Biosig contains the other toolboxes like TSA, NaN and Dataformats.
+
+
+Changes:
+DATAFORMATS:
+   see Release notes for Dataformat 1.00.
+
+BIOSIG/
+   detection of obstructive apnea/hypapnea events
+   thresholds for overflow detections from histograms
+   correction of QRS detection and ectopic beat effect included
+
+Bug fixes.
+
+
+=== Package: DATAFORMATS =============
+--- Release: BIOSIG 0.25 -------------
+
+Fri 26 Sep 2003 03:25:15 PM CEST
+======================================
+
+BIOSIG 0.25 contains many useful functions for signal processing.
+Many dataformats are supported, the toolbox provides a unique
+interface to read many formats, writing of the most common formats
+(EDF, etc) is also supported.
+
+Several useful algorithm are implemented, e.g. QRS-detection,
+algorithms for stochastic model paramters (autoregressive, multivariate,
+time-varying etc.) are included through the TSA toolbox. Handling of
+missing values and artifacts is supported, assuming that NaN encodes
+artifacts and missing values.
+
+
+Changes:
++ Support of NoN-EEG signal formats included (e.g. WAV, SND, AIF)
++ Identification of further dataformats
+
++ Functions EEG* are renamed to S*.M (e.g. instead of EEGOPEN, use SOPEN etc.)
+
++ QRS correction included
+
+
+
+
+=== Package: DATAFORMATS =============
+--- Release: BIOSIG 0.20 -------------
+
+Wed 23 Jul 2003 09:39:13 AM CEST
+======================================
+
+
+BIOSIG 0.20 contains many useful functions for biomedical signal process.
+Many dataformats are supported, the toolbox provides a unique interface
+to read many formats, writing of the most common formats (EDF, etc) is supported.
+Several useful algorithm are implemented, e.g. QRS-detection, algorithms
+for stochastic model paramters (autoregressive, multivariate, time-varying etc.)
+are included through the TSA toolbox. Handling of missing values and artifacts
+is supported, assuming that NaN encodes artifacts and missing values.
+
+
+CHANGES:
++ Support of more dataformats (GDF, 32bit-Neuroscan, SIGIF)
++ Identification of further dataformats (MAT-files from ADICHT, DAQ, SEG2, Labview, Dasylab)
+
++ Testing of Fileformats with Octave for Windows
++ Overview of supported file formats available at
+    http://www.dpmi.tu-graz.ac.at/~schloegl/biosig/TESTED
+
++ detection of muscle artifacts in EEG added
++ Standard BCI analysis, and classification accuracy added.
+
+
+
+
+
+=== Package: DATAFORMATS =============
+--- Release: BIOSIG 0.17 -------------
+
+Mon 02 Jun 2003 05:27:38 PM CEST
+======================================
+
+DATAFORMAT's contains a unique interface to many biosignal dataformats. The software can be used with Matlab and Octave.
+
+  Currently, the following formats are are supported:
+ 	BDF	Biosemi data format (EDF with 24bit integers)
+ 	BKR	Dept for Medical informatics, University of Technology Graz
+      	CNT	Neuroscan (continous data)
+ 	EDF	European Data Format
+        EEG	Neuroscan (triggered data)
+        EGI	Format from Electrical Geodesics
+ 	GDF	General data format (EDF different datatypes)
+ 	ISHNE	The ISHNE Holter Standard Output File Format
+ 	MIT/ECG	PhysioNet data format
+ 	ISHNE	The ISHNE Holter Standard Output File Format
+ 	Poly5/TMS32 Format used for recordings with the Porti-system and the PortiLab software
+ 	RDF	EPRSS Data Format
+ 	SMA	Snap-Master file format
+
+Changes:
+
+- Several new formats are supported (RDF, SMA, etc.)
+- EOF, SEEK and TELL are tested for many functions and are now - more consistent.
+- Documentation of Header information improved
+- Usage of Header fields NRec, SPR, Dur, SampleRate unified amoung formats.
+
+
+
+
+=== Package: DATAFORMATS =============
+--- Release: BIOSIG 0.16 -------------
+
+Fri 23 May 2003 04:31:35 PM CET
+======================================
+
+- t200/SAVE2BKR
+    additional options included
+    DETREND removes very low frequencies (<0.5Hz) optional
+    PHYSMAX forces a fixed scaling value; useful if several files need the same scaling.
+- CNTOPEN
+    Label added to header information
+- LOADEEG - P_C_S
+    several fields like, Label, Attribute, AttributeName, EpochingSelect, EpochingName added.
+    mode P_C_DAQ_S improved: scaling and several other header fields included
+- T200/*
+    ISHNE Holter format implemented. Not yet testet.
+    Poly5/TMS32	implemented. Not yet tested.
+    PhysioNet/MIT-ECG format implemented and tested.
+
+
+
+=== Package: DATAFORMATS =============
+--- Release: BIOSIG 0.15 -------------
+
+Fri 14 Mar 2003 04:31:35 PM CET
+======================================
+
+- class 'data'  of g.BSanalyze considered
+    P_C_S version 1.02 and 1.50 accepted
+- LOADEEG works now with and without g.BSanalyze
+- HEADER documentation included
+- INSTALL, README, LICENSE included
+
+
+
+=== Package: DATAFORMATS =============
+--- Release: BIOSIG 0.14 -------------
+
+Sat 01 Feb 2003 08:01:36 PM CET
+======================================
+
+- Obsolete functions removed
+- Package name changed
+
+
+
+=== Release BIOSIG 0.13 ==============
+
+Tue 28 Jan 2003 20:16:00 PM CET
+======================================
+
++ SAVE2BKR: autoscale implemented
+
++ EEGCHKHDR: improved
++ BKR WRITE: r+ implemented (writes header into existing file)
++ BDF WRITE: implemented
+- EDFOPEN: syntax analysis of PreFilt
+- BDF and GDF support: EEGSEEK, EEGTELL
+
+
+
+=== Release BIOSIG 0.12 ==============
+
+Sat 18 Jan 2003 06:43:51 PM CET
+======================================
+
+
+BIOSIG should become a public library for biosignal processing.
+In a first step, a unique interface for accessing various
+dataformats for biosignals is provided.
+
+Currently are supperted the following formats:
+     BKR dataformat of the Medical Informatics, University of Techn. Graz.
+     EDF European data format for biosignals (not EDF+)
+     BDF Biosemi EDF format
+     CNT (Neuroscan continous data)
+     EEG (Neuroscan epoched data)
+     [EGI (Electrical Geodesics) not tested].
+
+The software are programmed as M-files (Matlab/Octave)
+Several tools for accessing these dataformats included.
+
+
+
+=== Release BIOSIG 0.11 ==============
+
+Mon Jan  6 16:00:54 2003
+======================================
+
+Interface to access different dataformats is implemented.
+Currently, the formats EDF, CNT (Neuroscan) and BKR are supported.
+The former "EDF-tools for Matlab/Octave" are incorporated.
+
+Interface of EEG* functions are more robust.
+
+
+- EEGSEEK: CNT and BKR mode fixed
+- EEGOPEN for CNT: bug fixes for Octave
+- Tests with Octave 2.1.40
+
+
+
+=== Release BIOSIG 0.10 ==============
+
+Fri Jan  3 16:45:33 2003
+======================================
+
+Interface to access different dataformats is implemented.
+Currently, the formats EDF, CNT (Neuroscan) and BKR are supported.
+The former "EDF-tools for Matlab/Octave" are incorporated.
+
+
+
+<alois.schloegl@gmail.com>
+
