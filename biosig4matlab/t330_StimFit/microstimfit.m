@@ -186,7 +186,10 @@ N = length(evtpos);
 results.label = {'tix','baseline','baseSD','-','peak','tPeak', ...
 		 't20Real', 't80Real', 't50AInt', 't50AReal', 't50BInt', 't50BReal', 't0Real', ...
 		 'tMaxSlopeRiseReal', 'maxSlopeRiseReal', 'tThreshold', 'yThreshold', ...
+		 'tMaxSlopeDecayReal', 'maxSlopeDecayReal', ...
 		};
+
+numFixLabels = length(results.label);
 
 if (option.fitFlag==1)
 	results.label(end+[1:3]) = {'a','offset','tau [s]'};
@@ -327,6 +330,8 @@ for k=1:N;
 
 	maxSlopeRiseReal  = max(peakRegion3);
 	tMaxSlopeRiseReal = find(peakRegion3==maxSlopeRiseReal) + ix + option.peakBegin - 0.5;
+	maxSlopeDecayReal = min(peakRegion3);
+	tMaxSlopeDecayReal= find(peakRegion3==maxSlopeDecayReal) + ix + option.peakBegin - 0.5;
 
 	t50AReal = mean(t50AReal);
 	tMaxSlopeRiseReal(2:end) = [];	% First only
@@ -339,7 +344,8 @@ for k=1:N;
 	results.data(k,13) = mean(t0Real);
 	results.data(k,14) = mean(tMaxSlopeRiseReal);
 	results.data(k,15) = mean(maxSlopeRiseReal);
-	results.data(k,18:20) = NaN;
+	results.data(k,18) = mean(tMaxSlopeDecayReal);
+	results.data(k,19) = mean(maxSlopeDecayReal);
 
 	% peakRegion4
 	if option.thresFlag>0
@@ -386,7 +392,7 @@ for k=1:N;
 			decay = data(results.peakTime(k)*Fs+evtpos(k) + t);
 			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t/Fs, decay, LB, UB);
 			results.fitResults(k,1:3) = [fitResult(1), fitResult(2), 1/fitResult(3)];
-			results.data(k, 18:20)    = [fitResult(1), fitResult(2), 1/fitResult(3)];
+			results.data(k, numFixLabels+[1:3])    = [fitResult(1), fitResult(2), 1/fitResult(3)];
 		catch
 			warning('fitting failed; optimization toolbox or optim package missing')
 			fitResult=[];
@@ -447,6 +453,7 @@ for k=1:N;
 			(t50AReal-ix)/Fs, myf(t50AReal-ix),'b.', ...
 			(t50BReal-ix)/Fs, myf(t50BReal-ix),'b.', ...
 			(tMaxSlopeRiseReal-ix)/Fs, myf(tMaxSlopeRiseReal-ix),'c.', ...
+			(tMaxSlopeDecayReal-ix)/Fs, myf(tMaxSlopeDecayReal-ix),'c.', ...
 			(tThreshold-ix)/Fs, myf(tThreshold-ix), 'm.',  ...
 			[option.t1;option.t2]'/Fs, base*[1;1],'g-',  ...
 			[option.baseBegin;option.baseEnd]'/Fs, base*[1;1],'g-', ...
@@ -471,7 +478,6 @@ for k=1:N;
 		
 		if any(option.fitFlag==[1:3]) && ~isempty(fitResult)
 			hold on;
-			%% TODO: check time scale (samples vs seconds)
 			y=option.fitfun(fitResult,t/Fs);
 			if (option.fitFlag==2) y=y+base; end
 			plot(t/Fs+results.peakTime(k),y,'c','linewidth',4);
@@ -486,8 +492,9 @@ for k=1:N;
 	end
 end
 
-%% TODO: check time scale (samples vs. seconds)
-results.MaxSlope = results.data(:,15);
+results.MaxSlope = results.data(:,15);		% for backwards compatibility
+results.MaxRiseSlope = results.data(:,15);	% same as .MaxSlope
+results.MaxDecaySlope = results.data(:,19);
 results.BaseLine = Baseline;
 results.BaseLineDev = BaseSD;
 
@@ -495,7 +502,9 @@ results.OnsetTime = (results.data(:,13)-evtpos)/Fs;
 results.RiseTime = diff(results.data(:,[7,8]),[],2)/Fs;
 results.HalfWidth = diff(results.data(:,[10,12]),[],2)/Fs;
 results.PeakTime = diff(results.data(:,[1,6]),[],2)/Fs;
-results.maxSlopeTime = diff(results.data(:,[1,14]),[],2)/Fs;
+results.MaxSlopeTime   = diff(results.data(:,[1,14]),[],2)/Fs;	% for backwards compatibility
+results.tMaxRiseSlope  = diff(results.data(:,[1,14]),[],2)/Fs;	% same  .MaxSlopeTime
+results.tMaxDecaySlope = diff(results.data(:,[1,18]),[],2)/Fs;
 results.thresholdTime = diff(results.data(:,[1,16]),[],2)/Fs;
 
 
