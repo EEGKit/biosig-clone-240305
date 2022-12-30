@@ -1,0 +1,13 @@
+Reference:
+  Author: Alois Schlögl and Clemens Brunner
+  Title: "BioSig: A Free and Open Source Software Library for BCI Research"
+  Journal: Computer
+  Year: 2008
+  Volume: 41
+  Number: 10
+  Pages: 44-50
+  DOI: 10.1109/MC.2008.407
+  URL: http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=4640660
+  eprint: http://pub.ist.ac.at/~schloegl/publications/Schloegl2007_BCI_Software.pdf
+Archive: SourceForge
+Repository: https://git.code.sf.net/p/biosig/code

@@ -4,7 +4,8 @@ biosig4c++ for Debian
 TinyXML
 ~~~~~~~
 
-Upstream carries modified copy of tinyxml with enabled support of
+uses configure to check whether tinyxml is available. If not, a modified copy of
+tinyxml is used. This comes with enabled support of
 compression, which was not accepted upstream in tinyxml (yet, if
 ever).
 

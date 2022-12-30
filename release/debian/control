@@ -1,30 +1,33 @@
-Source: biosig4c++
-Maintainer: Alois Schloegl <alois.schloegl@gmail.com>
+Source: biosig
+Maintainer: Debian Med Packaging Team <debian-med-packaging@lists.alioth.debian.org>
 Uploaders: Yaroslav Halchenko <debian@onerussian.com>,
-           Michael Hanke <michael.hanke@gmail.com>
+           Michael Hanke <michael.hanke@gmail.com>,
+           Alois Schlögl <alois.schloegl@gmail.com>
 Section: science
 Priority: optional
-Build-Depends: debhelper (>= 9~),
+Build-Depends: debhelper-compat (= 13),
                dh-python,
                d-shlibs,
                gawk,
-               python3-dev,
-               swig,
+               python3-setuptools,
+               python3-all-dev,
                python3-numpy,
-               python3-pkgconfig,
                zlib1g-dev,
                libsuitesparse-dev,
                dh-octave,
                libdcmtk-dev,
                libtinyxml-dev,
                libb64-dev
-Standards-Version: 4.3.0
-Vcs-Git: git://git.code.sf.net/p/biosig/code
-Vcs-Browser: http://sourceforge.net/p/biosig/code/ci/master/tree/biosig4c++/
+Standards-Version: 4.6.1
+Vcs-Browser: https://salsa.debian.org/med-team/biosig
+Vcs-Git: https://salsa.debian.org/med-team/biosig.git
 Homepage: https://biosig.sourceforge.io/
+Rules-Requires-Root: no
+Testsuite: autopkgtest-pkg-python
 
-Package: libbiosig2
+Package: libbiosig3
 Architecture: any
+Multi-Arch: same
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends}
@@ -39,8 +42,10 @@ Description: I/O library for biomedical data - dynamic library
 
 Package: libbiosig-dev
 Architecture: any
+Multi-Arch: same
 Section: libdevel
-Depends: libbiosig2 (= ${binary:Version}),
+Depends: libbiosig3 (= ${binary:Version}),
+         ${devlibs:Depends},
          ${misc:Depends}
 Description: I/O library for biomedical data - development files
  BioSig is a library for accessing files in several biomedical data formats
@@ -53,41 +58,32 @@ Description: I/O library for biomedical data - development files
 
 Package: biosig-tools
 Architecture: any
-Depends: ${shlibs:Depends},
+Depends: libbiosig3 (= ${binary:Version}),
+         ${shlibs:Depends},
          ${misc:Depends}
 Description: format conversion tools for biomedical data formats
  Based on BioSig library, this package provides command line
  tools, such as
  .
- save2gdf: converter between different file formats, including but
-    not limited to SCP-ECG(EN1064), HL7aECG (FDA-XML), GDF, EDF, BDF,
-    CWFB.  save2gdf can be also used to upload or retrieve data from a
-    bscs server.
- .
- biosig_fhir: converter biomedical signals into FHIR binary template
-    files in JSON, XML and base64 format.
- .
- physicalunits provides a command line conversion for encoding of
-    physical units according to:
-    ISO/IEEE 11073-10101:2004 Vital Signs Units of Measurement
-
-Package: python-biosig
-Architecture: any
-Section: python
-Depends: ${python:Depends},
-         ${shlibs:Depends},
-         ${misc:Depends}
-Description: Python bindings for BioSig library
- This package provides Python bindings for BioSig library.  Primary
- goal -- I/O interface to variety of biomedical file formats, including
- but not limited to SCP-ECG(EN1064), HL7aECG (FDA-XML), GDF, EDF.
+  - save2gdf: converter between different file formats, including but
+        not limited to SCP-ECG(EN1064), HL7aECG (FDA-XML), GDF, EDF,
+        BDF, CWFB.
+  - biosig2gdf: converts biosig data files into GDF, to simplify
+        parsing and loading by scripting languages (e.g. loadgdf.{py,r})
+  - rec2bin, bin2rec, heka2itx, save2aecg, save2scp: several converter
+       tools based on save2gdf
+  - biosig_fhir: packs biosignal data into HL7/FHIR binary template file.
+  - physicalunits: converter for encoding and decoding of physical
+       units according to ISO 11073-10101
 
 Package: python3-biosig
 Architecture: any
+Multi-Arch: same
 Section: python
-Depends: ${python3:Depends},
+Depends: libbiosig3 (= ${binary:Version}),
+         ${python3:Depends},
          ${shlibs:Depends},
-         ${misc:Depends}
+         ${misc:Depends},
 Description: Python3 bindings for BioSig library
  This package provides Python3 bindings for BioSig library.  Primary
  goal -- I/O interface to variety of biomedical file formats, including
@@ -95,7 +91,9 @@ Description: Python3 bindings for BioSig library
 
 Package: octave-biosig
 Architecture: any
-Depends: ${octave:Depends},
+Multi-Arch: same
+Depends: libbiosig3 (= ${binary:Version}),
+         ${octave:Depends},
          ${shlibs:Depends},
          ${misc:Depends}
 Description: Octave bindings for BioSig library

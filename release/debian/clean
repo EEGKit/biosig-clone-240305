@@ -1,0 +1,4 @@
+.pybuild/
+biosig4c++/python/Biosig.egg-info/
+config.log
+config.status

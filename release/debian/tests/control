@@ -1,0 +1,4 @@
+Test-Command: octave -W --eval mexSLOAD
+Features: test-name=octave-ext-prints-usage
+Depends: octave-biosig
+Restrictions: allow-stderr, superficial

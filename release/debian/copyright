@@ -1,7 +1,7 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: biosig4c++
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: biosig
 Upstream-Contact: Alois Schloegl <alois.schloegl@gmail.com>
-Source: https://biosig.svn.sourceforge.net/svnroot/biosig/trunk/biosig4c++
+Source: https://sourceforge.net/p/biosig/code/ci/master/tree/
 
 Files: *
 Copyright: 2003-2007, Lev Walkin <vlm@lionet.info>
@@ -9,15 +9,15 @@ Copyright: 2003-2007, Lev Walkin <vlm@lionet.info>
            2003,2004, X/IO Labs (xiolabs.com)
            2003,2004,2006, Eugenio Cervesato
            2005,2006, Franco Chiarugi
-           2005-2019, Alois Schloegl <alois.schloegl@gmail.com>
+           2005-2022, Alois Schloegl <alois.schloegl@gmail.com>
            2007, Elias Apostolopoulos
 License: GPL-3+
 
-Files: XMLParser/tiny*
+Files: biosig4c++/XMLParser/tiny*
 Copyright: 2000-2007, Lee Thomason <leethomason@mindspring.com>
            2002-2004, Yves Berquin <yvesb@users.sourceforge.net>
            2005, Tyge Lovset
-           2007-2019, Alois Schloegl <alois.schloegl@gmail.com>
+           2007-2022, Alois Schloegl <alois.schloegl@gmail.com>
 License: ZLIB
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any
@@ -38,21 +38,21 @@ License: ZLIB
   3. This notice may not be removed or altered from any source
   distribution.
 
-Files: t240/ANY*
-       t240/BIT_STRING*
-       t240/General*
-       t240/INTEGER*
-       t240/Native*
-       t240/OBJECT_IDENTIFIER*
-       t240/OCTET_STRING*
-       t240/REAL*
-       t240/UTF8String*
-       t240/asn_*
-       t240/ber_*
-       t240/constr*
-       t240/der_*
-       t240/per_*
-       t240/xer_*
+Files: biosig4c++/t240/ANY*
+       biosig4c++/t240/BIT_STRING*
+       biosig4c++/t240/General*
+       biosig4c++/t240/INTEGER*
+       biosig4c++/t240/Native*
+       biosig4c++/t240/OBJECT_IDENTIFIER*
+       biosig4c++/t240/OCTET_STRING*
+       biosig4c++/t240/REAL*
+       biosig4c++/t240/UTF8String*
+       biosig4c++/t240/asn_*
+       biosig4c++/t240/ber_*
+       biosig4c++/t240/constr*
+       biosig4c++/t240/der_*
+       biosig4c++/t240/per_*
+       biosig4c++/t240/xer_*
 Copyright: 2003-2006 Lev Walkin <vlm@lionet.info>
 License: BSD-4-clause
  Redistribution and use in source and binary forms, with or without
@@ -87,11 +87,6 @@ Comment:
 Files: debian/*
 Copyright: 2011, Yaroslav Halchenko <debian@onerussian.com>
 License: GPL-3+
-
-Files: debian/upstream-extern
-Copyright: 2005-2019, Alois Schloegl <alois.schloegl@gmail.com>
-License: GPL-3+
-Note: Copied from BioSig project
 
 License: GPL-3+
   This program is free software: you can redistribute it and/or modify

@@ -1,0 +1,8 @@
+# A symlink that does not match Debian's conventions for shared libraries
+usr/lib/*/libbiosig3.so
+
+# libphysicalunits is not needed in Debian currently
+usr/lib/*/libphysicalunits.a
+
+# Octave binding are shipped, but not Matlab ones
+usr/share/biosig/matlab/

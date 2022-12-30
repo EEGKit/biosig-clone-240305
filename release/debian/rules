@@ -7,64 +7,27 @@ export DH_VERBOSE=1
 MAKEOPTS=LIBEXT=so
 
 export PYBUILD_NAME=biosig
-export PYBUILD_SYSTEM=pybuild
-
-export DEB_CFLAGS_MAINT_APPEND  = -I$(CURDIR)
+export PYBUILD_DIR=../biosig4c++/python/
 
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 %:
-	dh $@ --with python3
+	dh $@ --with python2,python3
+	# dh $@ --with python2,python3,octave
 
-override_dh_auto_configure:
-	autoconf
-	dh_auto_configure
-	: # Use our copies
-	#ln -s debian/upstream-extern extern
 
 override_dh_auto_build:
-	: # Build everything upstream builds by default
-	make $(MAKEOPTS)
-	: # Assure additional interesting to us pieces are built
-	#make $(MAKEOPTS) mex4o python
-	#make libbiosig.a save2gdf save2aecg save2scp pdp2gdf \
-	#	 biosig_client biosig_server
-	# Later: libbiosig.so -- fails, no SONAME etc,
-	#         mex4o -- there are some copying etc
-	# Later: Python -- depends on obsolete Numeric
-	#        biosig4python
-	#  to build for multiple Python's would need to loop
-	#  between versions with smth like make python -B PYTHONVER=2.6
+	dh_auto_build -- $(MAKEOPTS)
+	pybuild --build --system=distutils
 
 override_dh_auto_test:
-	: I: skip testing for now -- relies on download of test data
-
-# Manual crafting of installing Octave and Python bindings
-# TODO: proper
-PYTHON=$(shell pyversions -d)
-PYTHON3=$(shell py3versions -d)
-PYDIR=$(shell /bin/ls -d /usr/lib/$(PYTHON)/*-packages)
-PY3DIR=$(shell if /bin/ls -d /usr/lib/${PYTHON3}/*-packages 2>/dev/null ; then /bin/ls -d /usr/lib/${PYTHON3}/*-packages ; else /bin/ls -d /usr/lib/python3/*-packages ; fi)
-PYVER=$(shell pyversions -d -v)
-PY3VER=$(shell py3versions -d -v)
-
-OCTDIR=$(shell octave-config -p LOCALOCTFILEDIR)/biosig
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	echo "I: skip testing for now -- relies on download of test data"
+endif
 
 override_dh_auto_install:
 	dh_auto_install
-
-	: I: install Python binding for current Python version TODO: all
-	#mkdir -p debian/python-biosig$(PYDIR)
-	#cp -a python/build/lib.*-$(PYVER)/biosig.so debian/python-biosig$(PYDIR)
-	mkdir -p debian/python3-biosig$(PY3DIR)
-	cp -a python/build/lib.*-$(PY3VER)/biosig.*.so debian/python3-biosig$(PY3DIR)/biosig.so
-
-	: I: install Octave bindings
-	mkdir -p debian/octave-biosig$(OCTDIR)
-	: # install with executable flag so dh_{strip,...} tools could catch it to operate
-	install mex/mexS*.mex debian/octave-biosig$(OCTDIR)
-
-	[ -x /usr/bin/dh_numpy ] && dh_numpy || :
+	pybuild --install --system=distutils
 
 override_dh_install:
 	dh_install
@@ -73,23 +36,16 @@ override_dh_install:
 		    --devunversioned \
 		    --exclude-la \
 		    --override s/libcholmod3-dev/libsuitesparse-dev/ \
+		    --override s/libtinyxml2.6.2v5-dev/libtinyxml-dev/ \
 		    --movedev debian/tmp/usr/include usr \
+		    --movedev "debian/tmp/usr/lib/*/pkgconfig/*.pc" usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig \
 		    debian/tmp/usr/lib/*/*.so
 
-override_dh_makeshlibs:
-	dh_makeshlibs
-	: # Provide octave:Depends
-	dh_octave_substvar
-
-# Tune up permission for .mex files this late in the chain
-# Silly dh_strip, dh_shlibdeps do not process those since extension
-# is "unknown" to them and they are not executable
-override_dh_gencontrol:
-	chmod a-x debian/octave-biosig$(OCTDIR)/*.mex
-	dh_gencontrol
+# No idea whether octave needs the extra LICENSE file - if so it can be deleted here
+#override_dh_installdocs:
+#	dh_installdocs
+#	find debian -name LICENSE -delete
 
 override_dh_auto_clean:
+	if [ -f $(PYBUILD_DIR)/setup.py ] ; then pybuild --clean ; fi
 	dh_auto_clean
-	if [ -f Makefile ] ; then make $(MAKEOPTS) clean ; fi 	# distclean invoked by auto isn't enough
-	-rm extern
-
