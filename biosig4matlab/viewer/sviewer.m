@@ -174,8 +174,8 @@ if file == 0
     return;
 else
     Data = get(findobj('Tag','sviewer'),'UserData');
-    detect_stat = get(findobj('Tag','Startdetection'),'Label');
-    if strmatch('Stop/Save Detection',detect_stat)
+    detect_stat = get(findobj('Tag','Startdetection'),'Label')
+    if strcmp('Stop/Save Detection',detect_stat)
         setdefault_detection_stop(Data,1);
     end
         setdefault(file,path);
@@ -299,7 +299,7 @@ Data.allChannel = Data.HDR.Label(:);
 
 
 Data.ShowChannelmax = 4;
-set(findobj('Tag','numb_act_channels'),'String',min(size(Data.Channel,1),Data.ShowChannelmax));
+set(findobj('Tag','numb_act_channels'),'Value',min(size(Data.Channel,1),Data.ShowChannelmax));
 set(findobj('Tag','Slider_Channel'),'Visible','on','Value',1);
 Data.ChannelConf.Display_min = Data.HDR.PhysMin;
 Data.ChannelConf.Display_max = Data.HDR.PhysMax;
@@ -315,14 +315,13 @@ drawnew (file,path,Data.ShowSamples,0);
 function drawnew (file,path,showsamples,only_plot)
 newfile = [path,file];
 Data = get(findobj('Tag','sviewer'),'UserData');
-if ~isequal(Data, 0)
+if ~isempty(Data)
     if isfield(Data,'NoS');
         deleteObj(Data,only_plot);
         Data.NS = [];
     end
-    Data = get(findobj('Tag','sviewer'),'UserData');
     Data.NoS = showsamples / Data.HDR.SampleRate;
-    Data.NS = str2num(get(findobj('Tag','numb_act_channels'),'String'));
+    Data.NS = get(findobj('Tag','numb_act_channels'),'Value');
     tsec = Data.Total_length_sec;
     tmin = floor(tsec/60);
     tsec = rem(tsec,60);
@@ -754,7 +753,7 @@ end
 select = Data.ShowDetection.MainClass;
 select_string = Data.ShowDetection.SubClass;
 
-if strmatch('all Events',select_string,'exact')
+if strcmp('all Events',select_string)
     if (select + 1) > length(s.GroupValue)
         if (det_typ >= s.GroupValue(select) & det_typ < 32768)
             color = Data.detcolor.detcolor(pos,:);
@@ -778,7 +777,7 @@ if strmatch('all Events',select_string,'exact')
     end
 else
     pos_desc = find(s.CodeIndex == det_typ);
-    if strmatch(s.CodeDesc(pos_desc),select_string,'exact')
+    if strcmp(s.CodeDesc(pos_desc),select_string)
         color = Data.detcolor.detcolor(pos,:);
     else
         color = [];
@@ -1024,8 +1023,8 @@ Data = get(findobj('Tag', 'sviewer'), 'UserData');
 pos1 = get(hObject, 'Value');
 numb = pos1 * size(Data.Channel,1);
 
-if numb > 0 & numb ~= str2num(get(findobj('Tag','numb_act_channels'),'String'))
-    set(findobj('Tag','numb_act_channels'),'String',numb);
+if numb > 0 & numb ~= get(findobj('Tag','numb_act_channels'),'Value')
+    set(findobj('Tag','numb_act_channels'),'Value',numb);
     file = Data.File.file;
     path = Data.File.path;
     try delete(Data.Patch.firstline); end
@@ -1261,7 +1260,7 @@ path = Data.File.path;
 % % % Data.Channel = {};
 % % % Data.Channel = channel;
 % % % 
-% % % set(findobj('Tag','numb_act_channels'),'String',min(Data.ShowChannelmax,size_newchannel(1)));
+% % % set(findobj('Tag','numb_act_channels'),'Value',min(Data.ShowChannelmax,size_newchannel(1)));
 
 set(findobj('Tag','sviewer'),'UserData',Data);
 drawnew (file,path,Data.ShowSamples,0);
@@ -2029,7 +2028,7 @@ startchannel = (size(Data.Channel,1) - Data.NS) - pos_sliderchannel * (size(Data
 startchannel = round(startchannel);
 sel_channel = startchannel + get(gca, 'UserData') -1;
 %channel_name = Data.Channel{sel_channel};
-%pos_channel = strmatch(channel_name,Data.allChannel);
+%pos_channel = strcmp(channel_name,Data.allChannel);
 pos_channel = sel_channel; 
 slider_step = get(findobj('Tag','Slider1'),'SliderStep');
 pos_slider = Data.Slider.Pos;
@@ -2076,9 +2075,9 @@ else
     select_string = get(findobj('Tag','listbox_Event_detail'),'String');
     select_value = get(findobj('Tag','listbox_Event_detail'),'Value');
     if length(select_string) > 40
-        pos_desc = strmatch(select_string(select_value,1:40),s.CodeDesc);
+        pos_desc = strcmp(select_string(select_value,1:40),s.CodeDesc);
     else
-        pos_desc = strmatch(select_string(select_value,:),s.CodeDesc,'exact');
+        pos_desc = strcmp(select_string(select_value,:),s.CodeDesc);
     end
     det_typ = s.CodeIndex(pos_desc);
 

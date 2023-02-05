@@ -762,7 +762,7 @@ else
                 elseif all(s(1:4)==[0,0,32,65])         %float(10)
                         HDR.TYPE = 'ABF';
                         
-                elseif all(s(1:4)==abs(['ATF',9]))
+                elseif all(s(1:4)==abs(['ATF',char(9)]))
                         HDR.TYPE='ATF'; % axon text file 
                         [tmp,t]=strtok(ss,[9,10,13,32]);
                         [tmp,t]=strtok(t,[9,10,13,32]);
@@ -872,7 +872,7 @@ else
                 elseif all(s(1:4)==[149, 106, 166, 89])
                         HDR.TYPE='IMAGE:SunRasterfile';
                         HDR.Endianity = 'ieee-be';
-                elseif all(s(1:20)==['L',0,0,0,1,20,2,0,0,0,0,0,192,0,0,0,0,0,0,70])
+                elseif all(s(1:20)==[76,0,0,0,1,20,2,0,0,0,0,0,192,0,0,0,0,0,0,70])
                         HDR.TYPE='LNK';
                         tmp = fread(fid,inf,'uint8');
                         HDR.LNK=[s,tmp'];
