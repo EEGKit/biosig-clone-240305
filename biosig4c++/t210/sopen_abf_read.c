@@ -213,6 +213,12 @@ EXTERN_C void sopen_atf_read(HDRTYPE* hdr) {
 			hdr->EVENT.TYP[k] = 0x7ffe;
 			hdr->EVENT.POS[k] = (k+1)*hdr->SPR;
 		}
+		if (hdr->EVENT.DUR!=NULL && hdr->EVENT.CHN!=NULL) {
+			for (size_t k=0; k < hdr->EVENT.N ; k++) {
+				hdr->EVENT.DUR[k]=0;	// duration
+				hdr->EVENT.CHN[k]=0;	// all channels
+			}
+		}
 	}
 
 	/* reshape data */
@@ -543,6 +549,12 @@ EXTERN_C void sopen_abf_read(HDRTYPE* hdr) {
 			hdr->EVENT.TYP[k] = 0x7ffe;
 			hdr->EVENT.POS[k] = (k+1)*spr;
 		}
+		if (hdr->EVENT.DUR!=NULL && hdr->EVENT.CHN!=NULL) {
+			for (k=0; k < n1; k++) {
+				hdr->EVENT.DUR[k]=0;	// duration
+				hdr->EVENT.CHN[k]=0;	// all channels
+			}
+		}
 		/* add tags */
 		hdr->AS.auxBUF = realloc(hdr->AS.auxBUF, n2 * sizeof(struct ABFTag));
 		ifseek(hdr, lei32p(hdr->AS.Header + offsetof(struct ABFFileHeader, lTagSectionPtr))*ABF_BLOCKSIZE, SEEK_SET);
@@ -613,6 +625,7 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 		hdr->SPR = 1;
 		uint16_t gdftyp = 3;
 
+		unsigned numSweeps = leu32p(hdr->AS.Header + offsetof(struct ABF_FileInfo, uActualEpisodes));
 		if (VERBOSE_LEVEL>7) {
 			fprintf(stdout,"\nuFileInfoSize:\t%i\n",leu32p(hdr->AS.Header + offsetof(struct ABF_FileInfo, uFileInfoSize)));
 			fprintf(stdout,"uActualEpisodes:\t%i\n",leu32p(hdr->AS.Header + offsetof(struct ABF_FileInfo, uActualEpisodes)));
@@ -880,5 +893,22 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 		// beginning of data block
 		hdr->HeadLen = leu32p(hdr->AS.Header + offsetof(struct ABF_FileInfo, DataSection.uBlockIndex)) * 512;
 
+
+		/* set up event table  */
+		if (numSweeps > 1) {
+			reallocEventTable(hdr, numSweeps - 1);
+			hdr->EVENT.N = numSweeps - 1;
+			hdr->EVENT.SampleRate = hdr->SampleRate;
+			for (size_t k=0; k < hdr->EVENT.N ; k++) {
+				hdr->EVENT.TYP[k] = 0x7ffe;
+				hdr->EVENT.POS[k] = (k+1)*((uint64_t)hdr->SPR * hdr->NRec) / numSweeps;
+			}
+			if (hdr->EVENT.DUR!=NULL && hdr->EVENT.CHN!=NULL) {
+				for (size_t k=0; k < hdr->EVENT.N ; k++) {
+					hdr->EVENT.DUR[k] = 0;	// duration
+					hdr->EVENT.CHN[k] = 0;	// all channels
+				}
+			}
+		}
 }
 
