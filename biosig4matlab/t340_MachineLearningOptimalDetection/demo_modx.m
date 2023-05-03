@@ -108,26 +108,20 @@ end;
 
 
 %% check prerequisites
-if ~exist('sumskipnan','file') || ~exist('roc','file')
+if ~exist('sumskipnan','file') || ~exist('roc','file') || isnan(mean([1,3,NaN])) || (sum(isnan(detrend([1,NaN,3])))>1)
+        addpath(fullfile(BIOSIG_PATH, '../../NaN/src'));
+        addpath(fullfile(BIOSIG_PATH, '../../NaN/inst'));
+end
+if ~exist('sumskipnan','file') || ~exist('roc','file') || isnan(mean([1,3,NaN])) || (sum(isnan(detrend([1,NaN,3])))>1)
 	addpath(fullfile(pwd,'NaN','src'));
         addpath(fullfile(pwd,'NaN','inst'));
 	fprintf(2,'Warning: sumskipnan() is missing - installing NaN-toolbox\n');
-end
-if isnan(mean([1,3,NaN]))
-	addpath(fullfile(pwd,'NaN','src'));
-        addpath(fullfile(pwd,'NaN','inst'));
-	fprintf(2,'Warning: mean() from NaN-toolbox is missing - install NaN-toolbox\n');
 end
 tmp=roc(randn(100,1),[1:100]'<50);
 if ~isfield(tmp,'H_kappa')
 	error('roc() from NaN-toolbox is missing - install NaN-toolbox');
 end
-if sum(isnan(detrend([1,NaN,3])))>1
-	addpath(fullfile(pwd,'NaN','src')); hex2dec('0211')
 
-        addpath(fullfile(pwd,'NaN','inst'));
-	fprintf(2,'Warning: detrend() from NaN-toolbox is missing - install NaN-toolbox\n');
-end
 if ~exist('mexSLOAD','file')
         error('mexSLOAD is missing - mexBiosig or Biosig need to be installed');
 end
@@ -152,6 +146,7 @@ Fs = 25000;	% target sampling rate [Hz]
 
 
 datapath  = 'data';
+mkdir(datapath);	% used to write preprocessed data files, for later use - not manadatory
 DATAFILES = {
         '21-Feb-2018_001.dat'
         '23-Nov-2017_002.dat'
@@ -419,8 +414,8 @@ for k1=1:length(DATAFILES);
 	end
 
         %%%%% check duration %%%%%
-        EVT.TYP(EVT.POS < (tix2(1)  -0.4*Fs)) = 0;
-        EVT.TYP(EVT.POS > (tix3(end)+0.4*Fs)) = 0;
+        EVT.TYP(EVT.POS < ((tix2(1)  -0.4)*Fs)) = 0;
+        EVT.TYP(EVT.POS > ((tix3(end)+0.4)*Fs)) = 0;
         pos = EVT.POS(EVT.TYP>0);
         L1  = (max(pos)-min(pos))/Fs;
         pos = EVT.TimeStamp(EVT.TYP>0);
@@ -504,7 +499,7 @@ end
                 c1( max(1,ix-floor(win/2)):min(ix+floor(win/2),length(c1)) ) = 1;
         end; 
         for ix = [tix12;tix22]',
-                c2( max(1,ix-floor(win/2)):min(ix+floor(win/2),length(c1)) ) = 1;
+                c2( max(1,ix-floor(win/2)):min(ix+floor(win/2),length(c2)) ) = 1;
         end; 
 
         %%% mamud_results018_lda_x1.m
@@ -655,18 +650,18 @@ end
         X.isnan = [X.isnan; isnan(Stmp(tix1));             NAN_BLOCK; isnan(Stmp(tix2));             NAN_BLOCK];
 end
 
-if 1, 	% disable or enable XV
+for k1=1:length(DATAFILES);
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%       within-cell cross-validation (XV)
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% XV: S1->S2 cross-validiation
-	ixtrain=find(X.G2==1);
-	ixtest=find(X.G2==2);
+	ixtrain=find(X.G2==1 & X.G0==k1);
+	ixtest =find(X.G2==2 & X.G0==k1);
 	RES12S_C1=mod_optimal_detection_filter(X.S, X.C1, TemplateLength, ixtrain, ixtest);
 	RES12S_C2=mod_optimal_detection_filter(X.S, X.C2, TemplateLength, ixtrain, ixtest);
 	% XV: S2->S1 cross-validiation
-	ixtrain=find(X.G2==2);
-	ixtest=find(X.G2==1);
+	ixtrain=find(X.G2==2 & X.G0==k1);
+	ixtest =find(X.G2==1 & X.G0==k1);
 	RES21S_C1=mod_optimal_detection_filter(X.S, X.C1, TemplateLength, ixtrain, ixtest);
 	RES21S_C2=mod_optimal_detection_filter(X.S, X.C2, TemplateLength, ixtrain, ixtest);
 
@@ -675,13 +670,13 @@ if 1, 	% disable or enable XV
 	% for the sake of simplicity, this is omitted here. 
 
 	% XV: A1B2->A2B1 cross-validiation
-	ixtrain=find(X.G3==1);
-	ixtest=find(X.G3==2);
+	ixtrain=find(X.G3==1 & X.G0==k1);
+	ixtest =find(X.G3==0 & X.G0==k1);
 	RES1A2B_C1=mod_optimal_detection_filter(X.S, X.C1, TemplateLength, ixtrain, ixtest);
 	RES1A2B_C2=mod_optimal_detection_filter(X.S, X.C2, TemplateLength, ixtrain, ixtest);
 	% XV: A2B1->A1B2 cross-validiation
-	ixtrain=find(X.G3==2);
-	ixtest=find(X.G3==1);
+	ixtrain=find(X.G3==0 & X.G0==k1);
+	ixtest =find(X.G3==1 & X.G0==k1);
 	RES2A1B_C1=mod_optimal_detection_filter(X.S, X.C1, TemplateLength, ixtrain, ixtest);
 	RES2A1B_C2=mod_optimal_detection_filter(X.S, X.C2, TemplateLength, ixtrain, ixtest);
 
@@ -689,7 +684,7 @@ if 1, 	% disable or enable XV
 	% and applied the ROC analysis to this trace. 
 	% for the sake of simplicity, this is omitted here. 
 
-	fprintf(fid0,'\n#####\nResults from export scoring 1\n');
+	fprintf(fid0,'\n#####\nResults from export scoring 1 of %s\n',DATAFILES{k1});
 	fprintf(fid0,'AUC: (XV:S1->S2):\t %g\n', RES12S_C1.test.AUC);
 	fprintf(fid0,'AUC: (XV:S2->S1):\t %g\n', RES21S_C1.test.AUC);
 	fprintf(fid0,'Kappa (XV:S1-S2)    : %.3g/%.3g\n',kappa(RES12S_C1.test.CM).kappa,kappa(RES21S_C1.test.CM).kappa);
@@ -697,15 +692,19 @@ if 1, 	% disable or enable XV
 	fprintf(fid0,'AUC: (XV:A2B1->A1B2):\t %g\n', RES2A1B_C1.test.AUC);
 	fprintf(fid0,'Kappa (XV:A1B2-A2B1): %.3g/%.3g\n',kappa(RES1A2B_C1.test.CM).kappa,kappa(RES2A1B_C1.test.CM).kappa);
 
-	fprintf(fid0,'\n#####\nResults from export scoring 2\n');
+	fprintf(fid0,'\n#####\nResults from export scoring 2 of %s\n',DATAFILES{k1});
 	fprintf(fid0,'AUC: (XV:S1->S2):\t %g\n', RES12S_C2.test.AUC);
 	fprintf(fid0,'AUC: (XV:S2->S1):\t %g\n', RES21S_C2.test.AUC);
 	fprintf(fid0,'Kappa (XV:S1-S2)    : %.3g/%.3g\n',kappa(RES12S_C2.test.CM).kappa,kappa(RES21S_C2.test.CM).kappa);
 	fprintf(fid0,'AUC: (XV:A1B2->A2B1):\t %g\n', RES1A2B_C2.test.AUC);
 	fprintf(fid0,'AUC: (XV:A2B1->A1B2):\t %g\n', RES2A1B_C2.test.AUC);
 	fprintf(fid0,'Kappa (XV:A1B2-A2B1): %.3g/%.3g\n',kappa(RES1A2B_C2.test.CM).kappa,kappa(RES2A1B_C2.test.CM).kappa);
+
+	ResTable1(k1,1:4)=[RES12S_C1.test.AUC, RES21S_C1.test.AUC, RES1A2B_C1.test.AUC, RES2A1B_C1.test.AUC];
+	ResTable2(k1,1:4)=[RES12S_C2.test.AUC, RES21S_C2.test.AUC, RES1A2B_C2.test.AUC, RES2A1B_C2.test.AUC];
 end
 
+fprintf(fid0,'\n\n####################\nResults (XV:LOOM) from export scorings E1 and E2 for each cell [AUC]\n');
 for k=1:length(DATAFILES),
 	% XV: LOOM
 	% this is not implemented here, essentially the idea is to 
@@ -713,14 +712,13 @@ for k=1:length(DATAFILES),
 	% of m-1 cells for training, and the data from the remaining cell for
 	% testing.  
 
-	% XV: A1B2->A2B1 cross-validiation
 	ixtrain=find(X.G0~=k & ~isnan(X.G0));
 	ixtest=find(X.G0==k);
 	RES_LOOM_C1=mod_optimal_detection_filter(X.S, X.C1, TemplateLength, ixtrain, ixtest);
 	RES_LOOM_C2=mod_optimal_detection_filter(X.S, X.C2, TemplateLength, ixtrain, ixtest);
 
-	fprintf(fid0,'\n\n####################\nResults (XV:LOOM) from export scorings E1 and E2 for each cell [AUC]\n');
 	fprintf(fid0,'cell#%d:\t AUC: %g\t%g\n', k, RES_LOOM_C1.test.AUC, RES_LOOM_C2.test.AUC);
+	ResTable3(k,1:2)=[RES_LOOM_C1.test.AUC, RES_LOOM_C2.test.AUC];
 end
 
 % general classifier obtained from all scored data, one classifier from each of the export scorings. 
@@ -781,7 +779,7 @@ for k1 = 1:length(DATAFILES);
 	% save results in a GDF file for visualization with SigViewer
 	H0 = [];
 	[tmp_p,tmp_f,tmp_e] = fileparts(HDR.FileName);
-	H0.FileName = sprintf('output/%s.%s.w%d.e1.h%d.gdf', tmp_f, 'mod', round(Twin*1000), WinHann);
+	H0.FileName = sprintf('output/%s.%s.w%d.e%d.h%d.gdf', tmp_f, 'mod', round(WINLEN*1000), E, WinHann);
 	H2 = minidet2gdf([s, D, D>TH], [], pos, WINLEN, Fs, H0, AP);
 end
 end
