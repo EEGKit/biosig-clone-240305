@@ -75,7 +75,7 @@ if isfield(HDR,'EDFplus') && isfield(HDR.EDFplus,'ANNONS'),
 				%if all(s2(2:2:end)==0) s2 = s2(1:2:end); end; %% unicode to ascii - FIXME 
 				Desc{N}  = s2;
 				if length(t0)>1
-					DUR(N)  = t0(2) * HDR.EVENT.SampleRate; 
+					DUR(N,1)  = t0(2) * HDR.EVENT.SampleRate;
 				else
 					DUR(N,1)  = 0;
 				end;
