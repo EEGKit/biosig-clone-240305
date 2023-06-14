@@ -110,7 +110,7 @@ try
     [Pxx,f] = periodogram(x, [], 10, 100);
     [b,a]   = butter(5, [.08,.096]);
 catch
-    path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/signal'],'-end');	% Octave-Forge signal processing toolbox converted with freetb4matlab
+    path(path,[BIOSIG_MATLAB_PATH,'/freetb4matlab/signal']);	% Octave-Forge signal processing toolbox converted with freetb4matlab
     disp('signal processing toolbox (butter,periodogram) from freetb4matlab added');
 end; 
 
