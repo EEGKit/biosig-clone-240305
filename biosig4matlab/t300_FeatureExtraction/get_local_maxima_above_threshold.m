@@ -26,6 +26,12 @@ function [pos] = get_local_maxima_above_threshold(data, TH, Mode, winlen)
 %               and negative threshold, however the distance
 %               winlen must exceed the distance between the
 %               positive and negative threshold crossing
+%         5: similar to 4, but use a refractory period of winlen,
+%               for avoid multiple detections.
+%               single detection for period between positive
+%               and negative threshold, however the distance
+%               winlen must exceed the distance between the
+%               positive and negative threshold crossing
 %
 %   winlen (Mode=1 only): window length (in number of samples)
 %               in which all detections collapse to one event
@@ -118,6 +124,29 @@ elseif (Mode==3)
 
 elseif (Mode==4)
 	d      = diff([-inf;data;-inf] > TH);
+	onset  = find(d > 0);
+	offset = find(d < 0);
+	A      = repmat(NaN, size(onset));
+	pos    = repmat(NaN, size(onset));
+	for k  = find((offset - onset)' >= winlen),
+		[A,tix] = max(data(onset(k):offset(k)-1));
+		pos(k)  = onset(k)+tix-1;
+	end
+	fprintf(1,'%d spurious events removed\n',sum(isnan(pos)));
+	pos = pos(~isnan(pos));
+	return;
+
+elseif (Mode==5)
+	dd     = [-inf;data;-inf] > TH;
+	d      = diff(dd > TH);
+	onset  = find(d > 0);
+	% set refractory period
+	[ix,iy]= meshgrid(onset,0:winlen-1);
+	ix = (ix(:) + iy(:));
+	ix = ix(1<ix & ix<length(dd));
+	dd(ix) = 1;
+
+	d      = diff(dd > TH);
 	onset  = find(d > 0);
 	offset = find(d < 0);
 	A      = repmat(NaN, size(onset));
