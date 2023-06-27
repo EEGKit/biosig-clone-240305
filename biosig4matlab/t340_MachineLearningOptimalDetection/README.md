@@ -4,18 +4,20 @@ detecting EPSP/EPSCs as described in [1] and applied in [2].
 
 In order to run this demo, the following software packages are needed:
 
+
 + Octave (or Matlab) and the Signal Processing toolbox or package
 + Biosig [3]
-+ NaN-toolbox [4]
+please note biosig4c++/libbiosig and the mex-file of "Biosig for Octave/Matlab" are needed, and can be indendently obtained. E.g. biosig4c++/libbiosig can be obtained as a package from your linux distribution. "Biosig for Octave/Matlab" can be installed from source or through package manager of Octave.
++ NaN-toolbox [4] - For performance reasons you might want to compile the mex files.
 + SigViewer [5] - for scoring the data and visualization of the resulting detections
 	(either v0.5.1, or the most recent version from git repo)
 + Example data (from [1,2]) is available from [6]
 
-Copyright (C) 2016-2022 Alois Schlögl, IST Austria
+Copyright (C) 2016-2023 Alois Schlögl, IST Austria
 
 Downloads:
-    https://pub.ist.ac.at/~schloegl/software/mod/mod-2.0.tar.xz
-    https://pub.ist.ac.at/~schloegl/software/mod/mod-2.0.zip
+    https://pub.ist.ac.at/~schloegl/software/mod/mod-2.3.tar.xz
+    https://pub.ist.ac.at/~schloegl/software/mod/mod-2.3.zip
 
 The source code is also available as part of Biosig [3], in subdirectory …/t340_MachineLearningOptimalDetection/
 
@@ -39,6 +41,8 @@ The source code is also available as part of Biosig [3], in subdirectory …/t34
 
 [6] https://pub.ist.ac.at/~schloegl/software/mod/
 
+[7] https://en.wikipedia.org/wiki/Pattern_search_(optimization)
+
 # Content:
 
 	% demo - applying the method to the example data available from
@@ -47,7 +51,16 @@ The source code is also available as part of Biosig [3], in subdirectory …/t34
 	demo_mod.m
 	% An extended version with LOOM-based cross-validation, and two scorings
 	%   is shown in
-	demo_modx.m
+	demo_modx.m (obsolete, use demo_mody.m instead)
+
+	% improved version of demo_modx
+	demo_mody.m
+
+	% applying the general classifier to new data
+	apply_general_classifier.m
+
+    % loads the data, and apply preprocessing steps (High- and lowpass filtering, resampling to common sampling rate, AP detection and blanking, blanking of other artifacts like RS-pulses)
+    sload4mod.m
 
 	% this is the core function for obtaining the parameters of
         % from the MOD method  (filter coefficients, threshold, and delay)
@@ -82,7 +95,7 @@ That should do it. The main data processing of training the detection method hap
 and in case you still have some HF noise in the raw detection trace, you might want to smooth it before doing the event detection.
 
 ### General classifier:
-Check out demo_modx.m and address these items:
+Check out demo_mody and address these items:
 
 1) loading of data, where is your data located, how to load it.
    define the grouping information, this is useful for the cross-validation later
@@ -94,6 +107,9 @@ Check out demo_modx.m and address these items:
 4) run training and testing procedure on the scored data, use Leave-one-out-method for cross-validation.
 
 5) Build the general classifier from all scored data.
+
+6) (optional) check whether the changing default parameters for preprocessing
+   (i.e. HP, LP, WINLEN, MAXLAG) would improve the result.
 
 
 ## Is the output in the text file simply the event timings?
@@ -113,6 +129,38 @@ Yes, the event timing can be found in multiple outputs.
 
 
 ## Changes
+2023-06-27: v2.3
+
+	- restructuring of code, such that the codes for preprocessing, training,
+	  and applying the classifier is easier to identify. Therefore, demo_modx
+	  is now replaced with demo_mody, preprocessing is done in sload4mod, and
+	  the application of the GeneralClassifier is done in
+	  apply_general_classifier.
+
+	- sload4mod is a new fuction and provides additional pre-processing methods,
+	  including Highpass-filtering, Gaussian lowpass filter, and improves speed
+	  of downsampling
+
+	- apply_general_classifier: demonstrates how the precomputed classifier can
+	  be applied to new data.
+
+	- demo_mody has been used to optimize the preprocessing, using a manual
+	  patternsearch approach [7], suggesting that a different set of
+	  preprocessing would improve the results. The resulting changes are:
+                                 demo_modx        demo_mody
+	  HighPass filter:           detrend          1 Hz (Gaussian)
+	  LowPass filter;            1000 Hz          5000 Hz (Gaussian)
+	  WINLEN [ms]                4 ms             3 ms
+	  TemplateLength [samples]   1000             400
+
+
+2022-09-26: v2.2
+	- fix filenames in demo_mod.m
+
+2022-05-13: v2.1
+    add smoothing of raw detection trace to demo
+    enable cross-validation by default; report kappa in addition to AUC
+    improvements and cleanup of demo_mod{,x}
 
 2022-03-02:
     - demo_modx added
@@ -125,5 +173,3 @@ Yes, the event timing can be found in multiple outputs.
 
 2021-03-12:
     first release:
-
-
