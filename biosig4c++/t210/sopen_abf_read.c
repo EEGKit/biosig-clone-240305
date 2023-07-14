@@ -805,6 +805,7 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 			strncpy(hc->Label, (char*)hdr->AS.Header + offsetof(struct ABFFileHeader, sADCChannelName) + k*ABF_ADCNAMELEN, min(ABF_ADCNAMELEN,MAX_LENGTH_LABEL));
 			hc->Label[ABF_ADCNAMELEN] = 0;
 /*
+			// TODO: where to find information about PhysDim and Label in ABF2 file ? Currently, this is hardcoded below
 			char units[ABF_ADCUNITLEN+1]; {
 				memcpy(units, (char*)hdr->AS.Header + offsetof(struct ABFFileHeader, sADCUnits) + k*ABF_ADCUNITLEN, ABF_ADCUNITLEN);
 				units[ABF_ADCUNITLEN] = 0;
@@ -813,6 +814,9 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 			}
 */
 
+			hc->PhysDimCode = PhysDimCode("V");
+			hc->Cal = 0.001;
+			hc->Off = 0.0;
 			double PhysMax = fADCRange;
 			double DigMax  = lADCResolution;
 
@@ -820,16 +824,16 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 			// https://support.moleculardevices.com/s/article/Convert-data-file-from-another-program-to-an-ABF-file-so-that-it-can-be-read-by-pCLAMP
 			// https://github.com/yamad/libabf/blob/master/src/AxAbfFio32/abfheader.cpp -> GetADCtoUUFactors
 
-			{
-			double iCal = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentScaleFactor));
-			iCal *= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fADCProgrammableGain));
-			if (lei16p(hdr->AS.Header + offsetof(struct ABFFileHeader, nSignalType) + 2 * k) != 0)
-				iCal *= lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fSignalGain) + 4 * k);
-			if (!lei16p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, nTelegraphEnable)))
-				iCal *= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fTelegraphAdditGain));
-			if (hc->Cal == 0.0) hc->Cal = 1.0;
-			hc->Cal = fADCRange / (iCal * lADCResolution);
-			hc->Off = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset));
+			if (gdftyp==3) {
+				double iCal = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentScaleFactor));
+				iCal *= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fADCProgrammableGain));
+				if (lei16p(hdr->AS.Header + offsetof(struct ABFFileHeader, nSignalType) + 2 * k) != 0)
+					iCal *= lef32p(hdr->AS.Header + offsetof(struct ABFFileHeader, fSignalGain) + 4 * k);
+				if (!lei16p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, nTelegraphEnable)))
+					iCal *= lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fTelegraphAdditGain));
+				if (hc->Cal == 0.0) hc->Cal = 1.0;
+				hc->Cal = fADCRange / (iCal * lADCResolution);
+				hc->Off = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset));
 			}
 
 			// hc->Off      = lef32p(hdr->AS.auxBUF + S.uBytes*k + offsetof(struct ABF_ADCInfo, fInstrumentOffset));
