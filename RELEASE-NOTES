@@ -5,7 +5,18 @@ Bitcoin account for supporting biosig project:
 
 Next release:
 
+====================================================
+--- Version: 2.5.1 ---------------------------------
 
+Tue 18 Jul 2023 12:57:41 PM CEST
+====================================================
+
+- MOD: demo improved, preprocessing got its own function,
+        cleaner code structure
+- b4c/libbiosig:
+        ABF2: fixed scaling of float32 data (fixes stimfit issue #104)
+              define event table for multi-sweep data (fixes stimfit issue #102)
+- several minor fixes and improvements
 
 ====================================================
 --- Version: 2.5.0 ---------------------------------
