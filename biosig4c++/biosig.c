@@ -2013,6 +2013,9 @@ HDRTYPE* getfiletype(HDRTYPE* hdr)
 		case 0x03000000:
 		    	hdr->FILE.LittleEndian = 0;
 		    	break;
+		default:
+			biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "invalid/unsupported file type");
+			break;
 		}
 	}
 	else if ((Header1[0]==0x71 || Header1[0]==0x72) && (Header1[1]==1 || Header1[1]==2) && Header1[2]==1  && Header1[3]==0 )

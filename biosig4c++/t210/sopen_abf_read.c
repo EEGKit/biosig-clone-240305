@@ -296,6 +296,9 @@ EXTERN_C void sopen_abf_read(HDRTYPE* hdr) {
 		switch (lei16p(hdr->AS.Header + offsetof(struct ABFFileHeader, nDataFormat))) {
 		case 0: gdftyp = 3; break;
 		case 1: gdftyp = 16; break;
+		default:
+			biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "ABF datatype/gdftyp unknown/unsupported (neither int16 nor float32)");
+			break;
 		}
 
 	if (VERBOSE_LEVEL>7) fprintf(stderr,"%s (line %i)\n",__FILE__,__LINE__);
@@ -722,6 +725,9 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 		switch(leu32p(hdr->AS.Header + offsetof(struct ABF_FileInfo, DataSection.uBytes))) {
 		case 2: gdftyp=3; break;
 		case 4: gdftyp=16; break;
+		default:
+			biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "ABF2 datatype/gdftyp unknown/unsupported (neither int16 nor float32)");
+			break;
 		}
 
 		struct ABF_Section S;
@@ -744,7 +750,7 @@ EXTERN_C void sopen_abf2_read(HDRTYPE* hdr) {
 			fprintf(stdout,"Warning ABF2 v%4.2f: nOperationMode=%d is very experimental - double check the data you get.\n", hdr->VERSION, nOperationMode);
 			break;
 		default:
-			biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "ABF2 nOperationMode=%d unknown and unsupported");
+			biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "ABF2 nOperationMode unknown and unsupported");
 			break;
 		}
 
