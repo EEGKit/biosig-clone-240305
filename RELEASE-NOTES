@@ -6,9 +6,9 @@ Bitcoin account for supporting biosig project:
 Next release:
 
 ====================================================
---- Version: 2.5.1 ---------------------------------
+--- Version: 2.5.2 ---------------------------------
 
-Tue 18 Jul 2023 12:57:41 PM CEST
+Tue 18 Jul 2023 09:21:47 PM CEST
 ====================================================
 
 - MOD: demo improved, preprocessing got its own function,
