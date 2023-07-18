@@ -13,7 +13,7 @@
 ## TODO: add freetb4matlab
 ## Tagging a release
 
-B4OMversion=3.8.2
+B4OMversion=3.8.3
 
 SRCDIR=/home/schloegl/src
 MXEDIR=$SRCDIR"/mxe.github.schloegl"
@@ -74,7 +74,7 @@ echo 'License: GPL version 3 or later' >> $DESCRIPTION
 echo 'Url: http://biosig.sf.net' >> $DESCRIPTION
 
 rm -rf biosig-code/biosig4c++/todo.txt biosig-code/.git biosig-code/autom4te.cache
-rm -rf biosig-code/config.{guess,status,log,status,h.in*}
+rm -rf biosig-code/config.{status,log}
 
 # URL=https://sourceforge.net/projects/libb64/files/libb64/libb64/libb64-1.2.1.zip
 # wget -nc $URL -O /tmp/$(basename $URL)

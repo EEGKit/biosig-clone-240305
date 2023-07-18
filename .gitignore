@@ -33,9 +33,6 @@ biosig4c++/magic/*.mgc
 #
 # autoconf generated files
 autom4te.cache/
-config.guess
-config.h
-config.h.in
 config.log
 config.status
 config.sub
