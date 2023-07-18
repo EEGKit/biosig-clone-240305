@@ -44,7 +44,7 @@ function HDR = minidet2gdf(S,POS,pos,WINLEN,Fs,fn, AP_Events)
 % [4] ON K2204:2015 A general dataformat for biosignals, Austrian Standards, 2015
 
 
-%    Copyright (C) 2017-2021 by Alois Schloegl <alois.schloegl@ist.ac.at>
+%    Copyright (C) 2017-2021,2023 by Alois Schloegl <alois.schloegl@ist.ac.at>
 %    This is part of the BIOSIG-toolbox http://biosig.sf.net/
 %
 %    BioSig is free software: you can redistribute it and/or modify
@@ -267,8 +267,18 @@ if 0, %try,
 	mexSSAVE(HDR,S);
 else %catch
 
+	% write results file of mod, useful for debugging
 	HDR1 = sopen(HDR,'w');
 	HDR1 = swrite(HDR1,S);
+	HDR1 = sclose(HDR1);
+
+	% write event file
+	HDR2=HDR;
+	HDR2.NS=0;
+	HDR2.FileName = fullfile(p,[f,'.evt']);
+	HDR2.EVENT.CHN(:)=0;
+
+	HDR1 = sopen(HDR2,'w');
 	HDR1 = sclose(HDR1);
 end;
 

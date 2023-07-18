@@ -137,6 +137,7 @@ end
 %%%  https://github.com/shababo/psc-detection-dist
  
 
+HIGHPASS=0;
 LOWPASS=1000;
 if ~exist('WINLEN','var')
 	WINLEN=4; 	% window size [ms] for scoring trace 
@@ -388,7 +389,7 @@ for k1=1:length(DATAFILES);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%  50 Hertz Notch and Lowpass %%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	if 0
+	if (HIGHPASS>0)
 	        for k2 = 1:length(selpos)-1,
         	        d = Stmp(selpos(k2):selpos(k2+1)-1,:);
                 	dnan=isnan(d);
@@ -398,7 +399,7 @@ for k1=1:length(DATAFILES);
 	                D = fft(d); 
         	        ff = [0:length(d)-1]*Fs/length(d);
                 	%fix = ((ff > 49.5) & (ff < 50.5)) | (ff > Fs/2);
-	                fix = ff>LOWPASS;
+	                fix = (HIGHPASS < ff) | (ff > LOWPASS);
         	        D( fix ) = 0; 
                 	D(1) = D(1)/2;
 	                d = real(ifft(D))*2;
@@ -728,7 +729,7 @@ RES_C{1}=mod_optimal_detection_filter(X.S, X.C1, TemplateLength, ixtrain, ixtest
 RES_C{2}=mod_optimal_detection_filter(X.S, X.C2, TemplateLength, ixtrain, ixtest);
 RES_C{1}.output=[];
 RES_C{2}.output=[];
-save('output/GeneralClassifier.mat','RES_C','-mat');
+save('output/GeneralClassifier.mat','RES_C','LOWPASS','HIGHPASS','Fs','WINLEN','Mode', '-mat');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       Apply MOD to whole (including unscored) data 
