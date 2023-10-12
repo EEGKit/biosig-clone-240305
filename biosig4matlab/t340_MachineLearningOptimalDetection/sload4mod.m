@@ -64,6 +64,11 @@ end
         %       read in data 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	[data,HDR]     = mexSLOAD(datafile,0);
+	if ~isfield(HDR,'SampleRate')
+		rawdata=data;
+		data=[];
+		return;
+	end
 	HDR.SampleRate = round(HDR.SampleRate);
 	S = data(:,chan);        
 	[HDR.FILE.Path,HDR.FILE.Name,HDR.FILE.Ext]=fileparts(datafile);
@@ -111,6 +116,12 @@ end
 	% AP = detect_spikes_bursts(datafile, chan);
 	AP.EVENT.CHN(:)=1; % raw data is stored into channel 1 when writing file 
 
+	DIV = HDR.SampleRate/Fs;
+	if DIV~=round(DIV),
+		data=[];
+		rawdata=data;
+		return;
+	end
 	DIV = round(HDR.SampleRate/Fs);
 	if DIV~=1, 
 		% downsample to 25kHz
@@ -178,8 +189,8 @@ end
         	        D( 2*ff >= Fs) = 0; 	% Nyquist for downsampling 
                 	%fix = ((ff > 49.5) & (ff < 50.5)) | (ff > Fs/2);
         	        D( ffix ) = 0; 
-                	D(1) = D(1) / 2;
 
+			D(1) = D(1) / 2;
 	                d2   = real(ifft(D(ff<Fs)))*2; 	%% fft-based downsampling to Fs
 	                dnan = any(reshape(dnan,DIV,[]),1)';
         	        if any(dnan)
@@ -219,6 +230,7 @@ end
                 	%fix = ((ff > 49.5) & (ff < 50.5)) | (ff > Fs/2);
         	        D = D.*G2;	% gauss filter in F-domain
 
+			D(1) = D(1) / 2;
 	                d2 = real(ifft(D(ff<Fs)))*2; 	%% fft-based downsampling to Fs
 	                dnan=any(reshape(dnan,DIV,[]),1)';
         	        if any(dnan)
@@ -257,6 +269,7 @@ end
                 	%fix = ((ff > 49.5) & (ff < 50.5)) | (ff > Fs/2);
         	        D = D.*G1;	% gauss filter in F-domain
 
+			D(1) = D(1) / 2;
 	                d2 = real(ifft(D(ff<Fs)))*2; 	%% fft-based downsampling to Fs
 	                dnan=any(reshape(dnan,DIV,[]),1)';
         	        if any(dnan)
