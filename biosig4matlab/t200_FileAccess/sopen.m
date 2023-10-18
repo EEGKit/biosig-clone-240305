@@ -553,10 +553,8 @@ end;
 	                        HDR.PhysDim    =       fread(HDR.FILE.FID,[ 8,HDR.NS],'uint8=>char')';
 	                        HDR.PhysMin    =       fread(HDR.FILE.FID,[1,HDR.NS],'float64');	
 	                        HDR.PhysMax    =       fread(HDR.FILE.FID,[1,HDR.NS],'float64');	
-	                        tmp            =       fread(HDR.FILE.FID,[1,2*HDR.NS],'int32');
-	                        HDR.DigMin     =  tmp((1:HDR.NS)*2-1);
-	                        tmp            =       fread(HDR.FILE.FID,[1,2*HDR.NS],'int32');
-	                        HDR.DigMax     =  tmp((1:HDR.NS)*2-1);
+	                        HDR.DigMin     =       fread(HDR.FILE.FID,[1,HDR.NS],'int64');
+	                        HDR.DigMax     =       fread(HDR.FILE.FID,[1,HDR.NS],'int64');
 
                                 HDR.PreFilt    =       fread(HDR.FILE.FID,[80,HDR.NS],'uint8=>char')';	%
                                 HDR.AS.SPR     =       fread(HDR.FILE.FID,[ 1,HDR.NS],'uint32')';	%	samples per data record
