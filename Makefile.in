@@ -48,7 +48,7 @@ distclean : clean
         # also configure.ac for list of files
 	-rm config.log
 	-rm config.status
-	rm Makefile biosig4c++/Makefile biosig4c++/*/Makefile \
+	-rm Makefile biosig4c++/Makefile biosig4c++/*/Makefile \
 		biosig4c++/python/setup.py \
 		biosig4c++/R/DESCRIPTION
 
@@ -161,20 +161,4 @@ all: first #win32 win64 #sigviewer #win32/sigviewer.exe win64/sigviewer.exe #bio
 #---------------------------------------------------------------------------#
 $(srcdir)/configure: configure.ac aclocal.m4
 	autoconf
-
-# autoheader might not change config.h.in, so touch a stamp file.
-$(srcdir)/config.h.in: stamp-h.in
-$(srcdir)/stamp-h.in: configure.ac aclocal.m4
-	autoheader
-	echo timestamp > '$(srcdir)/stamp-h.in'
-
-config.h: stamp-h
-stamp-h: config.h.in config.status
-	./config.status
-
-Makefile: Makefile.in config.status
-	./config.status
-
-config.status: configure
-	./config.status --recheck
 

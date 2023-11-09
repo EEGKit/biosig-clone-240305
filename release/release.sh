@@ -44,7 +44,7 @@ sed -i '/^AC_CHECK_LIB.*hdf/   s/^/# /g'      configure.ac
 sed -i '/^AC_CHECK_LIB.*matio/   s/^/# /g'      configure.ac
 sed -i '/^AC_CHECK_LIB.*sqlite/   s/^/# /g'      configure.ac
 
-(cd biosig-code && autoreconf -fi && ./configure)
+(cd biosig-code && autoreconf -fi && ./configure && make distclean )
 ### precompute all *.i and avoid need for gawk at build time
 (cd biosig-code/biosig4c++ && \
 	gawk -f eventcodes.awk   "../biosig4matlab/doc/eventcodes.txt" && \
