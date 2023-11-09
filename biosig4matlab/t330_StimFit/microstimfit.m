@@ -474,7 +474,7 @@ for k=1:N;
 
 		try
 			% A0 * (exp(delay-t*invTau1) - exp(delay-t*invTau2)) + offset
-			fitfun = @(p, x) (p(1) * exp (p(4)-x*p(2) - exp (p(4)-x*p(3)) + p(5));
+			fitfun = @(p, x) (p(1) * (exp (p(4)-x*p(2)) - exp(p(4)-x*p(3))) + p(5));
 			t = [0:(default.option.fitEnd-default.option.fitBegin)]'/Fs;
 			decay = data(default.option.fitBegin(k) + t);
 			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t, decay, LB, UB)
