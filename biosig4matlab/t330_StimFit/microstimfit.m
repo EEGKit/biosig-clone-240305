@@ -122,8 +122,9 @@ default.t2=round(+Fs*100e-3);
 default.baseEnd=round(-Fs*10e-3);
 default.peakBeg=round(-Fs*10e-3);
 default.peakEnd=round(+Fs*20e-3);
+default.fitBegin=round(+Fs*0e-3);
 default.fitEnd=round(+Fs*50e-3);
-default.meanN=round(50e-6*Fs);	% see [1], Fig. 3-C
+default.meanN=max([1,round(50e-6*Fs)]);	% see [1], Fig. 3-C
 default.dir=0;
 default.plotFlag=0;
 default.baseFlag=0;
@@ -304,7 +305,7 @@ for k=1:N;
 
 	peakRegion = sdata( max(option.peakBegin+ix,1) : min(ix+option.peakEnd,size(data,1)) ) - base;
 
-	if option.dir && any(xor(peak < 0, option.dir < 0))
+	if option.dir && any(xor(peak(k) < 0, option.dir < 0))
 		warning('microStimfit: peak has wrong direction  - this is strange'); 
 	end
 
@@ -482,7 +483,7 @@ for k=1:N;
 		set(h(end-2),'linewidth',lineWidth);
 		set(h(end-1),'linewidth',lineWidth);
 		set(h(end),'linewidth',lineWidth);
-		title(sprintf('%i/%i',k,N))
+		title(sprintf('%i / %i (t = %g s)',k,N,evtpos(k)/Fs))
 		
 		if any(option.fitFlag==[1:3]) && ~isempty(fitResult)
 			hold on;
