@@ -61,7 +61,7 @@ function [results, option] = microstimfit(data, Fs, evtpos, varargin)
 %     https://pub.ist.ac.at/~schloegl/publications/GuzmanEtAl2014.fninf-08-00016.pdf
 
 
-% Copyright (C) 2017-2019,2022 Alois Schlögl, IST Austria <alois.schloegl@ist.ac.at>
+% Copyright (C) 2017-2019,2022,2023 Alois Schlögl, IST Austria <alois.schloegl@ist.ac.at>
 
 % TODO: 
 % smoothing window length 
@@ -189,7 +189,8 @@ N = length(evtpos);
 results.label = {'tix','baseline','baseSD','-','peak','tPeak', ...
 		 't20Real', 't80Real', 't50AInt', 't50AReal', 't50BInt', 't50BReal', 't0Real', ...
 		 'tMaxSlopeRiseReal', 'maxSlopeRiseReal', 'tThreshold', 'yThreshold', ...
-		 'tMaxSlopeDecayReal', 'maxSlopeDecayReal', ...
+		 'tMaximum', 'Maximum', ...
+		 'tMinimum', 'Minimum', ...
 		};
 
 numFixLabels = length(results.label);
@@ -326,24 +327,28 @@ for k=1:N;
 	t50AInt = find( diff(peakRegion2 >  0.5 * peakCor) > 0); t50AInt(t50AInt > tPeak2(k))=[];
 	t50BInt = find( diff(peakRegion2 >= 0.5 * peakCor) < 0); t50BInt(t50BInt < tPeak2(k))=[];
 
-	t20Real = ix + option.peakBegin - 1; 
-	t80Real = ix + option.peakBegin - 1;
-	t50AReal= ix + option.peakBegin - 1;
-	t50BReal= ix + option.peakEnd   - 1;
-
+	t20Real = ix + option.peakBegin - 1;
 	if (length(t20Int)>0)
 		t20Real  = t20Int  + (0.2*peakCor-peakRegion2(t20Int))./peakRegion3(t20Int) + ix + option.peakBegin-1; 
 	end;
+	t80Real = ix + option.peakBegin - 1;
 	if (length(t80Int)>0)
 		t80Real  = t80Int  + (0.8*peakCor-peakRegion2(t80Int))./peakRegion3(t80Int) + ix + option.peakBegin-1;
 	end;
+	t50AReal= ix + option.peakBegin - 1;
 	if (length(t50AInt)>0)
 		t50AReal = t50AInt + (0.5*peakCor-peakRegion2(t50AInt))./peakRegion3(t50AInt) + ix + option.peakBegin-1;
 	end;
+	t50BReal= ix + option.peakEnd   - 1;
 	if (length(t50BInt)>0)
 		t50BReal = t50BInt + (0.5*peakCor-peakRegion2(t50BInt))./peakRegion3(t50BInt) + ix + option.peakBegin-1;
 	end;
 	t0Real = mean(t20Real) - (mean(t80Real)-mean(t20Real))/3;
+
+	[Maximum,tMaximum] = max(peakRegion);
+	tMaximum = mean(tMaximum) + ix + option.peakBegin - 1;
+	[Minimum,tMinimum] = min(peakRegion);
+	tMinimum = mean(tMinimum) + ix + option.peakBegin - 1;
 
 	maxSlopeRiseReal  = max(peakRegion3);
 	tMaxSlopeRiseReal = find(peakRegion3==maxSlopeRiseReal) + ix + option.peakBegin - 0.5;
@@ -363,6 +368,10 @@ for k=1:N;
 	results.data(k,15) = mean(maxSlopeRiseReal);
 	results.data(k,18) = mean(tMaxSlopeDecayReal);
 	results.data(k,19) = mean(maxSlopeDecayReal);
+	results.data(k,20) = mean(tMaximum);
+	results.data(k,21) = mean(Maximum);
+	results.data(k,22) = mean(tMinimum);
+	results.data(k,23) = mean(Minimum);
 
 	% peakRegion4
 	if option.thresFlag>0
@@ -547,5 +556,7 @@ results.MaxSlopeTime   = diff(results.data(:,[1,14]),[],2)/Fs;	% for backwards c
 results.tMaxRiseSlope  = diff(results.data(:,[1,14]),[],2)/Fs;	% same  .MaxSlopeTime
 results.tMaxDecaySlope = diff(results.data(:,[1,18]),[],2)/Fs;
 results.thresholdTime = diff(results.data(:,[1,16]),[],2)/Fs;
+results.MaxTime = (results.data(:,20)-evtpos)/Fs;
+results.MinTime = (results.data(:,22)-evtpos)/Fs;
 
 
