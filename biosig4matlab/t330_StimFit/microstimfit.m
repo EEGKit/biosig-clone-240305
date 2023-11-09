@@ -38,8 +38,10 @@ function [results, option] = microstimfit(data, Fs, evtpos, varargin)
 %			1: fit decay with monoexponential model 'a*exp(-x/tau)+offset' (from peakTime to t2)
 %			2: fit decay with biexponential model 'a1*exp(-x/tau1)+a2*exp(-x/tau2) ' (from peakTime to t2)
 %			3: fit decay with biexponential model 'a1*exp(-x/tau1)+a2*exp(-x/tau2)+offset' (from peakTime to t2)
-%      option.thres	threshold value for AP (in relative units or unit voltage or current per sample interval), and 
-%      option.thresFlag	controls the threshold criterion (0 = relative to max slope, 1 = absolute). 
+%			5: biexponential with delay: 'a0*exp(delay-x/tau1)-exp(delay-x/tau2)+offset' (from peakTime to t2)
+%      option.thres	threshold value for AP (in relative units or unit voltage or current per sample interval), and
+%      option.thresFlag	controls the threshold criterion (0 = relative to max slope, 1 = absolute).
+%      option.fitBegin	start of fitting window (only for fitFlag=5)
 %      option.fitEnd	data length for fitting, starting from the peak time 
 %
 %  Output arguments:
@@ -213,6 +215,12 @@ elseif (option.fitFlag==2)
 elseif (option.fitFlag==3)
 	results.label(end+[1:5]) = {'A1','A2', 'tau1 [s]', 'tau2 [s]','offset'};
 	option.fitfun = @(p, x) (p(1) * exp (-x*p(3)) + p(2) * exp (-x*p(4)) + p(5));	% A1 * exp(-t*invTau1) + A2 * exp(-t*invTau2) + offset
+	results.fitResults=repmat(NaN,N,5);
+	results.weightedTau=repmat(NaN,N,1);
+elseif (option.fitFlag==5)
+	warning('fitting model "biexponential with delay" (fitFlag==5) is experimental')
+	results.label(end+[1:5]) = {'A0','tau1 [s]', 'tau2 [s]','delay', 'offset'};
+	option.fitfun = @(p, x) (p(1) * exp (p(4)-x*p(2) - exp (p(4)-x*p(3))) + p(5));	% A0 * (exp(delay-t*invTau1) - exp(delay-t*invTau2)) + offset
 	results.fitResults=repmat(NaN,N,5);
 	results.weightedTau=repmat(NaN,N,1);
 elseif (option.fitFlag==0)
@@ -448,6 +456,30 @@ for k=1:N;
 			results.fitResults(k,1:5) = [fitResult(1), fitResult(2), 1/fitResult(3), 1/fitResult(4), fitResult(5)];
 			% (A1/invTau1 + A2/invTau2)/(A1+A2)
 			results.weightedTau(k,1)  = sum(fitResult(1:2)./fitResult(3:4)) / sum(fitResult(1:2));
+		catch
+			warning('fitting failed; optimization toolbox or optim package missing')
+			fitResult=[];
+		end
+
+	elseif (option.fitFlag==5)
+		% results.label(end+[1:3]) = {'A0', 'tau1 [s]', 'tau2 [s]', 'delay [s]', offset};
+		%         fitfun = @(p, x) (p(1) * exp (p(4)-x*p(2) - exp (p(4)-x*p(3)) + p(5));	% A0 * (exp(delay-t*invTau1) - exp(delay-t*invTau2)) + offset
+
+		fitResult = [];
+		fExp      = option.fitfun;
+		invtau1   = Fs/(mean(t50BReal) - mean(t50AReal));
+		pInit = [peak(k), Fs/(mean(t50AReal)), Fs/(mean(t50BReal)), 0, base];
+		LB = [-inf, 0, 0, 0, -inf];
+		UB = [+inf, +inf, +inf, +inf, +inf];
+
+		try
+			% A0 * (exp(delay-t*invTau1) - exp(delay-t*invTau2)) + offset
+			fitfun = @(p, x) (p(1) * exp (p(4)-x*p(2) - exp (p(4)-x*p(3)) + p(5));
+			t = [0:(default.option.fitEnd-default.option.fitBegin)]'/Fs;
+			decay = data(default.option.fitBegin(k) + t);
+			[fitResult, RESNORM, RESIDUAL, EXITFLAG, OUTPUT, LAMBDA, JACOBIAN] = lsqcurvefit (option.fitfun, pInit', t, decay, LB, UB)
+			results.fitResults(k,1:5) = [fitResult(1), 1/fitResult(2), 1/fitResult(3), fitResult(4), fitResult(5)];
+			results.weightedTau(k,1)  = 1./fitResult(2:3);
 		catch
 			warning('fitting failed; optimization toolbox or optim package missing')
 			fitResult=[];
