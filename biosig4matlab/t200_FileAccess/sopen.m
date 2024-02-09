@@ -1054,7 +1054,6 @@ end;
                         
                 end;
                 HDR.EVENT.SampleRate = HDR.SampleRate;
-		HDR = edfannot2evt(HDR);
 
                 status = fseek(HDR.FILE.FID, HDR.HeadLen, 'bof');
                 HDR.FILE.POS  = 0;
