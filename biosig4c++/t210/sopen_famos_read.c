@@ -57,7 +57,19 @@ EXTERN_C void sopen_FAMOS_read(HDRTYPE* hdr) {
 
 		char flag_AbstandFile = 0;		// interleaved format ??? used for experimental code 
 		
-		fprintf(stdout,"SOPEN(FAMOS): support is experimental. Only time series with equidistant sampling and single sampling rate are supported.\n");		
+		/* FIXME: the current implemention has a number of flaws and limitations,
+			also the following security vulnerabilities are known:
+				CVE-2024-21812, CVE-2024-23313, CVE-2024-23310, CVE-2024-23606
+			Most likely a major rewrite is needed to fix those.
+			Only then, the following guard should be removed.
+		*/
+		char *FLAG_ENABLE_FAMOS = getenv("BIOSIG_FAMOS_TRUST_INPUT");
+		if (FLAG_ENABLE_FAMOS==NULL || strcmp(FLAG_ENABLE_FAMOS,"1") ) {
+			biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "FAMOS not supported unless BIOSIG_FAMOS_TRUST_INPUT=1 is set");
+			return;
+		}
+
+		fprintf(stdout,"SOPEN(FAMOS): support is experimental. Only time series with equidistant sampling and single sampling rate are supported.\n");
 
 		while (pos < count-20) {
 			t       = Header1+pos;	// start of line
