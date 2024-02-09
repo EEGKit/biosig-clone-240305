@@ -6063,11 +6063,15 @@ if (VERBOSE_LEVEL>8)
 		// skip first line
 		size_t N_EVENT=0;
 		hdr->EVENT.N=0;
+		int lineNo=1;
 		do {
 			t1 = t;
 			t += strcspn(t,"\x0A\x0D");
-			t += strspn(t,"\x0A\x0D");
-			t[-1]=0;
+			while ( (*t==0x0a) || (*t==0x0d) ) {
+				*t=0;
+				t++;
+			}
+			lineNo++;
 
 			if (VERBOSE_LEVEL>8) fprintf(stdout,"%i <%s>\n",seq,t1);
 
@@ -6081,12 +6085,20 @@ if (VERBOSE_LEVEL>8)
 			else if (seq==1)
 				;
 			else if ((seq==2) && !strncmp(t1,"Mk",2)) {
+
+				int p2=0, p3=0, p4=0, p5=0, p6=0;
 				int p1 = strcspn(t1,"=");
-				int p2 = p1 + 1 + strcspn(t1+p1+1,",");
-				int p3 = p2 + 1 + strcspn(t1+p2+1,",");
-				int p4 = p3 + 1 + strcspn(t1+p3+1,",");
-				int p5 = p4 + 1 + strcspn(t1+p4+1,",");
-				int p6 = p5 + 1 + strcspn(t1+p5+1,",");
+				if ( p1 && t1[p1] ) p2 = p1 + 1 + strcspn(t1+p1+1,",");
+				if ( p2 && t1[p2] ) p3 = p2 + 1 + strcspn(t1+p2+1,",");
+				if ( p3 && t1[p3] ) p4 = p3 + 1 + strcspn(t1+p3+1,",");
+				if ( p4 && t1[p4] ) p5 = p4 + 1 + strcspn(t1+p4+1,",");
+				if ( p5 && t1[p5] ) p6 = p5 + 1 + strcspn(t1+p5+1,",");
+
+				if ( !p5 ) {
+					// ignore this line when not at least 5 fields separated by 4 commas
+					fprintf(stderr,"WARNING: syntax error in %s (line %d) '%s' - line ignored\n", hdr->FileName, lineNo, t1);
+					continue;	// next line
+				}
 
 			if (VERBOSE_LEVEL>8) fprintf(stdout,"  %i %i %i %i %i %i \n",p1,p2,p3,p4,p5,p6);
 
