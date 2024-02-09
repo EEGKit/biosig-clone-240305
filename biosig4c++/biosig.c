@@ -7604,6 +7604,15 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 			POS = 36;
 		}
 
+		if (NEC>255) {
+			/* The GDF/Biosig header supports only 255 different types of free text events
+			// fixes CVE-2024-21795
+			*/
+			fprintf(stderr,"ERROR: %s line %d: %s(...) NEC=%d too large \n", __FILE__, __LINE__, __func__, NEC);
+			biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Error EGI: number of events exceeds 255\n");
+			return(hdr);
+		}
+
 		/* read event code description */
 		hdr->AS.auxBUF = (uint8_t*) realloc(hdr->AS.auxBUF,5*NEC);
 		hdr->EVENT.CodeDesc = (typeof(hdr->EVENT.CodeDesc)) realloc(hdr->EVENT.CodeDesc,257*sizeof(*hdr->EVENT.CodeDesc));
