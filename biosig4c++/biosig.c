@@ -6063,11 +6063,15 @@ if (VERBOSE_LEVEL>8)
 		// skip first line
 		size_t N_EVENT=0;
 		hdr->EVENT.N=0;
+		int lineNo=1;
 		do {
 			t1 = t;
 			t += strcspn(t,"\x0A\x0D");
-			t += strspn(t,"\x0A\x0D");
-			t[-1]=0;
+			while ( (*t==0x0a) || (*t==0x0d) ) {
+				*t=0;
+				t++;
+			}
+			lineNo++;
 
 			if (VERBOSE_LEVEL>8) fprintf(stdout,"%i <%s>\n",seq,t1);
 
@@ -6081,12 +6085,20 @@ if (VERBOSE_LEVEL>8)
 			else if (seq==1)
 				;
 			else if ((seq==2) && !strncmp(t1,"Mk",2)) {
+
+				int p2=0, p3=0, p4=0, p5=0, p6=0;
 				int p1 = strcspn(t1,"=");
-				int p2 = p1 + 1 + strcspn(t1+p1+1,",");
-				int p3 = p2 + 1 + strcspn(t1+p2+1,",");
-				int p4 = p3 + 1 + strcspn(t1+p3+1,",");
-				int p5 = p4 + 1 + strcspn(t1+p4+1,",");
-				int p6 = p5 + 1 + strcspn(t1+p5+1,",");
+				if ( p1 && t1[p1] ) p2 = p1 + 1 + strcspn(t1+p1+1,",");
+				if ( p2 && t1[p2] ) p3 = p2 + 1 + strcspn(t1+p2+1,",");
+				if ( p3 && t1[p3] ) p4 = p3 + 1 + strcspn(t1+p3+1,",");
+				if ( p4 && t1[p4] ) p5 = p4 + 1 + strcspn(t1+p4+1,",");
+				if ( p5 && t1[p5] ) p6 = p5 + 1 + strcspn(t1+p5+1,",");
+
+				if ( !p5 ) {
+					// ignore this line when not at least 5 fields separated by 4 commas
+					fprintf(stderr,"WARNING: syntax error in %s (line %d) '%s' - line ignored\n", hdr->FileName, lineNo, t1);
+					continue;	// next line
+				}
 
 			if (VERBOSE_LEVEL>8) fprintf(stdout,"  %i %i %i %i %i %i \n",p1,p2,p3,p4,p5,p6);
 
@@ -6143,12 +6155,6 @@ if (VERBOSE_LEVEL>8)
 	else if ((hdr->TYPE==BrainVision) || (hdr->TYPE==BrainVisionVAmp)) {
 		/* open and read header file */
 		// ifclose(hdr);
-		char *filename = hdr->FileName; // keep input file name
-		char* tmpfile = (char*)calloc(strlen(hdr->FileName)+5,1);
-		strcpy(tmpfile, hdr->FileName);		// Flawfinder: ignore
-		hdr->FileName = tmpfile;
-		char* ext = strrchr((char*)hdr->FileName,'.')+1;
-
 		while (!ifeof(hdr)) {
 			size_t bufsiz = max(2*count, PAGESIZE);
 			hdr->AS.Header = (uint8_t*)realloc(hdr->AS.Header, bufsiz+1);
@@ -6162,10 +6168,12 @@ if (VERBOSE_LEVEL>8)
 			fprintf(stdout,"SOPEN(BV): header file read.\n");
 
 		int seq = 0;
+		char *datafile = NULL;
+		int sections[6];
+		memset(sections,0,sizeof(sections));
 
 		/* decode header information */
 		hdr->FLAG.OVERFLOWDETECTION = 0;
-		seq = 0;
 		uint16_t gdftyp=3;
 		char FLAG_ASCII = 0;
 		hdr->FILE.LittleEndian = 1;	// default little endian
@@ -6191,44 +6199,23 @@ if (VERBOSE_LEVEL>8)
 
 			if (!strncmp(t,";",1)) 	// comments
 				;
-			else if (!strncmp(t,"[Common Infos]",14))
+			else if (!strncmp(t,"[Common Infos]",14)) {
 				seq = 1;
-			else if (!strncmp(t,"[Binary Infos]",14))
+				sections[seq]++;
+			}
+			else if (!strncmp(t,"[Binary Infos]",14)) {
 				seq = 2;
+				sections[seq]++;
+			}
 			else if (!strncmp(t,"[ASCII Infos]",13)) {
 				seq = 2;
+				sections[seq]++;
 				FLAG_ASCII = 1;
 				gdftyp = 17;
-
-//				biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "Error SOPEN(BrainVision): ASCII-format not supported (yet).");
 			}
 			else if (!strncmp(t,"[Channel Infos]",14)) {
 				seq = 3;
-
-				/* open data file */
-				if (FLAG_ASCII) hdr = ifopen(hdr,"rt");
-				else 	        hdr = ifopen(hdr,"rb");
-
-				hdr->AS.bpb = (hdr->NS*GDFTYP_BITS[gdftyp])>>3;
-				if (hdr->TYPE==BrainVisionVAmp) hdr->AS.bpb += 4;
-				if (!npts) {
-					struct stat FileBuf;
-					stat(hdr->FileName,&FileBuf);
-					npts = FileBuf.st_size/hdr->AS.bpb;
-		        	}
-
-				/* restore input file name, and free temporary file name  */
-				hdr->FileName = filename;
-				free(tmpfile);
-
-				if (orientation == VEC) {
-					hdr->SPR = npts;
-					hdr->NRec= 1;
-					hdr->AS.bpb*= hdr->SPR;
-				} else {
-					hdr->SPR = 1;
-					hdr->NRec= npts;
-				}
+				sections[seq]++;
 
 			    	hdr->CHANNEL = (CHANNEL_TYPE*) realloc(hdr->CHANNEL,hdr->NS*sizeof(CHANNEL_TYPE));
 				for (k=0; k<hdr->NS; k++) {
@@ -6236,7 +6223,7 @@ if (VERBOSE_LEVEL>8)
 					hc->Label[0] = 0;
 					hc->Transducer[0] = '\0';
 				    	hc->GDFTYP 	= gdftyp;
-				    	hc->SPR 	= hdr->SPR; // *(int32_t*)(Header1+56);
+					hc->SPR 	= 1;
 				    	hc->LowPass	= -1.0;
 				    	hc->HighPass	= -1.0;
 		    			hc->Notch	= -1.0;  // unknown
@@ -6266,11 +6253,19 @@ if (VERBOSE_LEVEL>8)
 			else if (!strncmp(t,"[",1))
 				seq = 9;
 
-
 			else if (seq==1) {
-				if      (!strncmp(t,"DataFile=",9))
-					strcpy(ext, strrchr(t,'.') + 1);
+				if      (!strncmp(t,"DataFile=",9)) {
+					if (datafile != NULL)
+						fprintf(stderr,"ERROR (BrainVision): multiple DataFile entries - previous ones will be ignored\n");
 
+					char *fn = t+9;
+					datafile = (char*)realloc(datafile, strlen(hdr->FileName)+strlen(t));
+					if (strrchr(hdr->FileName,FILESEP)) {
+						strcpy(datafile, hdr->FileName);
+						strcpy(strrchr(datafile,FILESEP)+1, fn);
+					} else
+						strcpy(datafile,fn);
+				}
 				else if (!strncmp(t,"MarkerFile=",11)) {
 
 					char* mrkfile = (char*)calloc(strlen(hdr->FileName)+strlen(t),1);
@@ -6362,10 +6357,6 @@ if (VERBOSE_LEVEL>8)
 				else if (!strncmp(t,"SkipColumns=",12)) {
 					SKIPCOLUMNS = atoi(t+12);
 				}
-				else if (0) {
-					biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "Error SOPEN(BrainVision): BinaryFormat=<unknown>");
-					return(hdr);
-				}
 			}
 			else if (seq==3) {
 				if (VERBOSE_LEVEL==9)
@@ -6408,6 +6399,48 @@ if (VERBOSE_LEVEL>8)
 			// t = strtok(NULL,"\x0a\x0d");	// extract next line
 		}
 		hdr->HeadLen  = 0;
+		// sanity checks
+		if (sections[1] != 1 || sections[2] != 1 || sections[3] != 1 ) {
+			biosigERROR(hdr, B4C_DATATYPE_UNSUPPORTED, "Error SOPEN(BrainVision): invalid header file");
+			return(hdr);
+		}
+		if (datafile == NULL) {
+			hdr->NRec= 0;
+		}
+		else {
+			/* open data file */
+			char *filename = hdr->FileName;
+			hdr->FileName = datafile;
+			if (FLAG_ASCII) hdr = ifopen(hdr,"rt");
+			else 	        hdr = ifopen(hdr,"rb");
+
+			hdr->AS.bpb = (hdr->NS*GDFTYP_BITS[gdftyp])>>3;
+			if (hdr->TYPE==BrainVisionVAmp) hdr->AS.bpb += 4;
+			if (!npts) {
+				struct stat FileBuf;
+				stat(datafile, &FileBuf);
+				npts = FileBuf.st_size/hdr->AS.bpb;
+			}
+
+			/* restore input file name, and free temporary file name  */
+			hdr->FileName = filename;
+			free(datafile);
+
+			if (orientation == VEC) {
+				hdr->SPR = npts;
+				hdr->NRec= 1;
+				hdr->AS.bpb *= hdr->SPR;
+				for (k=0; k<hdr->NS; k++) {
+					CHANNEL_TYPE *hc = hdr->CHANNEL+k;
+					hc->SPR = hdr->SPR;
+				}
+			}
+			else {
+				hdr->SPR = 1;
+				hdr->NRec= npts;
+			}
+		}
+
 	    	if (FLAG_ASCII) {
 	    		count = 0;
 			size_t bufsiz  = hdr->NS*hdr->SPR*hdr->NRec*16;
@@ -7569,6 +7602,15 @@ if (VERBOSE_LEVEL > 7) fprintf(stdout,"biosig/%s (line %d): #%d label <%s>\n", _
 			hdr->AS.bpb = (hdr->NS + NEC)*GDFTYP_BITS[hdr->CHANNEL[0].GDFTYP]>>3;
 			*/
 			POS = 36;
+		}
+
+		if (NEC>255) {
+			/* The GDF/Biosig header supports only 255 different types of free text events
+			// fixes CVE-2024-21795
+			*/
+			fprintf(stderr,"ERROR: %s line %d: %s(...) NEC=%d too large \n", __FILE__, __LINE__, __func__, NEC);
+			biosigERROR(hdr, B4C_FORMAT_UNSUPPORTED, "Error EGI: number of events exceeds 255\n");
+			return(hdr);
 		}
 
 		/* read event code description */
