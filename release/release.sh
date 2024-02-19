@@ -7,13 +7,13 @@
 #  for example:
 #    ./release.sh 2.5.0
 #
-# Copyright (C) 2004,2008,2011,2012,2013,2016-2022 Alois Schloegl
+# Copyright (C) 2004,2008,2011,2012,2013,2016-2024 Alois Schloegl
 
 
 ## TODO: add freetb4matlab
 ## Tagging a release
 
-B4OMversion=3.8.3
+B4OMversion=3.8.4
 
 SRCDIR=/home/schloegl/src
 MXEDIR=$SRCDIR"/mxe.github.schloegl"
@@ -39,12 +39,12 @@ rm -rf biosig-code/biosig4python
 rm -rf biosig-code/bioprofeed
 rm -rf biosig-code/release
 ### generate ./configure - set version number, disable non-productive libraries ###
-sed -i '/^AC_INIT/ s/^.*$/AC_INIT([biosig], ['$1'])/g' configure.ac
-sed -i '/^AC_CHECK_LIB.*hdf/   s/^/# /g'      configure.ac
-sed -i '/^AC_CHECK_LIB.*matio/   s/^/# /g'      configure.ac
-sed -i '/^AC_CHECK_LIB.*sqlite/   s/^/# /g'      configure.ac
+sed -i '/^AC_INIT/ s/^.*$/AC_INIT([biosig], ['$1'])/g' biosig-code/configure.ac
+sed -i '/^AC_CHECK_LIB.*hdf/   s/^/# /g'      biosig-code/configure.ac
+sed -i '/^AC_CHECK_LIB.*matio/   s/^/# /g'      biosig-code/configure.ac
+sed -i '/^AC_CHECK_LIB.*sqlite/   s/^/# /g'      biosig-code/configure.ac
+(cd biosig-code && autoreconf -fi )
 
-(cd biosig-code && autoreconf -fi && ./configure && make distclean )
 ### precompute all *.i and avoid need for gawk at build time
 (cd biosig-code/biosig4c++ && \
 	gawk -f eventcodes.awk   "../biosig4matlab/doc/eventcodes.txt" && \

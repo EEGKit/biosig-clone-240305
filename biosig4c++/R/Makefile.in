@@ -1,5 +1,5 @@
 
-BIOSIG4R_PKG = biosig_@PACKAGE_VERSION@.tar.gz
+BIOSIG4R_PKG=biosig_@PACKAGE_VERSION@.tar.gz
 
 build: $(BIOSIG4R_PKG)
 

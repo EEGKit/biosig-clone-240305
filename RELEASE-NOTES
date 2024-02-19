@@ -6,6 +6,39 @@ Bitcoin account for supporting biosig project:
 Next release:
 
 ====================================================
+--- Version: 2.6.0 ---------------------------------
+
+Mon 19 Feb 2024
+====================================================
+
+[b4m] biosig4matlab:
+    sopen:
+	fix reading EDF+/BDF+ with sopen (disable use of broken edfannot2evt)
+             fixes https://github.com/sccn/eeglab/issues/668 at the cost
+                 that events/annotations are not decoded.
+             Workarounds are the use of mexSLOAD.mex or converting
+             The EDF+/BDF+ file into GDF format using save2gdf.
+        GDF: fix reading large DigMax/DigMin values (abs(..) > 2^31)
+    microstimfit:
+	several improvements
+    MOD/sload4mod
+	more preprecessing options (high- and low-pass filtering with Gaussian filter)
+	fix baseline when resampling
+	additional options (EscapeCurrent, TemplateLength)
+	improve docu, fix typos
+
+[b4c] libbiosig:
+    BrainVisionMarker:
+	fixes CVE-2024-23305
+    BrainVision: proved parser and sanity checks
+	fixes CVE-2024-22097, CVE-2024-23809
+    EGI:
+	fixes CVE-2024-21795
+    FAMOS: disabled, support can be enabled by setting BIOSIG_FAMOS_TRUST_INPUT=1
+	mitigate vulnerabilities CVE-2024-21812, CVE-2024-23313, CVE-2024-23310, CVE-2024-23606
+
+
+====================================================
 --- Version: 2.5.2 ---------------------------------
 
 Tue 18 Jul 2023 09:21:47 PM CEST
@@ -17,6 +50,14 @@ Tue 18 Jul 2023 09:21:47 PM CEST
         ABF2: fixed scaling of float32 data (fixes stimfit issue #104)
               define event table for multi-sweep data (fixes stimfit issue #102)
 - several minor fixes and improvements
+
+da0331864931e312b762068f7d0276d39934caf8d4f0369c115dc0fc6d8ea9e8  biosig4octmat-3.8.3.zip
+c03a35fd3359d342ad0105aa3b12ca1345185a909e60fcc927c6625bdb58e61e  biosig4octave-2.5.2.src.tar.gz
+3c87fa4ae6d69e1a75477f85451b6f16480418a0018d59e1586a2e3e8954ec47  biosig-2.5.2.src.tar.xz
+95ef9d81f762eee5139b13a74db56f52deda948927bb8df1bf66e1affa1ec19b  biosig-2.5.2.src.zip
+44e68c1f4a9a7fc8f251eed03f33b828bcd82498aa1677cc4e87f3ac9c2713d9  biosig-2.5.2-Windows-32bit.zip
+a7b8b3cca53c73e7b73491e298526b52fd3173938e62f0f8653e2187eed3e636  biosig-2.5.2-Windows-64bit.zip
+
 
 ====================================================
 --- Version: 2.5.0 ---------------------------------
